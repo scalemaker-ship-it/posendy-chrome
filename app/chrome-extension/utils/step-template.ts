@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork: chrome_batch / chrome_shortcut step 간 값 전달 템플릿 엔진.
+ * posendy-chrome fork: chrome_batch / chrome_shortcut step 간 값 전달 템플릿 엔진.
  *
  * 설계 계약: docs/plans/2026-09-04-batch-flow-design.md 1절·4절.
  * 크롬 API 에 의존하지 않는 순수 함수만 둔다 (단위 테스트에서 그대로 부를 수 있게).

@@ -4,17 +4,17 @@
  * 왜 필요한가:
  *   브리지는 127.0.0.1 의 고정 포트에서 듣는다. CORS 는 "응답을 읽을 수 있는지"만
  *   통제하고 "요청이 실행되는지"는 통제하지 못한다. 그래서 아무 웹페이지나
- *   `fetch('http://127.0.0.1:12320/admin/kill-self', { method: 'POST' })` 한 방으로
+ *   `fetch('http://127.0.0.1:12330/admin/kill-self', { method: 'POST' })` 한 방으로
  *   남의 브리지를 죽이거나 `/mcp` 로 새 MCP 세션을 열 수 있었다.
  *
  * 어떻게 막는가:
  *   네이티브 호스트가 listen 하기 전에 무작위 토큰을 만들어
- *   `~/.auto-chrome-mcp/auth-token` 에 (소유자만 읽기) 저장한다. 같은 패키지의 stdio
+ *   `~/.posendy-chrome/auth-token` 에 (소유자만 읽기) 저장한다. 같은 패키지의 stdio
  *   프록시가 그 파일을 읽어 `Authorization: Bearer <token>` 으로 보내고, 확장은
  *   네이티브 메시지(SERVER_STARTED)로 같은 토큰을 받아 붙인다. 서버는 보호 대상 경로에서
  *   상수 시간 비교로 검증한다.
  *
- * 파일 위치·관례는 기존 CDP 포트 파일(`~/.auto-chrome-mcp/cdp-port`)과 같은 곳을 쓴다.
+ * 파일 위치·관례는 기존 CDP 포트 파일(`~/.posendy-chrome/cdp-port`)과 같은 곳을 쓴다.
  *
  * 생성 규칙 (동시에 여러 브리지가 떠도 안전해야 한다):
  *   1. 상태 디렉터리를 먼저 만들고 소유자 전용으로 잠근다 (윈도우는 icacls 로 상속 제거).
@@ -50,7 +50,7 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 import { execFileSync } from 'child_process';
 
-/** 상태 디렉터리 override (테스트·격리 실행용). 미설정이면 ~/.auto-chrome-mcp */
+/** 상태 디렉터리 override (테스트·격리 실행용). 미설정이면 ~/.posendy-chrome */
 export const STATE_DIR_ENV = 'AUTO_CHROME_MCP_HOME';
 export const TOKEN_FILE_NAME = 'auth-token';
 /** 32 bytes = hex 64 자. */
@@ -59,7 +59,7 @@ export const TOKEN_BYTE_LENGTH = 32;
 const TOKEN_FORMAT = /^[0-9a-f]{64}$/;
 
 export const getStateDir = (): string =>
-  process.env[STATE_DIR_ENV] || path.join(os.homedir(), '.auto-chrome-mcp');
+  process.env[STATE_DIR_ENV] || path.join(os.homedir(), '.posendy-chrome');
 
 export const getTokenFilePath = (): string => path.join(getStateDir(), TOKEN_FILE_NAME);
 
@@ -458,7 +458,7 @@ export interface TokenFileInspection {
   /** true = 소유자 전용 확인, false = 넓게 열림, null = 판정 불가 */
   ownerOnly: boolean | null;
   detail: string;
-  /** 상태 디렉터리 (`~/.auto-chrome-mcp`). */
+  /** 상태 디렉터리 (`~/.posendy-chrome`). */
   stateDir: string;
   /** 상태 디렉터리 권한. true = 소유자 전용, false = 넓게 열림, null = 판정 불가 */
   stateDirOwnerOnly: boolean | null;
@@ -996,7 +996,7 @@ const rotateUnderLock = (
       `[auth] the existing token file ${filePath} could not be trusted (${reason}) ` +
         `and could not be replaced: ${(e?.message || String(e)).trim()}. ` +
         'The bridge keeps running with an in-memory token, but the stdio proxy cannot read it. ' +
-        'Run "auto-chrome-mcp-bridge doctor" for the fix command.',
+        'Run "posendy-chrome-bridge doctor" for the fix command.',
     );
     return {
       token,
@@ -1024,7 +1024,7 @@ const rotateUnderLock = (
   if (insecure) {
     console.error(
       `[auth] token file ${filePath} is not owner-only (${after.detail}). ` +
-        'The bridge keeps running; run "auto-chrome-mcp-bridge doctor" for the fix command.',
+        'The bridge keeps running; run "posendy-chrome-bridge doctor" for the fix command.',
     );
   }
 
@@ -1053,7 +1053,7 @@ export const ensureAuthToken = (): EnsureTokenResult => {
       console.error(
         `[auth] the state directory ${dirResult.dir} is not confirmed owner-only ` +
           `(${dirResult.error || 'see doctor'}). The bridge keeps running; ` +
-          'run "auto-chrome-mcp-bridge doctor" for the fix command.',
+          'run "posendy-chrome-bridge doctor" for the fix command.',
       );
     }
     return {
@@ -1121,7 +1121,7 @@ export const ensureAuthToken = (): EnsureTokenResult => {
     console.error(
       '[auth] token file permission lockdown failed:',
       permissions.error,
-      '- the bridge keeps running; run "auto-chrome-mcp-bridge doctor" for the fix command.',
+      '- the bridge keeps running; run "posendy-chrome-bridge doctor" for the fix command.',
     );
   }
 

@@ -1,7 +1,7 @@
 import { describe, expect, test, jest, beforeEach, afterEach } from '@jest/globals';
 
 /**
- * auto-chrome-mcp fork — 회귀 케이스 #6: "bridge SIGTERM 후 재시작 → EOF 없이 재핸드셰이크".
+ * posendy-chrome fork — 회귀 케이스 #6: "bridge SIGTERM 후 재시작 → EOF 없이 재핸드셰이크".
  *
  * bridge 가 죽었다 살아나면 stdio 프록시가 들고 있던 MCP 세션은 서버 쪽에서 사라진다.
  * 그 상태로 도구를 호출하면 SDK 가 연결 오류(EOF / fetch failed / ECONNREFUSED …)를 던지는데,
@@ -86,7 +86,7 @@ describe('mcp-server-stdio — bridge 재시작 후 재핸드셰이크 (회귀 #
     jest.spyOn(process, 'exit').mockImplementation(((code?: number) => {
       throw new Error(`unexpected process.exit(${code}) during test`);
     }) as never);
-    process.env.CHROME_PORT = '12320';
+    process.env.CHROME_PORT = '12330';
     (globalThis as any).fetch = jest.fn(async () => ({
       ok: true,
       status: 200,
@@ -110,7 +110,7 @@ describe('mcp-server-stdio — bridge 재시작 후 재핸드셰이크 (회귀 #
   test.each([
     ['EOF', 'SSE stream disconnected: EOF'],
     ['fetch failed', 'fetch failed'],
-    ['ECONNREFUSED', 'connect ECONNREFUSED 127.0.0.1:12320'],
+    ['ECONNREFUSED', 'connect ECONNREFUSED 127.0.0.1:12330'],
     ['closed', 'Transport closed unexpectedly'],
   ])('연결성 오류(%s)는 새 클라이언트로 재시도해 성공한다', async (_label, message) => {
     let attempts = 0;

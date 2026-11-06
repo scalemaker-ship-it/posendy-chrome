@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — step 값 전달 템플릿 엔진 단위 테스트.
+ * posendy-chrome fork — step 값 전달 템플릿 엔진 단위 테스트.
  *
  * 계약: docs/plans/2026-09-04-batch-flow-design.md 1절.
  * 테스트 이름의 번호는 같은 문서 8절 체크리스트 번호다.

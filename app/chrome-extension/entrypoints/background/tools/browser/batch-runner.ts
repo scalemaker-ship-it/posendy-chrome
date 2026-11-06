@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork: chrome_batch 와 chrome_shortcut 이 함께 쓰는 step 실행기.
+ * posendy-chrome fork: chrome_batch 와 chrome_shortcut 이 함께 쓰는 step 실행기.
  *
  * 설계 계약: docs/plans/2026-09-04-batch-flow-design.md (구현 순서 1~4단계).
  * 두 도구에 똑같이 복사돼 있던 실행 루프를 여기로 모았다. 실행 의미는 그대로고,
@@ -12,7 +12,7 @@
  *   - 상한: 도구 호출 100회, 벽시계 100초. 호출 사이에 검사하고 남은 시간을 invoke 에 넘긴다.
  */
 
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { isBackgroundModeEnabled, stripEffectiveBackgroundMode } from '@/utils/background-mode';
 import { beginMcpGroupTask, endMcpGroupTask, setMcpGroupTitle } from '@/utils/mcp-tab-group';
 import { getWorkTabId, sessionKeyOf } from '@/utils/work-tab-manager';
@@ -49,7 +49,7 @@ import { sleep } from '@/utils/adaptive-wait';
 export const MAX_STEPS = 20;
 export const MAX_RESULT_TEXT_LENGTH = 4000;
 /**
- * auto-chrome-mcp fork: batch 가 돌려줄 이미지 최대 개수.
+ * posendy-chrome fork: batch 가 돌려줄 이미지 최대 개수.
  * 스키마가 권하는 `click -> fill -> screenshot` 체인이 실제로 그림을 받게 하되,
  * 20 스텝이 전부 스크린샷일 때 컨텍스트가 터지지 않도록 뒤에서부터 이만큼만 남긴다.
  */
@@ -78,7 +78,7 @@ export type ToolInvoker = (param: {
    */
   deadlineAt?: number;
   /**
-   * auto-chrome-mcp fork(2026-09-05 데일리 자동화 설계 2절): **실행 컨텍스트 모드**.
+   * posendy-chrome fork(2026-09-05 데일리 자동화 설계 2절): **실행 컨텍스트 모드**.
    *
    * 예약 실행처럼 전역 토글과 무관하게 항상 무간섭이어야 하는 실행에서 `true` 다.
    * 게이트·url 대상 해석·navigate 재사용·활성화 가드·chrome_close_tabs 가 전역 토글보다
@@ -165,7 +165,7 @@ export interface RunnerStepResult {
   ok: boolean;
   resultText?: string;
   error?: string;
-  /** auto-chrome-mcp fork: 이 스텝이 돌려준 이미지 수 (요약 JSON 뒤에 순서대로 붙는다). */
+  /** posendy-chrome fork: 이 스텝이 돌려준 이미지 수 (요약 JSON 뒤에 순서대로 붙는다). */
   images?: number;
   status: StepStatus;
   as?: string;
@@ -173,7 +173,7 @@ export interface RunnerStepResult {
   attempts?: { count: number; stoppedBy: RepeatStoppedBy };
 }
 
-/** auto-chrome-mcp fork: 스텝이 만든 이미지 1장 - 어느 스텝에서 나왔는지 기억해 둔다. */
+/** posendy-chrome fork: 스텝이 만든 이미지 1장 - 어느 스텝에서 나왔는지 기억해 둔다. */
 export interface RunnerImage {
   index: number;
   tool: string;
@@ -198,7 +198,7 @@ export interface RunStepsOptions {
   /** shortcut 실행 파라미터 (`{{params.x}}` 의 뿌리). */
   params?: Record<string, unknown>;
   /**
-   * auto-chrome-mcp fork(2026-09-05 데일리 자동화 설계 8절): 이 실행은 전역 토글과
+   * posendy-chrome fork(2026-09-05 데일리 자동화 설계 8절): 이 실행은 전역 토글과
    * 무관하게 항상 background 규칙으로 돈다. 예약 실행 전용이며 스키마에 노출하지 않는다.
    *
    * 인자 `background: true` 만 덮으면 전역 OFF 상태의 게이트가 작업 탭 주입 자체를
@@ -213,20 +213,20 @@ export interface RunStepsOptions {
    */
   beforeStep?: () => Promise<void> | void;
   /**
-   * auto-chrome-mcp fork(2026-09-05 Codex 리뷰 5): 이 실행의 **절대 마감 시각**.
+   * posendy-chrome fork(2026-09-05 Codex 리뷰 5): 이 실행의 **절대 마감 시각**.
    * 예약 러너의 end-to-end 상한이 batch 자체 상한(100초)보다 앞설 수 있어, 러너가 준
    * 마감을 그대로 쓴다. 주지 않으면 지금처럼 `MAX_BATCH_MS` 로 계산한다.
    */
   deadlineAt?: number;
   /**
-   * auto-chrome-mcp fork(2026-09-05 Codex 리뷰 5): 바깥에서 실행을 취소하는 신호.
+   * posendy-chrome fork(2026-09-05 Codex 리뷰 5): 바깥에서 실행을 취소하는 신호.
    * 예전에는 러너가 `Promise.race` 로 타임아웃 응답만 돌려주고 실행 자체는 계속 돌았다 -
    * 도구 호출이 끝나면 취소된 실행이 탭을 더 열었다. 신호가 서면 진행 중인 도구 호출이
    * 끝나는 대로 멈추고 `aborted` 를 실어 돌려준다.
    */
   signal?: { readonly aborted: boolean; readonly reason?: unknown };
   /**
-   * auto-chrome-mcp fork(2026-09-05 Codex 리뷰 10): report 파일용 `return` 페이로드를
+   * posendy-chrome fork(2026-09-05 Codex 리뷰 10): report 파일용 `return` 페이로드를
    * 이 byte 상한으로 한 벌 더 만든다. 이력용 `returned` 는 24,000자에서 잘리므로 그것만
    * 가지고는 설계가 약속한 256KiB report 를 끝까지 만들 수 없다.
    */
@@ -258,7 +258,7 @@ export interface RunStepsOutcome {
 /**
  * 결과의 모든 text content 를 이어붙여 잘라낸다.
  * (게이트가 new_tabs_opened 같은 알림을 두 번째 text 항목으로 첨부하므로
- *  첫 항목만 취하면 팝업 감지 알림이 유실된다 - auto-chrome-mcp fork)
+ *  첫 항목만 취하면 팝업 감지 알림이 유실된다 - posendy-chrome fork)
  */
 export function extractResultText(result: any): string | undefined {
   const content = Array.isArray(result?.content) ? result.content : null;
@@ -274,7 +274,7 @@ export function extractResultText(result: any): string | undefined {
 }
 
 /**
- * auto-chrome-mcp fork: 스텝 결과에서 이미지 content 를 꺼낸다.
+ * posendy-chrome fork: 스텝 결과에서 이미지 content 를 꺼낸다.
  *
  * 예전엔 텍스트만 이어붙이고 이미지를 통째로 버렸다 - 스키마는
  * `click -> fill -> click -> screenshot` 체인을 권하는데 정작 그림이 안 돌아왔다
@@ -1215,7 +1215,7 @@ export function prepareStepArgs(input: PrepareArgsInput): Record<string, any> {
     stepArgs = { ...(rawArgs ?? {}) };
   }
 
-  // auto-chrome-mcp fork: 실행 컨텍스트 키는 step 이 정하지 못한다.
+  // posendy-chrome fork: 실행 컨텍스트 키는 step 이 정하지 못한다.
   // 무조건 지운 뒤, 바깥 batch/shortcut 호출에 값이 있을 때만 다시 넣는다.
   delete stepArgs._mcpSessionId;
   delete stepArgs.lane;
@@ -1226,7 +1226,7 @@ export function prepareStepArgs(input: PrepareArgsInput): Record<string, any> {
     stepArgs.lane = lane;
   }
 
-  // auto-chrome-mcp fork(2026-09-05 설계 2절): 실행 컨텍스트 모드는 스키마에 없는 내부
+  // posendy-chrome fork(2026-09-05 설계 2절): 실행 컨텍스트 모드는 스키마에 없는 내부
   // 전용 값이다. step args 에 적혀 있어도 신뢰하지 않고 지운다 - 저장된 step 이 스스로
   // "나는 무간섭 실행이다" 라고 주장할 수 있으면 판정을 호출자가 조작하게 된다.
   stripEffectiveBackgroundMode(stepArgs);

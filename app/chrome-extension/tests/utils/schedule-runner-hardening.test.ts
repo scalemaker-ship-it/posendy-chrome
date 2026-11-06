@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — 예약 실행기 하드닝 (2026-09-05 Codex 리뷰 1~10).
+ * posendy-chrome fork — 예약 실행기 하드닝 (2026-09-05 Codex 리뷰 1~10).
  *
  * 계약: docs/plans/2026-09-05-daily-automation-design.md 1·2·4·5절.
  * 각 describe 앞 번호는 그 리뷰 항목 번호다. 여기 있는 검사는 전부 "수정 전에는 실패,

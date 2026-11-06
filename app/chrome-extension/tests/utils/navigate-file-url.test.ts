@@ -1,7 +1,7 @@
 /**
- * auto-chrome-mcp fork — file:// 이동 버그 회귀 테스트.
+ * posendy-chrome fork — file:// 이동 버그 회귀 테스트.
  *
- * 재현: `chrome_navigate url=file:///C:/PROJECTS/auto-chrome-mcp/README.md` →
+ * 재현: `chrome_navigate url=file:///C:/PROJECTS/posendy-chrome/README.md` →
  * `Error navigating to URL: Invalid url pattern 'https:///*'`.
  *
  * 원인: entrypoints/background/tools/browser/common.ts 의 buildUrlPatterns 가 모든 URL 을
@@ -244,7 +244,7 @@ describe('buildUrlPatterns — 스킴별 match pattern 생성', () => {
   // 섞여 조회가 throw 했다. 호출부는 빈 배열을 보고 정규화 문자열 비교로 넘어간다.
   it('file: 은 패턴을 만들지 않는다 (빈 배열 → 문자열 비교 경로)', async () => {
     const { buildUrlPatterns } = await loadNavigateModule();
-    const patterns = buildUrlPatterns('file:///C:/PROJECTS/auto-chrome-mcp/README.md');
+    const patterns = buildUrlPatterns('file:///C:/PROJECTS/posendy-chrome/README.md');
     expect(patterns).toEqual([]);
   });
 
@@ -279,7 +279,7 @@ describe('buildUrlPatterns — 스킴별 match pattern 생성', () => {
 
   it('버그 재현 방지: file: 입력에서 예전처럼 https:///* 패턴이 나오지 않는다', async () => {
     const { buildUrlPatterns } = await loadNavigateModule();
-    const patterns = buildUrlPatterns('file:///C:/PROJECTS/auto-chrome-mcp/README.md');
+    const patterns = buildUrlPatterns('file:///C:/PROJECTS/posendy-chrome/README.md');
     for (const p of patterns) {
       expect(() => validateMatchPattern(p)).not.toThrow();
     }
@@ -294,7 +294,7 @@ describe('chrome_navigate file:// 회귀', () => {
     const { navigateTool } = await loadNavigateModule();
 
     const result = await navigateTool.execute({
-      url: 'file:///C:/PROJECTS/auto-chrome-mcp/README.md',
+      url: 'file:///C:/PROJECTS/posendy-chrome/README.md',
       waitUntil: 'none',
     } as never);
 
@@ -306,7 +306,7 @@ describe('chrome_navigate file:// 회귀', () => {
     expect(urlFilteredQueries).toHaveLength(0);
     expect(h.tabsCreate).toHaveBeenCalledTimes(1);
     const created = h.tabsCreate.mock.calls[0][0] as Record<string, unknown>;
-    expect(created.url).toBe('file:///C:/PROJECTS/auto-chrome-mcp/README.md');
+    expect(created.url).toBe('file:///C:/PROJECTS/posendy-chrome/README.md');
   });
 
   it('isAllowedFileSchemeAccess 가 없는 환경(구형 크롬/테스트 목)은 검사를 건너뛴다', async () => {
@@ -314,7 +314,7 @@ describe('chrome_navigate file:// 회귀', () => {
     const { navigateTool } = await loadNavigateModule();
 
     const result = await navigateTool.execute({
-      url: 'file:///C:/PROJECTS/auto-chrome-mcp/README.md',
+      url: 'file:///C:/PROJECTS/posendy-chrome/README.md',
       waitUntil: 'none',
     } as never);
 
@@ -329,7 +329,7 @@ describe('chrome_navigate file:// 회귀', () => {
     const { navigateTool } = await loadNavigateModule();
 
     const result = await navigateTool.execute({
-      url: 'file:///C:/PROJECTS/auto-chrome-mcp/README.md',
+      url: 'file:///C:/PROJECTS/posendy-chrome/README.md',
       waitUntil: 'none',
     } as never);
 
@@ -366,19 +366,19 @@ describe('항목 3 — file: 판별과 권한 확인의 우회 경로', () => {
 
   it('회귀(핵심): 대문자 스킴 FILE:/// 도 막는다', async () => {
     denyFileAccess();
-    await expectBlocked('FILE:///C:/PROJECTS/auto-chrome-mcp/README.md');
+    await expectBlocked('FILE:///C:/PROJECTS/posendy-chrome/README.md');
   });
 
   it('회귀(핵심): 앞에 공백이 붙은 file: 도 막는다', async () => {
     denyFileAccess();
-    await expectBlocked('  file:///C:/PROJECTS/auto-chrome-mcp/README.md');
+    await expectBlocked('  file:///C:/PROJECTS/posendy-chrome/README.md');
   });
 
   it('회귀(핵심): 권한 API 가 throw 하면 허용이 아니라 거부다 (fail-closed)', async () => {
     (chrome as unknown as { extension: unknown }).extension = {
       isAllowedFileSchemeAccess: vi.fn().mockRejectedValue(new Error('api boom')),
     };
-    await expectBlocked('file:///C:/PROJECTS/auto-chrome-mcp/README.md');
+    await expectBlocked('file:///C:/PROJECTS/posendy-chrome/README.md');
   });
 
   it('URL 로 파싱되지 않는 입력은 file: 로 보지 않는다 (이동 경로는 그대로)', async () => {

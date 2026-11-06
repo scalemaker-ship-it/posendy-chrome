@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — `url` 인자로 대상 탭을 고르는 도구들의 공통 조회·생성 경로.
+ * posendy-chrome fork — `url` 인자로 대상 탭을 고르는 도구들의 공통 조회·생성 경로.
  *
  * 배경(2026-09-04 Codex 3차 검토, 항목 1): web-fetcher · console · inject-script ·
  * network capture 는 `url` 이 오면 `chrome.tabs.query({})` / `chrome.tabs.query({ url })`
@@ -72,7 +72,7 @@ export function isFileSchemeUrl(url: unknown): boolean {
 }
 
 /**
- * auto-chrome-mcp fork: `file:` 대상으로 이동하기 전에 확장이 파일 URL 접근 권한을
+ * posendy-chrome fork: `file:` 대상으로 이동하기 전에 확장이 파일 URL 접근 권한을
  * 가졌는지 확인한다. 권한이 꺼진 채로 이동을 시도하면 탭이 빈 페이지로 남거나
  * 조용히 실패하므로, 이동 자체를 걸기 전에 미리 걸러낸다.
  *

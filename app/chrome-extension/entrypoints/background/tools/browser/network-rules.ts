@@ -1,9 +1,9 @@
 import { createErrorResponse, ToolResult } from '@/common/tool-handler';
 import { BaseBrowserToolExecutor } from '../base-browser';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 
 /**
- * auto-chrome-mcp fork(B4): chrome_network_rules — 요청 차단 규칙.
+ * posendy-chrome fork(B4): chrome_network_rules — 요청 차단 규칙.
  *
  * declarativeNetRequest 권한은 이미 선언되어 있었지만 실제로 쓰이지 않고 있었다.
  * 광고·추적 스크립트나 무거운 이미지/영상을 막으면:

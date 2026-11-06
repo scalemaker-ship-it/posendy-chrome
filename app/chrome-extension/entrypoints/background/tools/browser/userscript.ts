@@ -1,6 +1,6 @@
 import { createErrorResponse, ToolResult } from '@/common/tool-handler';
 import { BaseBrowserToolExecutor } from '../base-browser';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { ExecutionWorld, STORAGE_KEYS } from '@/common/constants';
 import { cdpSessionManager } from '@/utils/cdp-session-manager';
 
@@ -19,7 +19,7 @@ interface UserscriptArgsBase {
   action: UserscriptAction;
   args?: any;
   /**
-   * auto-chrome-mcp fork(2026-09-04): work-tab-gate 는 **top-level** 에 작업 탭 id 를 주입한다.
+   * posendy-chrome fork(2026-09-04): work-tab-gate 는 **top-level** 에 작업 탭 id 를 주입한다.
    * 이 도구는 중첩된 `args.tabId` 만 읽어 그 주입값을 버렸고, 그러면 각 action 이
    * getActiveTab() 으로 내려가 사용자가 보고 있는 탭에 스크립트를 넣었다.
    */
@@ -471,7 +471,7 @@ class UserscriptTool extends BaseBrowserToolExecutor {
   }
 
   private async create(args: CreateArgs): Promise<ToolResult> {
-    // auto-chrome-mcp fork: honor an explicit tabId before falling back to the active tab.
+    // posendy-chrome fork: honor an explicit tabId before falling back to the active tab.
     const requestedTab =
       typeof args.tabId === 'number' ? await chrome.tabs.get(args.tabId).catch(() => null) : null;
     const active = requestedTab || (await getActiveTab());

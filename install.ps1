@@ -1,6 +1,6 @@
-﻿# Auto Chrome MCP 자동 설치 스크립트 (Windows)
+﻿# POSENDY Chrome 자동 설치 스크립트 (Windows)
 # 사용법: PowerShell에 아래 한 줄을 붙여넣고 Enter
-#   irm https://raw.githubusercontent.com/cw02326/auto-chrome-mcp/main/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/cw02326/posendy-chrome/main/install.ps1 | iex
 param(
   [switch]$SkipNpm,      # 테스트용: 브리지 설치 건너뛰기
   [switch]$SkipRegister, # 테스트용: 클로드 등록 건너뛰기
@@ -16,7 +16,7 @@ function Warn($msg) { Write-Host "  !!  $msg" -ForegroundColor Yellow }
 
 Write-Host ""
 Write-Host "=====================================" -ForegroundColor Magenta
-Write-Host "  Auto Chrome MCP 자동 설치" -ForegroundColor Magenta
+Write-Host "  POSENDY Chrome 자동 설치" -ForegroundColor Magenta
 Write-Host "=====================================" -ForegroundColor Magenta
 
 # ---------- 1. Node.js 확인 ----------
@@ -42,17 +42,17 @@ if ($node) {
 # ---------- 2. 브리지 설치 ----------
 if (-not $SkipNpm) {
   Step 2 "연결 프로그램(브리지) 설치 중... (1~2분)"
-  npm install -g auto-chrome-mcp-bridge | Out-Null
+  npm install -g posendy-chrome-bridge | Out-Null
   Ok "브리지 설치 완료"
   Step 3 "연결 상태 자동 점검·수리 중..."
-  try { auto-chrome-mcp-bridge doctor --fix | Out-Host } catch { Warn "점검 중 경고가 있었지만 계속 진행합니다." }
+  try { posendy-chrome-bridge doctor --fix | Out-Host } catch { Warn "점검 중 경고가 있었지만 계속 진행합니다." }
 } else { Step 2 "브리지 설치 건너뜀 (테스트 모드)" }
 
 # ---------- 3. 클로드 코드에 등록 ----------
 if (-not $SkipRegister) {
   Step 4 "클로드 코드에 등록 중..."
   $npmRoot = (npm root -g).Trim()
-  $stdioPath = Join-Path $npmRoot "auto-chrome-mcp-bridge\dist\mcp\mcp-server-stdio.js"
+  $stdioPath = Join-Path $npmRoot "posendy-chrome-bridge\dist\mcp\mcp-server-stdio.js"
   if (-not (Test-Path $stdioPath)) { throw "브리지 파일을 찾을 수 없습니다: $stdioPath" }
 
   $claude = Get-Command claude -ErrorAction SilentlyContinue
@@ -62,7 +62,7 @@ if (-not $SkipRegister) {
       claude mcp remove --scope user chrome-mcp-stdio 2>$null | Out-Null
     } catch {}
     try {
-      claude mcp add --scope user --transport stdio chrome-mcp-stdio -e CHROME_PORT=12320 -- node "$stdioPath" | Out-Null
+      claude mcp add --scope user --transport stdio chrome-mcp-stdio -e CHROME_PORT=12330 -- node "$stdioPath" | Out-Null
       Ok "클로드 코드 전역 등록 완료 (어느 폴더에서 실행해도 사용 가능)"
       $registered = $true
     } catch { Warn "claude mcp 등록 실패 — 설정 파일 방식으로 대신 등록합니다." }
@@ -77,7 +77,7 @@ if (-not $SkipRegister) {
     $server = [pscustomobject]@{
       type = "stdio"; command = "node"
       args = @($stdioPath)
-      env  = [pscustomobject]@{ CHROME_PORT = "12320" }
+      env  = [pscustomobject]@{ CHROME_PORT = "12330" }
     }
     if ($cfg.mcpServers.PSObject.Properties['chrome-mcp-stdio']) {
       $cfg.mcpServers.'chrome-mcp-stdio' = $server
@@ -92,11 +92,11 @@ if (-not $SkipRegister) {
 # ---------- 4. 크롬 확장 다운로드 ----------
 if (-not $SkipDownload) {
   Step 5 "크롬 확장 프로그램 다운로드 중..."
-  $rel = Invoke-RestMethod "https://api.github.com/repos/cw02326/auto-chrome-mcp/releases/latest"
+  $rel = Invoke-RestMethod "https://api.github.com/repos/cw02326/posendy-chrome/releases/latest"
   $asset = $rel.assets | Where-Object { $_.name -like "*chrome.zip" } | Select-Object -First 1
   if (-not $asset) { throw "확장 zip을 찾을 수 없습니다." }
   $extDir = Join-Path $HOME "Documents\AutoChromeMCP-확장프로그램"
-  $zipTmp = Join-Path $env:TEMP "auto-chrome-mcp-ext.zip"
+  $zipTmp = Join-Path $env:TEMP "posendy-chrome-ext.zip"
   Invoke-WebRequest $asset.browser_download_url -OutFile $zipTmp
   if (Test-Path $extDir) { Remove-Item $extDir -Recurse -Force }
   Expand-Archive -Path $zipTmp -DestinationPath $extDir -Force

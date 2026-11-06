@@ -75,7 +75,7 @@ claude
 파워셸에 아래 한 줄을 붙여넣고 Enter를 누르세요.
 
 ```
-irm https://raw.githubusercontent.com/cw02326/auto-chrome-mcp/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/cw02326/posendy-chrome/main/install.ps1 | iex
 ```
 
 이제 기다리면 됩니다. 2분에서 5분쯤 걸립니다. 이 한 줄이 이런 일을 알아서 합니다.
@@ -101,7 +101,7 @@ irm https://raw.githubusercontent.com/cw02326/auto-chrome-mcp/main/install.ps1 |
 2. **왼쪽 위**에 새로 나타난 **압축해제된 확장 프로그램을 로드합니다** 버튼을 누릅니다.
 3. 폴더 선택 창이 뜨면 **문서 > AutoChromeMCP-확장프로그램** 폴더를 고르고 **폴더 선택**을 누릅니다.
 
-목록에 **Auto Chrome MCP** 가 나타나면 성공입니다.
+목록에 **POSENDY Chrome** 가 나타나면 성공입니다.
 
 > 창이 자동으로 안 열렸다면, 크롬 주소창에 **chrome://extensions** 를 직접 입력하세요.
 
@@ -134,7 +134,7 @@ irm https://raw.githubusercontent.com/cw02326/auto-chrome-mcp/main/install.ps1 |
 직접 확인하고 싶다면 파워셸에 이렇게 쳐보세요.
 
 ```
-auto-chrome-mcp-bridge doctor
+posendy-chrome-bridge doctor
 ```
 
 12개 이상의 항목이 나오는데(설치된 브라우저 수와 OS 에 따라 늘어납니다) 전부 OK 면 정상입니다.
@@ -189,7 +189,7 @@ claude
 터미널에 아래 한 줄을 붙여넣고 Enter를 누르세요.
 
 ```
-curl -fsSL https://raw.githubusercontent.com/cw02326/auto-chrome-mcp/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/cw02326/posendy-chrome/main/install.sh | bash
 ```
 
 이제 기다리면 됩니다. 2분에서 5분쯤 걸립니다. 이 한 줄이 이런 일을 알아서 합니다.
@@ -226,7 +226,7 @@ curl -fsSL https://raw.githubusercontent.com/cw02326/auto-chrome-mcp/main/instal
 3. **왼쪽 위**에 새로 나타난 **압축해제된 확장 프로그램을 로드합니다** 버튼을 누르고,
    **서류 > AutoChromeMCP-확장프로그램** 폴더를 고른 뒤 **선택**을 누릅니다.
 
-목록에 **Auto Chrome MCP** 가 나타나면 성공입니다.
+목록에 **POSENDY Chrome** 가 나타나면 성공입니다.
 
 > **주의:** 이 폴더는 **지우면 안 됩니다.** 지우면 확장 프로그램이 꺼집니다.
 
@@ -256,7 +256,7 @@ curl -fsSL https://raw.githubusercontent.com/cw02326/auto-chrome-mcp/main/instal
 직접 확인하고 싶다면 터미널에 이렇게 쳐보세요.
 
 ```
-auto-chrome-mcp-bridge doctor
+posendy-chrome-bridge doctor
 ```
 
 12개 이상의 항목이 나오는데(설치된 브라우저 수와 OS 에 따라 늘어납니다) 전부 OK 면 정상입니다.
@@ -267,19 +267,19 @@ auto-chrome-mcp-bridge doctor
 한 줄 설치가 실패하면, 아래 두 줄을 차례로 실행해도 결과는 같습니다.
 
 ```
-npm install -g auto-chrome-mcp-bridge
+npm install -g posendy-chrome-bridge
 ```
 
 ```
-claude mcp add --scope user --transport stdio chrome-mcp-stdio -e CHROME_PORT=12320 -- node "$(npm root -g)/auto-chrome-mcp-bridge/dist/mcp/mcp-server-stdio.js"
+claude mcp add --scope user --transport stdio chrome-mcp-stdio -e CHROME_PORT=12330 -- node "$(npm root -g)/posendy-chrome-bridge/dist/mcp/mcp-server-stdio.js"
 ```
 
 첫 줄이 확장 프로그램도 같이 내려받습니다.
-이 경우 확장 폴더는 **다운로드(Downloads)** 안에 `auto-chrome-mcp-extension-v...` 라는
+이 경우 확장 폴더는 **다운로드(Downloads)** 안에 `posendy-chrome-extension-v...` 라는
 이름으로 생깁니다. 2단계에서 그 폴더를 고르면 됩니다.
 
 그래도 안 되면 아래 주소에 오류 화면을 올려 주세요.
-github.com/cw02326/auto-chrome-mcp/issues
+github.com/cw02326/posendy-chrome/issues
 
 # 공통. 설치 후 알아두면 좋은 것
 
@@ -331,6 +331,6 @@ github.com/cw02326/auto-chrome-mcp/issues
 
 ---
 
-프로젝트 주소: github.com/cw02326/auto-chrome-mcp
+프로젝트 주소: github.com/cw02326/posendy-chrome
 
 이 가이드는 컴퓨터를 처음 다루는 분 기준으로 작성했습니다.

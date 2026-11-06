@@ -6,11 +6,11 @@
 # 사전 설정 (npmjs.com, 패키지마다 1회):
 #   패키지 페이지 → Settings → Trusted publisher → GitHub Actions
 #     Organization or user: cw02326
-#     Repository:           auto-chrome-mcp
+#     Repository:           posendy-chrome
 #     Workflow filename:    release.yml      ← 이 파일 이름과 정확히 일치해야 한다(대소문자 포함)
 #     Environment:          (비움)
 #     Allowed actions:      npm publish
-#   대상: auto-chrome-mcp-shared, auto-chrome-mcp-bridge 두 개 모두.
+#   대상: posendy-chrome-shared, posendy-chrome-bridge 두 개 모두.
 name: release
 
 on:
@@ -86,13 +86,13 @@ jobs:
 
       # 에셋 이름 두 가지가 **모두** 필요하다:
       #   - install.ps1 은 릴리스 에셋에서 `*chrome.zip` 패턴으로 찾는다
-      #   - bridge 의 postinstall 은 releases/latest/download/auto-chrome-mcp-extension.zip 고정명으로 받는다
+      #   - bridge 의 postinstall 은 releases/latest/download/posendy-chrome-extension.zip 고정명으로 받는다
       - name: Package extension zips
         run: |
           cd app/chrome-extension/.output/chrome-mv3
-          zip -qr "${{ github.workspace }}/auto-chrome-mcp-extension-${VERSION}-chrome.zip" .
-          cp "${{ github.workspace }}/auto-chrome-mcp-extension-${VERSION}-chrome.zip" \
-             "${{ github.workspace }}/auto-chrome-mcp-extension.zip"
+          zip -qr "${{ github.workspace }}/posendy-chrome-extension-${VERSION}-chrome.zip" .
+          cp "${{ github.workspace }}/posendy-chrome-extension-${VERSION}-chrome.zip" \
+             "${{ github.workspace }}/posendy-chrome-extension.zip"
 
       - name: Package launcher tarball
         run: |
@@ -105,15 +105,15 @@ jobs:
       - name: Pack tarballs with resolved workspace deps
         run: |
           mkdir -p dist-tarballs
-          pnpm --filter auto-chrome-mcp-shared pack --pack-destination "$PWD/dist-tarballs"
-          pnpm --filter auto-chrome-mcp-bridge pack --pack-destination "$PWD/dist-tarballs"
+          pnpm --filter posendy-chrome-shared pack --pack-destination "$PWD/dist-tarballs"
+          pnpm --filter posendy-chrome-bridge pack --pack-destination "$PWD/dist-tarballs"
           ls -la dist-tarballs
           # 치환이 실제로 됐는지 확인 — 안 됐으면 여기서 멈춘다.
-          tar -xzOf "dist-tarballs/auto-chrome-mcp-bridge-${VERSION}.tgz" package/package.json \
+          tar -xzOf "dist-tarballs/posendy-chrome-bridge-${VERSION}.tgz" package/package.json \
             | node -e '
               let d = "";
               process.stdin.on("data", (c) => (d += c)).on("end", () => {
-                const dep = JSON.parse(d).dependencies["auto-chrome-mcp-shared"];
+                const dep = JSON.parse(d).dependencies["posendy-chrome-shared"];
                 if (String(dep).startsWith("workspace:")) {
                   console.error("::error::workspace 의존성이 치환되지 않았습니다: " + dep);
                   process.exit(1);
@@ -126,13 +126,13 @@ jobs:
       # ⚠️ 경로 앞의 `./` 를 지우지 마라. npm 12 부터 git 타입 fetch 가 기본 차단(EALLOWGIT)이고,
       #    `dist-tarballs/foo.tgz` 처럼 슬래시가 든 인자는 로컬 파일이 아니라 `owner/repo` GitHub
       #    단축 표기로 해석된다. v1.7.0 첫 발행이 정확히 이걸로 죽었다:
-      #      npm error Refusing to fetch "github:dist-tarballs/auto-chrome-mcp-shared-1.7.0.tgz"
+      #      npm error Refusing to fetch "github:dist-tarballs/posendy-chrome-shared-1.7.0.tgz"
       #    `./` 를 붙이면 파일 경로로 확정되고 npm 11·12 양쪽에서 동작한다.
       - name: Publish to npm (trusted publishing)
         if: github.event_name == 'push'
         run: |
-          npm publish "./dist-tarballs/auto-chrome-mcp-shared-${VERSION}.tgz" --access public
-          npm publish "./dist-tarballs/auto-chrome-mcp-bridge-${VERSION}.tgz" --access public
+          npm publish "./dist-tarballs/posendy-chrome-shared-${VERSION}.tgz" --access public
+          npm publish "./dist-tarballs/posendy-chrome-bridge-${VERSION}.tgz" --access public
 
       - name: GitHub Release
         if: github.event_name == 'push'
@@ -141,7 +141,7 @@ jobs:
           name: ${{ github.ref_name }}
           generate_release_notes: true
           files: |
-            auto-chrome-mcp-extension-${{ env.VERSION }}-chrome.zip
-            auto-chrome-mcp-extension.zip
+            posendy-chrome-extension-${{ env.VERSION }}-chrome.zip
+            posendy-chrome-extension.zip
             chrome-launcher-v${{ env.VERSION }}.tar.gz
-            dist-tarballs/auto-chrome-mcp-bridge-${{ env.VERSION }}.tgz
+            dist-tarballs/posendy-chrome-bridge-${{ env.VERSION }}.tgz

@@ -31,7 +31,7 @@ if (typeof globalThis.chrome === 'undefined') {
         set: vi.fn().mockResolvedValue(undefined),
         remove: vi.fn().mockResolvedValue(undefined),
       },
-      // auto-chrome-mcp fork: work-tab-manager / mcp-window-manager persist to storage.session
+      // posendy-chrome fork: work-tab-manager / mcp-window-manager persist to storage.session
       session: {
         get: vi.fn().mockResolvedValue({}),
         set: vi.fn().mockResolvedValue(undefined),
@@ -45,14 +45,14 @@ if (typeof globalThis.chrome === 'undefined') {
       update: vi.fn().mockResolvedValue({}),
       remove: vi.fn().mockResolvedValue(undefined),
       captureVisibleTab: vi.fn().mockResolvedValue('data:image/png;base64,'),
-      // auto-chrome-mcp fork: MCP 작업 탭 그룹 편입 (utils/mcp-tab-group.ts)
+      // posendy-chrome fork: MCP 작업 탭 그룹 편입 (utils/mcp-tab-group.ts)
       group: vi.fn().mockResolvedValue(100),
       ungroup: vi.fn().mockResolvedValue(undefined),
       onRemoved: { addListener: vi.fn(), removeListener: vi.fn() },
       onCreated: { addListener: vi.fn(), removeListener: vi.fn() },
       onUpdated: { addListener: vi.fn(), removeListener: vi.fn() },
     },
-    // auto-chrome-mcp fork: 탭 그룹 "MCP" 조회·제목/색 지정 (utils/mcp-tab-group.ts)
+    // posendy-chrome fork: 탭 그룹 "MCP" 조회·제목/색 지정 (utils/mcp-tab-group.ts)
     tabGroups: {
       query: vi.fn().mockResolvedValue([]),
       get: vi.fn().mockResolvedValue({ id: 100, title: 'MCP', color: 'green', windowId: 1 }),
@@ -63,14 +63,14 @@ if (typeof globalThis.chrome === 'undefined') {
       onRemoved: { addListener: vi.fn(), removeListener: vi.fn() },
       onUpdated: { addListener: vi.fn(), removeListener: vi.fn() },
     },
-    // auto-chrome-mcp fork: work-tab badge ("MCP") lives on chrome.action
+    // posendy-chrome fork: work-tab badge ("MCP") lives on chrome.action
     action: {
       setBadgeText: vi.fn().mockResolvedValue(undefined),
       setBadgeBackgroundColor: vi.fn().mockResolvedValue(undefined),
       setTitle: vi.fn().mockResolvedValue(undefined),
       setIcon: vi.fn().mockResolvedValue(undefined),
     },
-    // auto-chrome-mcp fork: dedicated MCP work window (mcp-window-manager)
+    // posendy-chrome fork: dedicated MCP work window (mcp-window-manager)
     windows: {
       get: vi.fn().mockResolvedValue({ id: 1 }),
       getAll: vi.fn().mockResolvedValue([]),

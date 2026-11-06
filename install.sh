@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Auto Chrome MCP 설치 스크립트 (macOS / Linux)
+# POSENDY Chrome 설치 스크립트 (macOS / Linux)
 #
 # 사용법: 터미널에 아래 한 줄을 붙여넣고 Enter
-#   curl -fsSL https://raw.githubusercontent.com/cw02326/auto-chrome-mcp/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/cw02326/posendy-chrome/main/install.sh | bash
 #
 # 하는 일 (install.ps1 과 동일한 순서):
 #   1. Node.js 20+ 확인
@@ -14,8 +14,8 @@
 
 set -euo pipefail
 
-REPO="cw02326/auto-chrome-mcp"
-CHROME_PORT="${CHROME_PORT:-12320}"
+REPO="cw02326/posendy-chrome"
+CHROME_PORT="${CHROME_PORT:-12330}"
 EXTENSION_DIR="${AUTO_CHROME_MCP_EXTENSION_DIR:-}"
 
 SKIP_NPM=0
@@ -39,7 +39,7 @@ err()  { echo -e "  ${C_RED}✗${C_RESET}  $*" >&2; }
 
 echo ""
 echo -e "${C_BOLD}=====================================${C_RESET}"
-echo -e "${C_BOLD}  Auto Chrome MCP 설치${C_RESET}"
+echo -e "${C_BOLD}  POSENDY Chrome 설치${C_RESET}"
 echo -e "${C_BOLD}=====================================${C_RESET}"
 
 # ---------- 1. Node.js 확인 ----------
@@ -60,7 +60,7 @@ ok "Node.js $(node -v) / npm $(npm -v)"
 # ---------- 2. 브리지 설치 ----------
 if [ "$SKIP_NPM" -eq 0 ]; then
   step 2 "연결 프로그램(브리지) 설치 중... (1~2분)"
-  if ! npm install -g auto-chrome-mcp-bridge >/dev/null 2>&1; then
+  if ! npm install -g posendy-chrome-bridge >/dev/null 2>&1; then
     err "전역 설치에 실패했습니다."
     echo "     권한 문제라면 npm 전역 경로를 사용자 폴더로 옮기는 것이 안전합니다:"
     echo "       npm config set prefix ~/.npm-global"
@@ -72,7 +72,7 @@ if [ "$SKIP_NPM" -eq 0 ]; then
 
   step 3 "연결 상태 자동 점검·수리 중..."
   # doctor 는 네이티브 메시징 매니페스트 등록까지 고쳐 준다. 경고가 있어도 계속 진행한다.
-  auto-chrome-mcp-bridge doctor --fix || warn "점검 중 경고가 있었지만 계속 진행합니다."
+  posendy-chrome-bridge doctor --fix || warn "점검 중 경고가 있었지만 계속 진행합니다."
 else
   step 2 "브리지 설치 건너뜀 (테스트 모드)"
 fi
@@ -81,7 +81,7 @@ fi
 if [ "$SKIP_REGISTER" -eq 0 ]; then
   step 4 "클로드 코드에 등록 중..."
   NPM_ROOT="$(npm root -g)"
-  STDIO_PATH="$NPM_ROOT/auto-chrome-mcp-bridge/dist/mcp/mcp-server-stdio.js"
+  STDIO_PATH="$NPM_ROOT/posendy-chrome-bridge/dist/mcp/mcp-server-stdio.js"
   if [ ! -f "$STDIO_PATH" ]; then
     err "브리지 파일을 찾을 수 없습니다: $STDIO_PATH"
     exit 1
@@ -150,7 +150,7 @@ if [ "$SKIP_DOWNLOAD" -eq 0 ]; then
     fi
   fi
 
-  ZIP_TMP="$(mktemp -t auto-chrome-mcp-ext.XXXXXX).zip"
+  ZIP_TMP="$(mktemp -t posendy-chrome-ext.XXXXXX).zip"
   curl -fsSL "$ASSET_URL" -o "$ZIP_TMP"
   rm -rf "$EXTENSION_DIR"
   mkdir -p "$EXTENSION_DIR"
@@ -186,6 +186,6 @@ $(echo -e "${C_BOLD}=====================================${C_RESET}")
  확인: 클로드 코드에 /mcp 를 입력했을 때 chrome-mcp-stdio 가 보이면 성공!
 
  문제가 생기면: 확장 팝업의 ⚡ 강제 재연결, 또는 터미널에서
-   auto-chrome-mcp-bridge doctor
+   posendy-chrome-bridge doctor
 
 EOF

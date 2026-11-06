@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — chrome_batch / chrome_shortcut 공용 실행기 + 값 전달 통합 테스트.
+ * posendy-chrome fork — chrome_batch / chrome_shortcut 공용 실행기 + 값 전달 통합 테스트.
  *
  * 계약: docs/plans/2026-09-04-batch-flow-design.md (구현 순서 1·2단계).
  * 테스트 이름의 번호는 같은 문서 8절 체크리스트 번호다.
@@ -1503,7 +1503,7 @@ describe('대시 스캔 (15)', () => {
   };
 
   it('15. chrome_batch·chrome_shortcut 스키마 설명에 대시가 없다', async () => {
-    const { TOOL_SCHEMAS } = await import('auto-chrome-mcp-shared');
+    const { TOOL_SCHEMAS } = await import('posendy-chrome-shared');
     const targets = (TOOL_SCHEMAS as any[]).filter((tool) =>
       ['chrome_batch', 'chrome_shortcut'].includes(tool.name),
     );

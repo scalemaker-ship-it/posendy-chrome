@@ -20,7 +20,7 @@ import {
 } from './port-probe';
 
 /**
- * auto-chrome-mcp fork — doctor 의 브리지 포트 탐색이 ps/lsof 기반이라 Windows 에서
+ * posendy-chrome fork — doctor 의 브리지 포트 탐색이 ps/lsof 기반이라 Windows 에서
  * 항상 빈 결과였던 회귀를 고치는 모듈. 파서는 순수 함수라 실제 OS 명령 없이 표본
  * 출력만으로 검증한다.
  */
@@ -33,13 +33,13 @@ describe('parseNetstatOutput', () => {
       '',
       '  Proto  Local Address          Foreign Address        State           PID',
       '  TCP    0.0.0.0:135            0.0.0.0:0              LISTENING       1111',
-      '  TCP    127.0.0.1:12320        0.0.0.0:0              LISTENING       5678',
-      '  TCP    127.0.0.1:54321        127.0.0.1:12320        ESTABLISHED     9999',
+      '  TCP    127.0.0.1:12330        0.0.0.0:0              LISTENING       5678',
+      '  TCP    127.0.0.1:54321        127.0.0.1:12330        ESTABLISHED     9999',
       '',
     ].join('\r\n');
 
     const result = parseNetstatOutput(output);
-    expect(result).toContainEqual({ host: '127.0.0.1', port: 12320, pid: 5678 });
+    expect(result).toContainEqual({ host: '127.0.0.1', port: 12330, pid: 5678 });
     expect(result).toContainEqual({ host: '0.0.0.0', port: 135, pid: 1111 });
     // ESTABLISHED 행은 LISTEN 이 아니므로 제외.
     expect(result.find((r) => r.port === 54321)).toBeUndefined();
@@ -62,12 +62,12 @@ describe('parseNetstatOutput', () => {
   test('IPv6 [::1]:port 행도 크래시 없이 파싱한다(호스트는 ::1)', () => {
     const output = [
       '  Proto  Local Address          Foreign Address        State           PID',
-      '  TCP    [::1]:12320            [::1]:0                LISTENING       5678',
+      '  TCP    [::1]:12330            [::1]:0                LISTENING       5678',
       '  TCP    [::]:135               [::]:0                 LISTENING       1111',
     ].join('\r\n');
 
     const result = parseNetstatOutput(output);
-    expect(result).toContainEqual({ host: '::1', port: 12320, pid: 5678 });
+    expect(result).toContainEqual({ host: '::1', port: 12330, pid: 5678 });
     expect(result).toContainEqual({ host: '::', port: 135, pid: 1111 });
   });
 
@@ -78,7 +78,7 @@ describe('parseNetstatOutput', () => {
 
   test('PID 가 숫자로 안 읽히면 그 행은 버린다(정상 행은 유지)', () => {
     const output = [
-      '  TCP    127.0.0.1:12320        0.0.0.0:0              LISTENING       -',
+      '  TCP    127.0.0.1:12330        0.0.0.0:0              LISTENING       -',
       '  TCP    127.0.0.1:12325        0.0.0.0:0              LISTENING       5678',
     ].join('\r\n');
     const result = parseNetstatOutput(output);
@@ -89,11 +89,11 @@ describe('parseNetstatOutput', () => {
 describe('parsePowerShellNetTcpJson', () => {
   test('여러 행: JSON 배열', () => {
     const output = JSON.stringify([
-      { LocalAddress: '127.0.0.1', LocalPort: 12320, OwningProcess: 5678 },
+      { LocalAddress: '127.0.0.1', LocalPort: 12330, OwningProcess: 5678 },
       { LocalAddress: '0.0.0.0', LocalPort: 135, OwningProcess: 1111 },
     ]);
     expect(parsePowerShellNetTcpJson(output)).toEqual([
-      { host: '127.0.0.1', port: 12320, pid: 5678 },
+      { host: '127.0.0.1', port: 12330, pid: 5678 },
       { host: '0.0.0.0', port: 135, pid: 1111 },
     ]);
   });
@@ -101,11 +101,11 @@ describe('parsePowerShellNetTcpJson', () => {
   test('행이 1개면 ConvertTo-Json 이 배열이 아니라 단일 객체를 낸다', () => {
     const output = JSON.stringify({
       LocalAddress: '127.0.0.1',
-      LocalPort: 12320,
+      LocalPort: 12330,
       OwningProcess: 5678,
     });
     expect(parsePowerShellNetTcpJson(output)).toEqual([
-      { host: '127.0.0.1', port: 12320, pid: 5678 },
+      { host: '127.0.0.1', port: 12330, pid: 5678 },
     ]);
   });
 
@@ -119,8 +119,8 @@ describe('parsePowerShellNetTcpJson', () => {
   });
 
   test('IPv6 LocalAddress(::1)도 그대로 host 로 담긴다', () => {
-    const output = JSON.stringify({ LocalAddress: '::1', LocalPort: 12320, OwningProcess: 42 });
-    expect(parsePowerShellNetTcpJson(output)).toEqual([{ host: '::1', port: 12320, pid: 42 }]);
+    const output = JSON.stringify({ LocalAddress: '::1', LocalPort: 12330, OwningProcess: 42 });
+    expect(parsePowerShellNetTcpJson(output)).toEqual([{ host: '::1', port: 12330, pid: 42 }]);
   });
 });
 
@@ -128,14 +128,14 @@ describe('parseLsofListenOutput', () => {
   test('IPv4 LISTEN 행 파싱', () => {
     const output = [
       'COMMAND   PID   USER   FD   TYPE DEVICE SIZE/OFF NODE NAME',
-      'node    12345   user   23u  IPv4 0x1234      0t0  TCP 127.0.0.1:12320 (LISTEN)',
+      'node    12345   user   23u  IPv4 0x1234      0t0  TCP 127.0.0.1:12330 (LISTEN)',
     ].join('\n');
-    expect(parseLsofListenOutput(output)).toEqual([{ host: '127.0.0.1', port: 12320, pid: 12345 }]);
+    expect(parseLsofListenOutput(output)).toEqual([{ host: '127.0.0.1', port: 12330, pid: 12345 }]);
   });
 
   test('IPv6 LISTEN 행도 파싱된다(host 는 ::1)', () => {
-    const output = 'node    12345   user   24u  IPv6 0x5678      0t0  TCP [::1]:12320 (LISTEN)';
-    expect(parseLsofListenOutput(output)).toEqual([{ host: '::1', port: 12320, pid: 12345 }]);
+    const output = 'node    12345   user   24u  IPv6 0x5678      0t0  TCP [::1]:12330 (LISTEN)';
+    expect(parseLsofListenOutput(output)).toEqual([{ host: '::1', port: 12330, pid: 12345 }]);
   });
 
   test('빈 출력은 빈 배열', () => {
@@ -145,15 +145,15 @@ describe('parseLsofListenOutput', () => {
 
 describe('filterLoopbackListeners / filterCandidatePorts', () => {
   const listeners: PortListener[] = [
-    { host: '127.0.0.1', port: 12320, pid: 1 },
-    { host: '0.0.0.0', port: 12320, pid: 1 },
-    { host: '::1', port: 12320, pid: 1 },
+    { host: '127.0.0.1', port: 12330, pid: 1 },
+    { host: '0.0.0.0', port: 12330, pid: 1 },
+    { host: '::1', port: 12330, pid: 1 },
     { host: '127.0.0.1', port: 9999, pid: 2 },
   ];
 
   test('127.0.0.1 만 남긴다', () => {
     expect(filterLoopbackListeners(listeners)).toEqual([
-      { host: '127.0.0.1', port: 12320, pid: 1 },
+      { host: '127.0.0.1', port: 12330, pid: 1 },
       { host: '127.0.0.1', port: 9999, pid: 2 },
     ]);
   });
@@ -161,12 +161,12 @@ describe('filterLoopbackListeners / filterCandidatePorts', () => {
   test('기본 범위(12300~12399) 밖 포트는 걸러진다', () => {
     const loopbackOnly = filterLoopbackListeners(listeners);
     expect(filterCandidatePorts(loopbackOnly)).toEqual([
-      { host: '127.0.0.1', port: 12320, pid: 1 },
+      { host: '127.0.0.1', port: 12330, pid: 1 },
     ]);
   });
 
-  test('기본 범위가 popup 후보 포트(12306/12315/12320/12325) 전부를 포함한다', () => {
-    for (const port of [12306, 12315, 12320, 12325]) {
+  test('기본 범위가 popup 후보 포트(12306/12315/12330/12325) 전부를 포함한다', () => {
+    for (const port of [12306, 12315, 12330, 12325]) {
       expect(port).toBeGreaterThanOrEqual(DEFAULT_PORT_RANGE.min);
       expect(port).toBeLessThanOrEqual(DEFAULT_PORT_RANGE.max);
     }
@@ -179,12 +179,12 @@ describe('listListeningPorts (platform adapter)', () => {
     const runner = (cmd: string, args: string[]): string => {
       calls.push({ cmd, args });
       if (cmd === 'powershell') {
-        return JSON.stringify({ LocalAddress: '127.0.0.1', LocalPort: 12320, OwningProcess: 7 });
+        return JSON.stringify({ LocalAddress: '127.0.0.1', LocalPort: 12330, OwningProcess: 7 });
       }
       throw new Error('should not be called');
     };
     const result = listListeningPorts('win32', runner);
-    expect(result).toEqual([{ host: '127.0.0.1', port: 12320, pid: 7 }]);
+    expect(result).toEqual([{ host: '127.0.0.1', port: 12330, pid: 7 }]);
     expect(calls).toHaveLength(1);
     expect(calls[0].cmd).toBe('powershell');
   });
@@ -195,12 +195,12 @@ describe('listListeningPorts (platform adapter)', () => {
       calls.push(cmd);
       if (cmd === 'powershell') throw new Error('powershell not found');
       if (cmd === 'netstat') {
-        return '  TCP    127.0.0.1:12320        0.0.0.0:0              LISTENING       9';
+        return '  TCP    127.0.0.1:12330        0.0.0.0:0              LISTENING       9';
       }
       throw new Error('unexpected command ' + cmd);
     };
     const result = listListeningPorts('win32', runner);
-    expect(result).toEqual([{ host: '127.0.0.1', port: 12320, pid: 9 }]);
+    expect(result).toEqual([{ host: '127.0.0.1', port: 12330, pid: 9 }]);
     expect(calls).toEqual(['powershell', 'netstat']);
   });
 
@@ -215,10 +215,10 @@ describe('listListeningPorts (platform adapter)', () => {
     const calls: Array<{ cmd: string; args: string[] }> = [];
     const runner = (cmd: string, args: string[]): string => {
       calls.push({ cmd, args });
-      return 'node    5   user   1u  IPv4 0x1      0t0  TCP 127.0.0.1:12320 (LISTEN)';
+      return 'node    5   user   1u  IPv4 0x1      0t0  TCP 127.0.0.1:12330 (LISTEN)';
     };
     const result = listListeningPorts('darwin', runner);
-    expect(result).toEqual([{ host: '127.0.0.1', port: 12320, pid: 5 }]);
+    expect(result).toEqual([{ host: '127.0.0.1', port: 12330, pid: 5 }]);
     expect(calls[0].cmd).toBe('lsof');
   });
 
@@ -234,38 +234,38 @@ describe('probeBridgePorts', () => {
   test('후보 포트 중 /ping 에 응답한 포트만 responsivePorts 에 들어간다', async () => {
     const runner = (): string =>
       JSON.stringify([
-        { LocalAddress: '127.0.0.1', LocalPort: 12320, OwningProcess: 100 },
+        { LocalAddress: '127.0.0.1', LocalPort: 12330, OwningProcess: 100 },
         { LocalAddress: '127.0.0.1', LocalPort: 12325, OwningProcess: 200 },
       ]);
     const fetchFn = (async (url: unknown) => {
       const s = String(url);
-      if (s.includes(':12320/ping')) return { ok: true } as Response;
+      if (s.includes(':12330/ping')) return { ok: true } as Response;
       return { ok: false } as Response;
     }) as typeof fetch;
 
     const result = await probeBridgePorts({ platform: 'win32', runner, fetchFn });
-    expect(result.ports).toEqual([12320, 12325]);
-    expect(result.responsivePorts).toEqual([12320]);
-    expect(result.pidByPort).toEqual({ 12320: 100, 12325: 200 });
+    expect(result.ports).toEqual([12330, 12325]);
+    expect(result.responsivePorts).toEqual([12330]);
+    expect(result.pidByPort).toEqual({ 12330: 100, 12325: 200 });
   });
 
   test('/ping 이 reject 되면 그 포트는 responsive 아님(throw 안 함)', async () => {
     const runner = (): string =>
-      JSON.stringify({ LocalAddress: '127.0.0.1', LocalPort: 12320, OwningProcess: 1 });
+      JSON.stringify({ LocalAddress: '127.0.0.1', LocalPort: 12330, OwningProcess: 1 });
     const fetchFn = (async () => {
       throw new Error('ECONNREFUSED');
     }) as unknown as typeof fetch;
 
     const result = await probeBridgePorts({ platform: 'win32', runner, fetchFn });
-    expect(result.ports).toEqual([12320]);
+    expect(result.ports).toEqual([12330]);
     expect(result.responsivePorts).toEqual([]);
   });
 
   test('fetchFn 을 null 로 주면 /ping 단계를 건너뛰고 candidate ports 만 돌려준다', async () => {
     const runner = (): string =>
-      JSON.stringify({ LocalAddress: '127.0.0.1', LocalPort: 12320, OwningProcess: 1 });
+      JSON.stringify({ LocalAddress: '127.0.0.1', LocalPort: 12330, OwningProcess: 1 });
     const result = await probeBridgePorts({ platform: 'win32', runner, fetchFn: null });
-    expect(result.ports).toEqual([12320]);
+    expect(result.ports).toEqual([12330]);
     expect(result.responsivePorts).toEqual([]);
   });
 
@@ -343,11 +343,11 @@ describe('probeBridgePorts - 탐색된 포트 취급', () => {
       if (s.endsWith('/ping')) {
         return { ok: true, status: 200, json: async () => ({ status: 'ok', message: 'pong' }) };
       }
-      if (s.includes(':12320/')) {
+      if (s.includes(':12330/')) {
         return {
           ok: true,
           status: 200,
-          json: async () => ({ status: 'ok', fork: 'auto-chrome-mcp', version: '1.0.0' }),
+          json: async () => ({ status: 'ok', fork: 'posendy-chrome', version: '1.0.0' }),
         };
       }
       return { ok: true, status: 200, json: async () => ({ status: 'ok' }) };
@@ -355,13 +355,13 @@ describe('probeBridgePorts - 탐색된 포트 취급', () => {
 
     const result = await probeBridgePorts({
       platform: 'win32',
-      runner: listenersOn(12320, 12345),
+      runner: listenersOn(12330, 12345),
       fetchFn,
     });
 
-    expect(result.bridgePorts).toEqual([12320]);
+    expect(result.bridgePorts).toEqual([12330]);
     expect(result.otherPorts).toEqual([12345]);
-    expect(result.identityByPort[12320]).toEqual({ fork: 'auto-chrome-mcp', version: '1.0.0' });
+    expect(result.identityByPort[12330]).toEqual({ fork: 'posendy-chrome', version: '1.0.0' });
   });
 });
 
@@ -457,7 +457,7 @@ describe('readBridgeIdentity - 식별 기준', () => {
 
   test('fork 가 다르면 브리지가 아니다 (부분 일치도 거부)', () => {
     expect(readBridgeIdentity({ fork: 'mcp-chrome', version: '1.0.0' })).toBeNull();
-    expect(readBridgeIdentity({ fork: 'auto-chrome-mcp-proxy', version: '1.0.0' })).toBeNull();
+    expect(readBridgeIdentity({ fork: 'posendy-chrome-proxy', version: '1.0.0' })).toBeNull();
     expect(readBridgeIdentity({ fork: 'x', version: 'y' })).toBeNull();
     expect(readBridgeIdentity({ version: '1.0.0' })).toBeNull();
   });
@@ -479,7 +479,7 @@ describe('probeBridgePorts - 낯선 서비스는 브리지로 세지 않는다',
   const runner = (): string =>
     [
       'COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME',
-      'node 1 me 20u IPv4 1 0t0 TCP 127.0.0.1:12321 (LISTEN)',
+      'node 1 me 20u IPv4 1 0t0 TCP 127.0.0.1:12330 (LISTEN)',
     ].join('\n');
 
   test('fork 이름이 다르면 otherPorts 로만 보고한다', async () => {
@@ -491,9 +491,9 @@ describe('probeBridgePorts - 낯선 서비스는 브리지로 세지 않는다',
 
     const result = await probeBridgePorts({ platform: 'darwin', runner, fetchFn });
 
-    expect(result.responsivePorts).toEqual([12321]);
+    expect(result.responsivePorts).toEqual([12330]);
     expect(result.bridgePorts).toEqual([]);
-    expect(result.otherPorts).toEqual([12321]);
+    expect(result.otherPorts).toEqual([12330]);
     expect(result.identityByPort).toEqual({});
   });
 
@@ -507,7 +507,7 @@ describe('probeBridgePorts - 낯선 서비스는 브리지로 세지 않는다',
     const result = await probeBridgePorts({ platform: 'darwin', runner, fetchFn });
 
     expect(result.bridgePorts).toEqual([]);
-    expect(result.otherPorts).toEqual([12321]);
+    expect(result.otherPorts).toEqual([12330]);
   });
 });
 

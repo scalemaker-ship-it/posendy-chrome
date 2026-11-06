@@ -1,4 +1,4 @@
-import { NativeMessageType } from 'auto-chrome-mcp-shared';
+import { NativeMessageType } from 'posendy-chrome-shared';
 import { BACKGROUND_MESSAGE_TYPES } from '@/common/message-types';
 import { NATIVE_HOST, STORAGE_KEYS, ERROR_MESSAGES, SUCCESS_MESSAGES } from '@/common/constants';
 import { handleCallTool } from './tools';
@@ -29,7 +29,7 @@ const RECONNECT_MAX_FAST_ATTEMPTS = 3;
 const RECONNECT_COOLDOWN_DELAY_MS = 60_000;
 
 // ==================== Heartbeat Configuration ====================
-// auto-chrome-mcp fork: onDisconnect 가 안 뜨는 "silent-dead" 연결(HTTP hang, sleep/wake
+// posendy-chrome fork: onDisconnect 가 안 뜨는 "silent-dead" 연결(HTTP hang, sleep/wake
 // 좀비, half-open socket)을 능동 ping 으로 감지해 자동 복구. 건강하면 no-op.
 const HEARTBEAT_INTERVAL_MS = 15_000; // 15s 주기 ping
 const HEARTBEAT_TIMEOUT_MS = 3_000; // 각 ping 3s 안에 응답 없으면 miss
@@ -508,7 +508,7 @@ export function connectNativeHost(port: number = NATIVE_HOST.DEFAULT_PORT): bool
         }
       } else if (message.type === NativeMessageType.SERVER_STARTED) {
         const port = message.payload?.port;
-        // auto-chrome-mcp fork: 브리지가 기동 시 만든 loopback HTTP 인증 토큰. 네이티브
+        // posendy-chrome fork: 브리지가 기동 시 만든 loopback HTTP 인증 토큰. 네이티브
         // 메시징으로만 오므로 같은 PC 의 다른 프로그램은 볼 수 없다. 옛 브리지는 보내지
         // 않으니 없으면 기록을 비운다(그러면 헤더 없이 호출한다).
         await setBridgeAuthToken(
@@ -523,7 +523,7 @@ export function connectNativeHost(port: number = NATIVE_HOST.DEFAULT_PORT): bool
         broadcastServerStatusChange(currentServerStatus);
         // Server is confirmed running - now we can reset reconnect state
         resetReconnectState();
-        // auto-chrome-mcp fork: start active liveness watchdog for this live session.
+        // posendy-chrome fork: start active liveness watchdog for this live session.
         heartbeat.start();
         console.log(`${SUCCESS_MESSAGES.SERVER_STARTED} on port ${port}`);
       } else if (message.type === NativeMessageType.SERVER_STOPPED) {
@@ -565,7 +565,7 @@ export function connectNativeHost(port: number = NATIVE_HOST.DEFAULT_PORT): bool
           }
           nativePort = null;
         }
-        // auto-chrome-mcp fork: conflict tears down the session — stop the watchdog.
+        // posendy-chrome fork: conflict tears down the session — stop the watchdog.
         heartbeat.stop();
         void markServerStopped(`port_conflict:${reason}`);
       } else if (message.type === 'file_operation_response') {
@@ -579,7 +579,7 @@ export function connectNativeHost(port: number = NATIVE_HOST.DEFAULT_PORT): bool
     nativePort.onDisconnect.addListener(() => {
       console.warn(ERROR_MESSAGES.NATIVE_DISCONNECTED, chrome.runtime.lastError);
       nativePort = null;
-      // auto-chrome-mcp fork: session ended — stop the liveness watchdog.
+      // posendy-chrome fork: session ended — stop the liveness watchdog.
       heartbeat.stop();
 
       // Mark server as stopped since native host disconnection means server is down
@@ -757,7 +757,7 @@ export const initNativeHostListener = () => {
       return true;
     }
 
-    // auto-chrome-mcp fork: Force Reconnect Stage A step ③ - 팝업의 supervisor 가
+    // posendy-chrome fork: Force Reconnect Stage A step ③ - 팝업의 supervisor 가
     // 부르는 메시지 경로. 실제 처리는 위 forceReconnectRespawn 하나이고, 컨텍스트
     // 메뉴는 그 함수를 직접 부른다.
     if (msgType === 'force-reconnect-respawn') {
@@ -789,7 +789,7 @@ export const initNativeHostListener = () => {
           }
           nativePort = null;
         }
-        // auto-chrome-mcp fork: user disconnected — stop the watchdog.
+        // posendy-chrome fork: user disconnected — stop the watchdog.
         heartbeat.stop();
         await markServerStopped('manual_disconnect');
       })()

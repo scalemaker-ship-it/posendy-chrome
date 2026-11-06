@@ -1,5 +1,5 @@
 /**
- * MCP work-window policy + tracker (auto-chrome-mcp fork).
+ * MCP work-window policy + tracker (posendy-chrome fork).
  *
  * MCP 작업 탭을 "어느 창에" 만들지 결정한다. 두 가지 모드:
  *
@@ -187,7 +187,7 @@ function normalizeMarker(raw: unknown): WorkWindowMarker | null {
 }
 
 /**
- * auto-chrome-mcp fork(F4): 표지 변경을 한 줄로 세운다.
+ * posendy-chrome fork(F4): 표지 변경을 한 줄로 세운다.
  *
  * registerWorkWindowTab 은 표지를 읽어 복제한 뒤 저장하는 read-modify-write 였다. 두 레인이
  * 동시에 작업 탭을 등록하면 둘 다 옛 표지를 복제하므로 마지막 write 만 남고, 살아남지 못한
@@ -270,7 +270,7 @@ function sameMarker(a: WorkWindowMarker | null, b: WorkWindowMarker | null): boo
  */
 export async function registerWorkWindowTab(windowId: number, tabId?: number): Promise<void> {
   if (typeof tabId !== 'number') return;
-  // auto-chrome-mcp fork(F4): 읽기·판정·저장이 한 임계 구역이어야 한다. 락을 잡은 안에서는
+  // posendy-chrome fork(F4): 읽기·판정·저장이 한 임계 구역이어야 한다. 락을 잡은 안에서는
   // 락을 다시 잡지 않는 writeMarker 를 쓴다 (재진입 = 교착).
   return await withMarkerLock(async () => {
     const marker = await loadMarker();

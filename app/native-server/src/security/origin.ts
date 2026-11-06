@@ -69,7 +69,7 @@ export const isAllowedCorsOrigin = (origin: unknown): boolean =>
 // Host 헤더
 // ============================================================
 // Origin 만 봐서는 DNS rebinding 을 막지 못한다. 공격자가 attacker.example 을
-// 127.0.0.1 로 돌려놓고 그 페이지에서 `fetch('http://attacker.example:12320/...')` 을
+// 127.0.0.1 로 돌려놓고 그 페이지에서 `fetch('http://attacker.example:12330/...')` 을
 // 던지면 브라우저는 same-origin 으로 판단해 Origin 헤더를 아예 붙이지 않는다.
 // 그래서 Host 가 loopback 이름인지도 반드시 본다 (공개 경로 포함).
 

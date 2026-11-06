@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — `url` 인자로 대상 탭을 고르는 도구는 세션이 소유한 탭만 본다.
+ * posendy-chrome fork — `url` 인자로 대상 탭을 고르는 도구는 세션이 소유한 탭만 본다.
  *
  * 배경(2026-09-04 Codex 3차 검토, 항목 1): web-fetcher · console · inject-script 는 `url` 이
  * 오면 `chrome.tabs.query({})` / `chrome.tabs.query({ url })` 로 **모든 창의 모든 탭**을 뒤져
@@ -267,7 +267,7 @@ describe('web-fetcher · inject-script 의 url 분기가 사용자 탭을 잡지
  * 이제 URL 조회(재사용 탐색) 전에 확인한다.
  */
 describe('항목 2 — 재사용 탐색도 파일 접근 권한을 확인한다', () => {
-  const FILE_URL = 'file:///C:/PROJECTS/auto-chrome-mcp/README.md';
+  const FILE_URL = 'file:///C:/PROJECTS/posendy-chrome/README.md';
 
   function installWithOwnedFileTab(allowed: boolean | 'throws') {
     installChrome({ backgroundMode: true, ownedTabs: [99] });

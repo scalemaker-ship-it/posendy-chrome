@@ -13,7 +13,7 @@
 
 - **단일 소유:** `entrypoints/background/context-menus.ts`(등록·클릭 처리)와 `context-menus-spec.ts`(순수 명세·문구·녹화 문구 갱신)만 메뉴를 만든다. 다른 모듈은 클릭 처리 함수만 export 한다(`injectMarkerHelper`, `toggleEditorInTab`, `toggleQuickPanelInActiveTab`, `forceReconnectRespawn`). 파일을 둘로 나눈 이유: record-replay 가 녹화 문구 갱신을 위해 한 파일을 import 하면 native-host → tools 전체가 딸려와 테스트가 깨졌다.
 - **기동 시 `removeAll()` 후 재생성.** onInstalled 와 서비스 워커 기동 둘 다. 옛 엔진 잔여 메뉴가 이걸로 사라진다.
-- **아이콘 메뉴(contexts `action`)와 페이지 메뉴(page·frame·selection·link·image·video·audio·editable)를 분리.** 페이지 메뉴는 부모 "Auto Chrome MCP" 하나만 노출해 사용자 페이지 메뉴를 어지럽히지 않는다.
+- **아이콘 메뉴(contexts `action`)와 페이지 메뉴(page·frame·selection·link·image·video·audio·editable)를 분리.** 페이지 메뉴는 부모 "POSENDY Chrome" 하나만 노출해 사용자 페이지 메뉴를 어지럽히지 않는다.
 - 문구는 `chrome.i18n.getMessage('menu_*')`(ko·en). 키가 없으면 ko 문구 폴백.
 - record-replay 의 contextMenu 트리거 경로(`refreshContextMenus`, `rr_menu_*`, `TriggerType 'contextMenu'`)는 삭제. 배경 코드의 한자 리터럴은 전부 제거(1006자 → 0).
 - 강제 재연결을 배경에서 부르려면 배경이 자기 자신에게 `sendMessage` 해도 리스너에 닿지 않으므로 `utils/force-reconnect.ts` 에 `transport` 옵션을 두어 직접 함수 호출로 우회했다.
@@ -35,7 +35,7 @@
 | 7    | `acm_userscripts`     | 유저스크립트 관리               | `chrome.runtime.openOptionsPage()`                                                                                                                                     |
 | 8    | `acm_force_reconnect` | 강제 재연결                     | `forceReconnect()` + `chrome.notifications` 한 줄                                                                                                                      |
 
-**페이지 우클릭:** `acm_page_root` "Auto Chrome MCP" 아래 `acm_page_mark_element` 이 요소 마킹, `acm_page_web_editor` 웹 에디터 켜기/끄기, `acm_page_record` 이 탭에서 녹화 시작/중지.
+**페이지 우클릭:** `acm_page_root` "POSENDY Chrome" 아래 `acm_page_mark_element` 이 요소 마킹, `acm_page_web_editor` 웹 에디터 켜기/끄기, `acm_page_record` 이 탭에서 녹화 시작/중지.
 
 ## 검증
 

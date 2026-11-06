@@ -1,8 +1,8 @@
 import { createErrorResponse, ToolResult } from '@/common/tool-handler';
 import { BaseBrowserToolExecutor } from '../base-browser';
-// auto-chrome-mcp fork: url 분기가 사용자 창의 탭에 캡처를 붙이지 않도록 세션 소유 탭으로만 조회한다.
+// posendy-chrome fork: url 분기가 사용자 창의 탭에 캡처를 붙이지 않도록 세션 소유 탭으로만 조회한다.
 import { createTabForUrl, findTabByUrlInSessionScope } from './url-target';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { LIMITS, NETWORK_FILTERS } from '@/common/constants';
 import { redactedArgsForLog, redactUrlForLog } from '@/utils/log-redact';
 
@@ -807,7 +807,7 @@ class NetworkCaptureStartTool extends BaseBrowserToolExecutor {
       // Get current tab or create new tab
       let tabToOperateOn: chrome.tabs.Tab;
 
-      // auto-chrome-mcp fork(2026-09-04): 주입된 tabId 가 url 보다 우선한다.
+      // posendy-chrome fork(2026-09-04): 주입된 tabId 가 url 보다 우선한다.
       // 예전에는 url 분기가 먼저라, 게이트가 작업 탭을 주입해도 chrome.tabs.query({url}) 가
       // 다른 창의 사용자 탭을 골라 캡처를 붙였다.
       const preferredTab = await this.tryGetTab(requestedTabId);
@@ -815,7 +815,7 @@ class NetworkCaptureStartTool extends BaseBrowserToolExecutor {
       if (preferredTab) {
         tabToOperateOn = preferredTab;
       } else if (targetUrl) {
-        // auto-chrome-mcp fork: 백그라운드 작업 모드에서는 이 세션이 소유한 탭에서만 찾는다.
+        // posendy-chrome fork: 백그라운드 작업 모드에서는 이 세션이 소유한 탭에서만 찾는다.
         // 예전에는 chrome.tabs.query({ url }) 로 모든 창을 뒤져 사용자 탭에 캡처가 붙었다.
         const existing = await findTabByUrlInSessionScope(targetUrl, args);
 
@@ -907,7 +907,7 @@ class NetworkCaptureStopTool extends BaseBrowserToolExecutor {
 
   async execute(args?: {
     tabId?: number;
-    // auto-chrome-mcp fork: 페이지네이션 — STOP 결과의 requests 배열을 자르는 limit/offset, 개수만 반환하는 countOnly
+    // posendy-chrome fork: 페이지네이션 — STOP 결과의 requests 배열을 자르는 limit/offset, 개수만 반환하는 countOnly
     limit?: number;
     offset?: number;
     countOnly?: boolean;
@@ -983,7 +983,7 @@ class NetworkCaptureStopTool extends BaseBrowserToolExecutor {
         }
       }
 
-      // auto-chrome-mcp fork: 정적 리소스 필터링(존재 시) 이후의 requests 배열에 limit/offset/countOnly 페이지네이션 적용
+      // posendy-chrome fork: 정적 리소스 필터링(존재 시) 이후의 requests 배열에 limit/offset/countOnly 페이지네이션 적용
       const allRequests: NetworkRequestInfo[] = stopResult.data?.requests || [];
       const totalCount = allRequests.length;
       const isCountOnly = args?.countOnly === true;

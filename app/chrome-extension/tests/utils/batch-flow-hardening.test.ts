@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — 2026-09-04 Codex 최종 리뷰(NO-GO 7건) 회귀 테스트.
+ * posendy-chrome fork — 2026-09-04 Codex 최종 리뷰(NO-GO 7건) 회귀 테스트.
  *
  * 계약: docs/plans/2026-09-04-batch-flow-design.md 4절·9절.
  * 각 describe 의 번호는 리뷰 지적 번호다. 수정 전에는 전부 실패해야 한다.

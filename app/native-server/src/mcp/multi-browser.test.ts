@@ -1,7 +1,7 @@
 import { describe, expect, test, jest, beforeEach, afterEach } from '@jest/globals';
 
 /**
- * auto-chrome-mcp fork — stdio 프록시의 세션 중 브라우저(프로필) 전환 회귀 테스트.
+ * posendy-chrome fork — stdio 프록시의 세션 중 브라우저(프로필) 전환 회귀 테스트.
  *
  * Chrome profile 1개 = bridge 1개 = port 1개. 예전에는 CHROME_PORT 로 정한 url 이
  * 프로세스 수명 내내 고정이라 다른 profile 을 쓰려면 Claude Code 재시작이 필요했다.
@@ -118,14 +118,14 @@ const originalFetch = (globalThis as any).fetch;
 const originalChromePort = process.env.CHROME_PORT;
 const originalChromePorts = process.env.CHROME_PORTS;
 
-describe('mcp-server-stdio — 세션 중 브라우저 전환 (auto-chrome-mcp fork, multi-profile)', () => {
+describe('mcp-server-stdio — 세션 중 브라우저 전환 (posendy-chrome fork, multi-profile)', () => {
   beforeEach(() => {
     // 모듈 import 시 main() 이 돌면서 실패하면 process.exit(1) 로 러너를 죽인다 — 무력화.
     jest.spyOn(process, 'exit').mockImplementation(((code?: number) => {
       throw new Error(`unexpected process.exit(${code}) during test`);
     }) as never);
     // 활성 port 를 고정해 테스트를 결정론적으로 (loadConfig 가 CHROME_PORT 를 읽는다)
-    process.env.CHROME_PORT = '12320';
+    process.env.CHROME_PORT = '12330';
     delete process.env.CHROME_PORTS;
     mockCallTool.mockClear();
     mockClientClose.mockClear();
@@ -146,7 +146,7 @@ describe('mcp-server-stdio — 세션 중 브라우저 전환 (auto-chrome-mcp f
 
   test('tools/list 에 chrome_list_browsers / chrome_use_browser 가 추가된다', async () => {
     const { listTools } = await loadHandlers();
-    const { TOOL_SCHEMAS } = await import('auto-chrome-mcp-shared');
+    const { TOOL_SCHEMAS } = await import('posendy-chrome-shared');
 
     const { tools } = await listTools();
     const names = tools.map((t) => t.name);
@@ -168,10 +168,10 @@ describe('mcp-server-stdio — 세션 중 브라우저 전환 (auto-chrome-mcp f
     );
 
     expect(payload.success).toBe(true);
-    expect(payload.activePort).toBe(12320);
+    expect(payload.activePort).toBe(12330);
     expect(payload.browsers.filter((b: any) => b.alive).map((b: any) => b.port)).toEqual([12315]);
     // 기본 후보 port 들은 모두 probe 대상
-    expect(payload.browsers.map((b: any) => b.port).sort()).toEqual([12306, 12315, 12320, 12325]);
+    expect(payload.browsers.map((b: any) => b.port).sort()).toEqual([12306, 12315, 12330, 12325]);
     expect(payload.browsers.find((b: any) => b.port === 12315).url).toBe(
       'http://127.0.0.1:12315/mcp',
     );
@@ -192,7 +192,7 @@ describe('mcp-server-stdio — 세션 중 브라우저 전환 (auto-chrome-mcp f
     const ports = payload.browsers.map((b: any) => b.port);
     expect(ports).toContain(12400);
     expect(ports).toContain(12401);
-    // 중복 없음 (활성 port 12320 은 기본 후보에도 있다)
+    // 중복 없음 (활성 port 12330 은 기본 후보에도 있다)
     expect(new Set(ports).size).toBe(ports.length);
     expect(payload.browsers.find((b: any) => b.port === 12400)).toMatchObject({
       alive: true,
@@ -201,12 +201,12 @@ describe('mcp-server-stdio — 세션 중 브라우저 전환 (auto-chrome-mcp f
   });
 
   test('chrome_use_browser 는 다음 연결부터 새 port 를 쓰게 한다', async () => {
-    alivePorts = [12320, 12315];
+    alivePorts = [12330, 12315];
     const { callTool } = await loadHandlers();
 
     // ① 전환 전 호출 → 기본 port 로 연결
     await callTool({ params: { name: 'chrome_navigate', arguments: { url: 'https://a.test' } } });
-    expect(mockTransportUrls).toEqual(['http://127.0.0.1:12320/mcp']);
+    expect(mockTransportUrls).toEqual(['http://127.0.0.1:12330/mcp']);
 
     // ② 전환
     const payload = parsePayload(
@@ -222,16 +222,16 @@ describe('mcp-server-stdio — 세션 중 브라우저 전환 (auto-chrome-mcp f
     expect(mockClientClose).toHaveBeenCalled();
     const del = fetchCalls.find((c) => c.init?.method === 'DELETE');
     expect(del).toBeDefined();
-    expect(del!.url).toBe('http://127.0.0.1:12320/mcp');
+    expect(del!.url).toBe('http://127.0.0.1:12330/mcp');
     expect(del!.init.headers['Mcp-Session-Id']).toBe('test-http-session');
 
     // ④ 전환 후 호출 → 새 port 로 새로 연결
     await callTool({ params: { name: 'chrome_navigate', arguments: { url: 'https://b.test' } } });
-    expect(mockTransportUrls).toEqual(['http://127.0.0.1:12320/mcp', 'http://127.0.0.1:12315/mcp']);
+    expect(mockTransportUrls).toEqual(['http://127.0.0.1:12330/mcp', 'http://127.0.0.1:12315/mcp']);
   });
 
   test('죽은 port 로 전환하면 isError + 살아있는 port 목록, 활성 브라우저는 그대로', async () => {
-    alivePorts = [12320];
+    alivePorts = [12330];
     const { callTool } = await loadHandlers();
 
     await callTool({ params: { name: 'chrome_navigate', arguments: { url: 'https://a.test' } } });
@@ -242,13 +242,13 @@ describe('mcp-server-stdio — 세션 중 브라우저 전환 (auto-chrome-mcp f
     expect(result.isError).toBe(true);
     const payload = parsePayload(result);
     expect(payload.success).toBe(false);
-    expect(payload.alivePorts).toEqual([12320]);
+    expect(payload.alivePorts).toEqual([12330]);
     // 세션 종료 요청도 없어야 한다 (전환 자체가 일어나지 않음)
     expect(fetchCalls.some((c) => c.init?.method === 'DELETE')).toBe(false);
 
     // 다음 호출은 여전히 기존 port
     await callTool({ params: { name: 'chrome_navigate', arguments: { url: 'https://b.test' } } });
-    expect(new Set(mockTransportUrls)).toEqual(new Set(['http://127.0.0.1:12320/mcp']));
+    expect(new Set(mockTransportUrls)).toEqual(new Set(['http://127.0.0.1:12330/mcp']));
   });
 
   test('port 인자가 없거나 잘못되면 검증 단계에서 거부한다', async () => {
@@ -261,7 +261,7 @@ describe('mcp-server-stdio — 세션 중 브라우저 전환 (auto-chrome-mcp f
   });
 
   test('두 도구는 extension 으로 forward 되지 않고, 다른 도구는 _mcpSessionId 를 그대로 받는다', async () => {
-    alivePorts = [12320, 12315];
+    alivePorts = [12330, 12315];
     const { callTool } = await loadHandlers();
 
     await callTool({ params: { name: 'chrome_list_browsers', arguments: {} } });

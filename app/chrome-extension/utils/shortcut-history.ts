@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork: chrome_shortcut 실행 이력.
+ * posendy-chrome fork: chrome_shortcut 실행 이력.
  *
  * 설계 계약: docs/plans/2026-09-05-daily-automation-design.md 4절 (구현 순서 1단계).
  *

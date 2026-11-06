@@ -1,6 +1,6 @@
 import { createErrorResponse, ToolResult } from '@/common/tool-handler';
 import { BaseBrowserToolExecutor } from '../base-browser';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { networkCaptureStartTool, networkCaptureStopTool } from './network-capture-web-request';
 import { networkDebuggerStartTool, networkDebuggerStopTool } from './network-capture-debugger';
 
@@ -13,7 +13,7 @@ interface NetworkCaptureToolParams {
   maxCaptureTime?: number;
   inactivityTimeout?: number;
   includeStatic?: boolean;
-  // auto-chrome-mcp fork(2026-09-04): 게이트가 주입하는 대상 탭. delegate 까지 반드시 전달한다.
+  // posendy-chrome fork(2026-09-04): 게이트가 주입하는 대상 탭. delegate 까지 반드시 전달한다.
   // 예전에는 여기서 버려져, 위임받은 legacy 도구가 사용자의 활성 탭을 다시 골랐다.
   tabId?: number;
   background?: boolean;

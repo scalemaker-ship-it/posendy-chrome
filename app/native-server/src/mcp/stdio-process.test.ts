@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 
 /**
- * auto-chrome-mcp fork — 회귀 케이스 #3·#4·#7 을 **실제 프로세스**로 검증한다.
+ * posendy-chrome fork — 회귀 케이스 #3·#4·#7 을 **실제 프로세스**로 검증한다.
  *
  * #3 Cursor 연결 / #4 Claude Desktop 연결
  *   두 클라이언트가 하는 일은 결국 같다 — stdio 로 프로세스를 띄우고 `initialize` 뒤

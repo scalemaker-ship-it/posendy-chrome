@@ -7,7 +7,7 @@ import { effectiveBackgroundModeOf } from '@/utils/background-mode';
 const PING_TIMEOUT_MS = 300;
 
 /**
- * auto-chrome-mcp fork: content script 응답 대기 상한.
+ * posendy-chrome fork: content script 응답 대기 상한.
  *
  * chrome.tabs.sendMessage 는 상대가 sendResponse 를 영영 안 부르면 **영원히 pending** 이다
  * (헬퍼가 비동기 예외로 죽거나, 페이지가 멎었을 때). 그러면 그 도구 호출이 끝나지 않고,
@@ -102,7 +102,7 @@ export abstract class BaseBrowserToolExecutor implements ToolExecutor {
     tabId: number,
     message: any,
     frameId?: number,
-    // auto-chrome-mcp fork: 오래 걸리는 게 정상인 호출(사용자 입력 대기 등)은 상한을 늘린다.
+    // posendy-chrome fork: 오래 걸리는 게 정상인 호출(사용자 입력 대기 등)은 상한을 늘린다.
     timeoutMs: number = TAB_MESSAGE_TIMEOUT_MS,
   ): Promise<any> {
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -129,7 +129,7 @@ export abstract class BaseBrowserToolExecutor implements ToolExecutor {
       ]);
 
       if (response && response.error) {
-        // auto-chrome-mcp fork(A3): content script 가 error 와 함께 보낸 진단 정보
+        // posendy-chrome fork(A3): content script 가 error 와 함께 보낸 진단 정보
         // (elementInfo / obstruction 등)를 Error 에 실어 호출부가 쓸 수 있게 한다.
         // 기존 동작(throw + message)은 그대로다.
         const err = new Error(String(response.error)) as Error & { response?: any };
@@ -178,7 +178,7 @@ export abstract class BaseBrowserToolExecutor implements ToolExecutor {
    * Optionally focus window and/or activate tab. Defaults preserve current behavior
    * when caller sets activate/focus flags explicitly.
    *
-   * auto-chrome-mcp fork: 두 동작이 각각 별도 정책 게이트를 통과해야 한다.
+   * posendy-chrome fork: 두 동작이 각각 별도 정책 게이트를 통과해야 한다.
    * - focusWindow: popup 의 "강제 포커스" 토글 정책(focus-policy)을 통과한 경우에만 실제로
    *   windows.update({focused:true}) 호출.
    * - activate: popup 의 "백그라운드 작업" 토글이 ON 이면 tabs.update({active:true}) 를 skip

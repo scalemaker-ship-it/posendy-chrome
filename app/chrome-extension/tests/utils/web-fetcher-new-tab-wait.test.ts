@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — chrome_get_web_content 새 탭 생성 후 대기 회귀 테스트 (task E5).
+ * posendy-chrome fork — chrome_get_web_content 새 탭 생성 후 대기 회귀 테스트 (task E5).
  *
  * 계약: url 로 새 탭을 만든 뒤 예전에는 고정 3000ms 를 무조건 쉬었다. 이제는
  * waitForPageLoad(관측 기반) 를 먼저 기다리고, 로드가 그보다 일찍 끝나면 그만큼 빨리 돌아온다.

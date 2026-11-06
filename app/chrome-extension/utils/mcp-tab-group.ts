@@ -1,5 +1,5 @@
 /**
- * MCP tab group (auto-chrome-mcp fork) — MCP 작업 탭을 탭 그룹 "MCP" 로 묶는다.
+ * MCP tab group (posendy-chrome fork) — MCP 작업 탭을 탭 그룹 "MCP" 로 묶는다.
  *
  * 무간섭 모드에서는 MCP 작업 탭이 사용자 창에 백그라운드로 생기기 때문에, 사용자
  * 입장에서 "내가 연 탭" 과 "자동화가 연 탭" 이 탭 스트립에 섞여 구분이 안 된다.
@@ -36,7 +36,7 @@ const TAB_GROUP_ID_NONE = -1;
 export const MCP_TAB_GROUP_TITLE_MAX = 24;
 
 /**
- * auto-chrome-mcp fork(2026-09-05 데일리 자동화 설계): 지금 무슨 작업을 하고 있는지 그룹
+ * posendy-chrome fork(2026-09-05 데일리 자동화 설계): 지금 무슨 작업을 하고 있는지 그룹
  * 제목으로 보여 준다. 무간섭 모드에서는 탭이 배경에 조용히 열리므로, 사용자가 "지금 이
  * 창에서 뭐가 돌고 있나" 를 알 방법이 탭 그룹 라벨뿐이다.
  *

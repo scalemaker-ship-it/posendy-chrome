@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork: 산출물 경로 헬퍼 단위 테스트.
+ * posendy-chrome fork: 산출물 경로 헬퍼 단위 테스트.
  *
  * 지키는 것 셋.
  *  1. 모든 산출물은 `mcp-screenshots/YYYY-MM-DD/` 안에 들어간다 (다운로드 폴더 루트 오염 금지).

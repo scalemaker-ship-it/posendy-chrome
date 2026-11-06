@@ -13,8 +13,8 @@
  * @see https://developer.chrome.com/docs/extensions/mv3/service_workers/
  */
 
-import type { AgentActRequest, RealtimeEvent } from 'auto-chrome-mcp-shared';
-import { NativeMessageType } from 'auto-chrome-mcp-shared';
+import type { AgentActRequest, RealtimeEvent } from 'posendy-chrome-shared';
+import { NativeMessageType } from 'posendy-chrome-shared';
 
 import { NATIVE_HOST, STORAGE_KEYS } from '@/common/constants';
 import {

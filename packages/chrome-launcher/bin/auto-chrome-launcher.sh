@@ -18,7 +18,7 @@ fi
 # dist 가 빌드되어 있어야 함.
 CLI_PATH="$PKG_DIR/dist/cli.js"
 if [ ! -f "$CLI_PATH" ]; then
-  echo "❌ CLI not built. Run: pnpm --filter auto-chrome-mcp-launcher build" >&2
+  echo "❌ CLI not built. Run: pnpm --filter posendy-chrome-launcher build" >&2
   exit 1
 fi
 

@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — MCP 탭 그룹 제목 ("지금 무슨 작업 중인가").
+ * posendy-chrome fork — MCP 탭 그룹 제목 ("지금 무슨 작업 중인가").
  *
  * 계약: docs/plans/2026-09-05-daily-automation-design.md (탭 그룹 제목).
  * 무간섭 모드에서는 작업 탭이 배경에 조용히 열리므로, 사용자가 "이 창에서 뭐가 돌고

@@ -1,4 +1,4 @@
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { handleCallTool } from '@/entrypoints/background/tools';
 import type { StepDrag } from '../types';
 import { locateElement } from '../selector-engine';

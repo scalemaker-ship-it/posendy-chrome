@@ -1,5 +1,5 @@
 /**
- * Viewport override (auto-chrome-mcp fork, v1.9.0).
+ * Viewport override (posendy-chrome fork, v1.9.0).
  *
  * `chrome_navigate` 의 width/height 는 v1.8.0 까지 **새 창**을 만들었다. 새 창은 사용자
  * 바탕화면에 떠서 작업을 방해하는 가장 큰 원인이었고, 정작 요구는 "이 크기의 화면에서

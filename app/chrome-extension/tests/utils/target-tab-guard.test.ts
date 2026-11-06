@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — 죽은 대상 탭 가드 회귀 테스트.
+ * posendy-chrome fork — 죽은 대상 탭 가드 회귀 테스트.
  *
  * 실측으로 잡은 실패: 작업 탭이 닫힌 뒤 같은 tabId 로 chrome_screenshot 을 부르니,
  * 에러가 나는 대신 **사용자가 보고 있던 유튜브 탭**이 찍혀 돌아왔다. 원인은 도구 25개가

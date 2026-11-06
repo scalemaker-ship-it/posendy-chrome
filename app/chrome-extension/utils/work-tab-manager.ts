@@ -1,5 +1,5 @@
 /**
- * MCP work-tab tracker (auto-chrome-mcp fork) — 세션별 다중 작업 탭.
+ * MCP work-tab tracker (posendy-chrome fork) — 세션별 다중 작업 탭.
  *
  * 각 Claude Code 세션(stdio 프로세스)은 고유 _mcpSessionId 를 모든 도구 호출 인자에 실어 보낸다.
  * 이 모듈은 세션별로 "MCP 작업 탭"을 기억해 두고, tabId 미지정 도구 호출이 사용자의 활성 탭
@@ -17,7 +17,7 @@ import { isMcpWindow } from '@/utils/mcp-window-manager';
 import { assignTabToMcpGroup } from '@/utils/mcp-tab-group';
 
 const SESSION_KEY = 'mcpWorkTabs';
-/** auto-chrome-mcp fork: 세션이 직접 만든 탭 목록 (정리 대상 판정용) */
+/** posendy-chrome fork: 세션이 직접 만든 탭 목록 (정리 대상 판정용) */
 const OWNED_KEY = 'mcpOwnedTabs';
 const LEGACY_SESSION_KEY = 'mcpWorkTabId';
 export const DEFAULT_SESSION_ID = 'default';
@@ -25,7 +25,7 @@ export const DEFAULT_SESSION_ID = 'default';
 export const MAX_SESSIONS = 32;
 
 /**
- * auto-chrome-mcp fork(P1): 레인 구분자.
+ * posendy-chrome fork(P1): 레인 구분자.
  *
  * 한 Claude Code 세션의 서브에이전트들은 **같은 stdio 프로세스**를 공유하므로
  * _mcpSessionId 가 전부 동일하다. 병렬 에이전트가 서로의 작업 탭을 덮어쓰거나 닫는 것을
@@ -46,7 +46,7 @@ export const MAX_OWNED_PER_KEY = 8;
 export const OWNED_ABANDON_MS = 15 * 60_000;
 
 /**
- * auto-chrome-mcp fork(P1): 도구 인자에서 "작업 탭 버킷 키" 를 만든다.
+ * posendy-chrome fork(P1): 도구 인자에서 "작업 탭 버킷 키" 를 만든다.
  * _mcpSessionId 는 stdio 프로세스(=Claude Code 세션) 단위라 서브에이전트끼리 같다.
  * 호출자가 lane 을 주면 그만큼 버킷이 갈라져 병렬 에이전트가 서로 간섭하지 않는다.
  */
@@ -70,7 +70,7 @@ interface WorkTabEntry {
   tabId: number;
   lastUsedAt: number;
   /**
-   * auto-chrome-mcp fork: 이 탭을 MCP 가 직접 만들었는가.
+   * posendy-chrome fork: 이 탭을 MCP 가 직접 만들었는가.
    * true 인 탭만 다음 navigate 가 재사용(=다른 URL 로 이동)한다. 사용자가
    * chrome_set_work_tab 으로 지정한 자기 탭을 MCP 가 임의로 이동시키지 않게 하는 구분이다.
    */
@@ -83,7 +83,7 @@ let cachedMap: WorkTabMap | null = null;
 let mapLoad: Promise<WorkTabMap> | null = null;
 
 /**
- * auto-chrome-mcp fork(F4): 기록 변경을 한 줄로 세운다.
+ * posendy-chrome fork(F4): 기록 변경을 한 줄로 세운다.
  *
  * 예전에는 setWorkTab / addOwnedTab / pruneOwnedTabs 가 각자 공유 map 을 읽어 복제한 뒤
  * 비동기로 저장했다. 두 레인이 동시에 navigate 하면 둘 다 옛 map 을 복제하므로 마지막
@@ -131,7 +131,7 @@ async function persistMap(map: WorkTabMap): Promise<void> {
 }
 
 /**
- * auto-chrome-mcp fork: "자주 바뀌지만 몇 초 낡아도 되는" 기록의 storage 쓰기를 한
+ * posendy-chrome fork: "자주 바뀌지만 몇 초 낡아도 되는" 기록의 storage 쓰기를 한
  * 타이머로 모은다 (작업 탭 LRU 표시, 소유 탭 touch).
  *
  * 예전에는 getWorkTabId 가 조회마다 chrome.storage.session.set 을 했다. 게이트가 도구
@@ -148,7 +148,7 @@ function scheduleStateFlush(): void {
   if (stateFlushTimer !== null) return;
   stateFlushTimer = setTimeout(() => {
     stateFlushTimer = null;
-    // auto-chrome-mcp fork(F4): 몇 초 전에 캡처한 map 을 저장하면 그 사이 pruneOwnedTabs 가
+    // posendy-chrome fork(F4): 몇 초 전에 캡처한 map 을 저장하면 그 사이 pruneOwnedTabs 가
     // 닫은 탭이 소유 목록에 되살아난다. 실행 시점의 최신 상태를 저장한다.
     void withStateLock(async () => {
       if (ownedMapDirty) {
@@ -172,7 +172,7 @@ async function setBadge(tabId: number, on: boolean): Promise<void> {
   } catch {
     // 탭이 이미 닫혔거나 action API 불가 — 무시
   }
-  // auto-chrome-mcp fork: 툴바 뱃지는 그 탭을 보고 있을 때만 보인다. 페이지 안에도
+  // posendy-chrome fork: 툴바 뱃지는 그 탭을 보고 있을 때만 보인다. 페이지 안에도
   // "Claude 작업 중" 표시를 띄워, 어떤 탭이 자동화에 쓰이는지 한눈에 보이게 한다.
   if (on) {
     void showWorkTabIndicator(tabId);
@@ -218,7 +218,7 @@ export async function setWorkTab(
 ): Promise<void> {
   await withStateLock(() => setWorkTabImpl(tabId, sessionId, owned));
 
-  // auto-chrome-mcp fork: MCP 작업 탭을 크롬 탭 그룹 "MCP"(초록)로 묶는다. 이 함수가
+  // posendy-chrome fork: MCP 작업 탭을 크롬 탭 그룹 "MCP"(초록)로 묶는다. 이 함수가
   // MCP 가 만든 탭(navigate 계열)과 chrome_set_work_tab 지정 탭이 모두 지나는 단일
   // 관문이라 편입도 여기서 한다. 실패는 assignTabToMcpGroup 안에서 삼켜지므로
   // (throw 없음, null 반환) 작업 탭 등록 자체를 실패시키지 않는다.
@@ -269,7 +269,7 @@ export async function getWorkTabId(sessionId: string = DEFAULT_SESSION_ID): Prom
 }
 
 /**
- * auto-chrome-mcp fork: MCP 가 직접 만든(재사용해도 되는) 작업 탭 id. 없으면 null.
+ * posendy-chrome fork: MCP 가 직접 만든(재사용해도 되는) 작업 탭 id. 없으면 null.
  * navigate 가 새 탭을 만들기 전에 이 탭을 먼저 재사용해 탭이 무한히 쌓이는 것을 막는다.
  */
 export async function getOwnedWorkTabId(
@@ -297,7 +297,7 @@ export async function getAllWorkTabs(): Promise<Record<string, number>> {
 }
 
 /**
- * auto-chrome-mcp fork(P1): 소유 탭 1건. touchedAt 은 "이 탭을 대상으로 마지막 도구 호출이
+ * posendy-chrome fork(P1): 소유 탭 1건. touchedAt 은 "이 탭을 대상으로 마지막 도구 호출이
  * 있었던 시각" — 정리 판정의 핵심 신호다. isTabBusy 는 호출이 *실행 중일 때만* true 라서,
  * 에이전트가 다음 행동을 고민하는 사이 병렬 형제 탭이 idle 로 오인돼 닫히던 것이 원인이었다.
  */
@@ -386,7 +386,7 @@ export async function addOwnedTab(
 }
 
 /**
- * auto-chrome-mcp fork: 이 세션·레인이 **소유한** 탭 id 목록 + 이 버킷의 작업 탭.
+ * posendy-chrome fork: 이 세션·레인이 **소유한** 탭 id 목록 + 이 버킷의 작업 탭.
  *
  * URL 로 대상 탭을 고르는 도구(web-fetcher · console · inject-script · network capture)가
  * `chrome.tabs.query({})` 로 전체 탭을 뒤지면 사용자가 보고 있는 다른 창의 탭이 걸린다.
@@ -411,7 +411,7 @@ export async function getSessionScopedTabIds(
 }
 
 /**
- * auto-chrome-mcp fork(P1): 이 탭을 지금 쓰고 있다고 표시한다 (게이트가 매 도구 호출마다 호출).
+ * posendy-chrome fork(P1): 이 탭을 지금 쓰고 있다고 표시한다 (게이트가 매 도구 호출마다 호출).
  * 정리 로직은 이 시각을 보고 "살아 있는 병렬 작업" 과 "방치된 탭" 을 구분한다.
  * 저장 쓰기는 scheduleStateFlush 로 디바운스한다 — 호출 빈도가 높고, 최대 몇 초 낡아도
  * 판정에 지장이 없다.
@@ -434,7 +434,7 @@ function applyTouch(map: OwnedMap, tabId: number): void {
 
 export function touchOwnedTab(tabId: unknown): void {
   if (typeof tabId !== 'number') return;
-  // auto-chrome-mcp fork(F4): 표시도 map 변경이므로 같은 큐를 쓴다. 예전에는 공유 map 을
+  // posendy-chrome fork(F4): 표시도 map 변경이므로 같은 큐를 쓴다. 예전에는 공유 map 을
   // 락 밖에서 직접 고쳐, pruneOwnedTabs 가 chrome API 를 기다리는 사이 끼어들어 이미
   // 유휴로 판정된 탭을 되살렸다 (정리가 자기 시작 시점의 상태로 끝나지 못했다).
   // 신호가 몇 밀리초 늦게 반영돼도 판정에는 지장이 없다.
@@ -456,7 +456,7 @@ async function forgetOwnedTabImpl(tabId: number): Promise<void> {
 }
 
 /**
- * auto-chrome-mcp fork(2026-09-05 데일리 자동화 설계 2절): 탭은 그대로 두고 **소유만**
+ * posendy-chrome fork(2026-09-05 데일리 자동화 설계 2절): 탭은 그대로 두고 **소유만**
  * 해제한다. 예약 실행 도중 사용자가 그 탭을 활성화해 가져갔을 때 쓴다 - 사용자가 눌러 본
  * 탭을 도구가 계속 조작하거나 닫는 것이 곧 사용자 탭 침해다.
  */
@@ -465,7 +465,7 @@ export async function forgetOwnedTab(tabId: number): Promise<void> {
 }
 
 /**
- * auto-chrome-mcp fork(2026-09-05): 이 접두로 시작하는 버킷 키 목록 (소유 목록과 작업 탭
+ * posendy-chrome fork(2026-09-05): 이 접두로 시작하는 버킷 키 목록 (소유 목록과 작업 탭
  * 기록 양쪽에서). 예약 실행의 고아 탭 정리가 `scheduled::` 버킷을 찾을 때 쓴다.
  */
 export async function listSessionKeysWithPrefix(prefix: string): Promise<string[]> {
@@ -484,7 +484,7 @@ export async function listSessionKeysWithPrefix(prefix: string): Promise<string[
 }
 
 /**
- * auto-chrome-mcp fork(P1): MCP 가 닫은 탭의 사유 기록 (진단용, 메모리 전용).
+ * posendy-chrome fork(P1): MCP 가 닫은 탭의 사유 기록 (진단용, 메모리 전용).
  * 탭이 사라져 도구가 실패했을 때 "왜 없어졌는지" 를 에러에 붙여 준다.
  */
 const closedByMcp = new Map<number, { at: number; reason: string }>();
@@ -536,7 +536,7 @@ async function reasonToKeep(
 }
 
 /**
- * auto-chrome-mcp fork(P1): 새 작업 탭이 열릴 때 소유 탭을 정리한다.
+ * posendy-chrome fork(P1): 새 작업 탭이 열릴 때 소유 탭을 정리한다.
  *
  * v1.6.0 은 "같은 세션이 만든 탭 중 지금 실행 중이 아닌 것" 을 전부 닫았다. 서브에이전트가
  * stdio 세션을 공유하는 탓에, 병렬 에이전트 4개가 서로의 탭을 차례로 닫아 전원
@@ -620,7 +620,7 @@ export async function pruneOwnedTabs(
   return await withStateLock(() => pruneOwnedTabsImpl(sessionKey, exceptTabId));
 }
 
-// auto-chrome-mcp fork: 작업 탭이 다른 페이지로 이동하면 표시기 DOM 이 사라지므로 다시 붙인다.
+// posendy-chrome fork: 작업 탭이 다른 페이지로 이동하면 표시기 DOM 이 사라지므로 다시 붙인다.
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   if (changeInfo.status !== 'complete') return;
   void (async () => {
@@ -631,7 +631,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
-  // auto-chrome-mcp fork(F4): 소유 목록 정리와 작업 탭 기록 정리를 한 임계 구역에서
+  // posendy-chrome fork(F4): 소유 목록 정리와 작업 탭 기록 정리를 한 임계 구역에서
   // 처리한다 — 예전엔 두 개의 비동기 흐름이 각자 옛 map 을 복제해 저장했다.
   void withStateLock(async () => {
     await forgetOwnedTabImpl(tabId);

@@ -22,7 +22,7 @@
  */
 
 import type { ToolResult } from '@/common/tool-handler';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { createTabLeaseToken, withTabLease } from '@/utils/tab-lock';
 import { createTimeoutAbort, MAX_FLOW_RUN_TIMEOUT_MS } from '@/utils/tool-watchdog';
 import { isExplicitTabId, noWorkTabErrorText } from '@/utils/work-tab-gate';

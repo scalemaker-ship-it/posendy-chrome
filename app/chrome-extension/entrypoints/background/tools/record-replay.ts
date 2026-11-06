@@ -33,7 +33,7 @@
  *     failure screenshot, which is far too big for a tool response.
  */
 import { createErrorResponse, ToolResult } from '@/common/tool-handler';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import type { RunResult } from '../record-replay/types';
 import { listPublished } from '../record-replay/flow-store';
 // 실행 본체는 예약 엔진과 공유한다 (2026-09-05 사이드패널 2단계 D).

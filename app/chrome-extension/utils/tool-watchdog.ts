@@ -1,5 +1,5 @@
 /**
- * 도구 실행 워치독 (auto-chrome-mcp fork).
+ * 도구 실행 워치독 (posendy-chrome fork).
  *
  * 탭 단위 직렬화(`utils/tab-lock.ts`)는 앞선 호출이 **반드시 끝난다** 는 전제 위에 서 있다.
  * 그런데 `chrome.tabs.sendMessage` 는 상대가 `sendResponse` 를 영영 안 부르면 영원히 pending

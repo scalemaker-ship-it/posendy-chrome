@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — `url` 인자를 준 호출에 작업 탭 id 가 주입되면 URL 이 무시된다.
+ * posendy-chrome fork — `url` 인자를 준 호출에 작업 탭 id 가 주입되면 URL 이 무시된다.
  *
  * 재현하려는 실패(2026-09-04 Codex 최종 검토, 기능 회귀 1건):
  *   work-tab-gate 는 background mode 에서 tabId 가 없으면 작업 탭 id 를 넣는다
@@ -19,7 +19,7 @@
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 
 const B = TOOL_NAMES.BROWSER;
 

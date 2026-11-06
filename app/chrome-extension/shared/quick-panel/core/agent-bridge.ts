@@ -28,7 +28,7 @@
  * ```
  */
 
-import type { RealtimeEvent } from 'auto-chrome-mcp-shared';
+import type { RealtimeEvent } from 'posendy-chrome-shared';
 
 import {
   BACKGROUND_MESSAGE_TYPES,

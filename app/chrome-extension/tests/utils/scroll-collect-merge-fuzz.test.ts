@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — appendWithOverlap 수렴성 퍼즈 테스트.
+ * posendy-chrome fork — appendWithOverlap 수렴성 퍼즈 테스트.
  *
  * 단발 케이스 테스트만으로는 "패스를 거듭할수록 조금씩 어긋나 결국 폭발" 하는 유형을 못 잡는다.
  * (실제로 그 유형이었다: 최종 16.8KB 페이지가 패스마다 통째로 다시 붙어 120KB 가 됐다.)

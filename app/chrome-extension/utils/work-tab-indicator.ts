@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork: 작업 탭 표시기.
+ * posendy-chrome fork: 작업 탭 표시기.
  *
  * MCP 가 조작 중인 탭임을 페이지 위에 눈에 보이게 알린다. 기존 chrome.action 뱃지('MCP')는
  * 툴바 아이콘에만 뜨고 그 탭을 보고 있을 때만 보여서, 사용자가 "지금 이 탭을 AI 가 쓰는 중"임을

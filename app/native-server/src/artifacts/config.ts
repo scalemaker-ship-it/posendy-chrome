@@ -1,5 +1,5 @@
 /**
- * 브리지 설정 파일 — `~/.auto-chrome-mcp/config.json`
+ * 브리지 설정 파일 — `~/.posendy-chrome/config.json`
  *
  * 지금은 산출물(스크린샷·GIF·PDF·트레이스) 자동 정리 설정만 담는다. 비밀이 아니라서
  * 인증 토큰과 달리 소유자 전용으로 잠그지 않는다. 파일이 없거나 깨졌으면 조용히 기본값을
@@ -24,7 +24,7 @@ export interface BridgeConfig {
   artifactCleanup: ArtifactCleanupMode;
 }
 
-export const DEFAULT_ARCHIVE_DIR_NAME = 'auto-chrome-mcp-archive';
+export const DEFAULT_ARCHIVE_DIR_NAME = 'posendy-chrome-archive';
 export const DEFAULT_RETENTION_DAYS = 7;
 /**
  * 보관 기간의 하한.

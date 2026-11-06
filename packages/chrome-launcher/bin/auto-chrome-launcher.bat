@@ -15,7 +15,7 @@ if errorlevel 1 (
 
 set "CLI_PATH=%PKG_DIR%\dist\cli.js"
 if not exist "%CLI_PATH%" (
-  echo Error: CLI not built. Run: pnpm --filter auto-chrome-mcp-launcher build 1>&2
+  echo Error: CLI not built. Run: pnpm --filter posendy-chrome-launcher build 1>&2
   exit /b 1
 )
 

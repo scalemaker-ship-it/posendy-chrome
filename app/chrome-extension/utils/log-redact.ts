@@ -1,5 +1,5 @@
 /**
- * 도구 인자 로그 마스킹 (auto-chrome-mcp fork).
+ * 도구 인자 로그 마스킹 (posendy-chrome fork).
  *
  * 배경 (2026-09-04 Codex 최종 검토 항목 2): 여러 도구가 진입점에서 `console.log(..., args)` 로
  * 인자를 통째로 찍었다. chrome_shortcut 의 `secret` 파라미터는 응답에서는 가려지지만

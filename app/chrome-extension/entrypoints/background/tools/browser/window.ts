@@ -1,11 +1,11 @@
 import { createErrorResponse, ToolResult } from '@/common/tool-handler';
 import { BaseBrowserToolExecutor } from '../base-browser';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { getAllWorkTabs } from '@/utils/work-tab-manager';
 import { isMcpWindow } from '@/utils/mcp-window-manager';
 import { getRecentSpawnedTabs } from '@/utils/spawned-tab-tracker';
 
-// auto-chrome-mcp fork(T6): 탭 title/url 은 상한이 없어 목록이 길면 토큰을 크게 먹는다.
+// posendy-chrome fork(T6): 탭 title/url 은 상한이 없어 목록이 길면 토큰을 크게 먹는다.
 // 스키마/옵션은 그대로 두고 응답에서만 클립한다(잘리면 "…"). 식별에는 이 길이로 충분하다.
 const TITLE_CLIP = 80;
 const URL_CLIP = 200;
@@ -20,7 +20,7 @@ class WindowTool extends BaseBrowserToolExecutor {
       const windows = await chrome.windows.getAll({ populate: true });
       let tabCount = 0;
 
-      // auto-chrome-mcp fork: 세션 작업 탭 / 전용 작업 창 / 최근 스폰(팝업) 표시용 컨텍스트
+      // posendy-chrome fork: 세션 작업 탭 / 전용 작업 창 / 최근 스폰(팝업) 표시용 컨텍스트
       const workTabs = await getAllWorkTabs(); // sessionKey(세션+레인) -> tabId
       const workTabSessions = new Map<number, string[]>();
       for (const [sid, tid] of Object.entries(workTabs)) {

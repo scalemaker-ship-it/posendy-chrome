@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork(B, stage 2): record_replay_flow_run / record_replay_list_published
+ * posendy-chrome fork(B, stage 2): record_replay_flow_run / record_replay_list_published
  * 의 MCP 노출 계약.
  *
  * 배경 — 2026-09-04 에는 두 도구를 **감췄다**. replay 엔진이 대상 탭을 스스로 골랐기
@@ -20,7 +20,7 @@
  *   (7) 결과는 요약이고, returnLogs 를 줘야 로그가 실리며 4000자 상한이 걸린다
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TOOL_NAMES, TOOL_SCHEMAS } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES, TOOL_SCHEMAS } from 'posendy-chrome-shared';
 
 const FLOW_RUN = TOOL_NAMES.RECORD_REPLAY.FLOW_RUN;
 const LIST_PUBLISHED = TOOL_NAMES.RECORD_REPLAY.LIST_PUBLISHED;

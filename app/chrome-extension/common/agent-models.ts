@@ -5,7 +5,7 @@
  * Based on the pattern from Claudable (other/cweb).
  */
 
-import type { CodexReasoningEffort } from 'auto-chrome-mcp-shared';
+import type { CodexReasoningEffort } from 'posendy-chrome-shared';
 
 // ============================================================
 // Types

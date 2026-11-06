@@ -50,13 +50,13 @@ CLAUDE.md
 
 .docs/
 .claude/
-# auto-chrome-mcp fork — private RSA key for deterministic extension ID (NEVER commit)
+# posendy-chrome fork — private RSA key for deterministic extension ID (NEVER commit)
 app/chrome-extension/.keys/
 .extension-id
 .extension-pubkey-b64
 
 # release 빌드 산출물 (gh release upload 로 별도 관리)
-auto-chrome-mcp-extension.zip
+posendy-chrome-extension.zip
 chrome-launcher-*.tar.gz
 
 # local MCP server config (path is user-specific)

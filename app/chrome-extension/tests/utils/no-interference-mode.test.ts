@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork v1.9.0 — 무간섭 모드 계약 테스트.
+ * posendy-chrome fork v1.9.0 — 무간섭 모드 계약 테스트.
  *
  * 사용자 불만은 하나였다: "MCP 가 새 탭·새 창을 띄우면 실제로 앞에 떠서 내 작업을 방해한다."
  * 설계 문서 docs/plans/2026-09-02-no-interference-mode-design.md 의 단위 테스트 7건을
@@ -148,7 +148,7 @@ function installChrome(): Harness {
     return tab;
   });
 
-  // auto-chrome-mcp fork(F3): refresh / back / forward 경로가 쓰는 API.
+  // posendy-chrome fork(F3): refresh / back / forward 경로가 쓰는 API.
   const requireTab = (tabId: number): TabRecord => {
     const tab = tabs.find((t) => t.id === tabId);
     if (!tab) throw new Error(`no tab ${tabId}`);

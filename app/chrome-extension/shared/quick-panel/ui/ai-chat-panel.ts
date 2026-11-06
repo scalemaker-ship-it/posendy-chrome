@@ -17,7 +17,7 @@ import type {
   AgentStatusEvent,
   AgentUsageStats,
   RealtimeEvent,
-} from 'auto-chrome-mcp-shared';
+} from 'posendy-chrome-shared';
 
 import type { QuickPanelAIContext, QuickPanelSendToAIPayload } from '@/common/message-types';
 import type { QuickPanelAgentBridge } from '../core/agent-bridge';

@@ -4,7 +4,7 @@ import * as os from 'os';
 import * as path from 'path';
 
 /**
- * auto-chrome-mcp fork — 업로드 임시 파일 경로 회귀 테스트 (Codex 지적 F5 + 독립 검증 4).
+ * posendy-chrome fork — 업로드 임시 파일 경로 회귀 테스트 (Codex 지적 F5 + 독립 검증 4).
  *
  * ① 예전에는 `path.join(this.tempDir, fileName)` 을 검증 없이 썼다. 그래서 fileName 이
  *    `../../pwned.txt` 면 temp 디렉터리 밖 아무 곳에나 파일을 썼다. cleanupFile 의
@@ -34,7 +34,7 @@ const cleanup = (target: string) => {
 };
 
 beforeAll(async () => {
-  process.env.AUTO_CHROME_MCP_HOME = path.join(stateRoot, '.auto-chrome-mcp');
+  process.env.AUTO_CHROME_MCP_HOME = path.join(stateRoot, '.posendy-chrome');
   FileHandlerClass = (await import('./file-handler')).FileHandler;
   handler = new FileHandlerClass();
 

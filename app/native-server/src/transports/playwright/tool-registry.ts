@@ -8,7 +8,7 @@
  *                           search_tabs_content, performance, gif_recorder, file_upload,
  *                           handle_download
  *
- * auto-chrome-mcp fork 가 upstream 이후 도구 12개(chrome_batch, chrome_set_work_tab,
+ * posendy-chrome fork 가 upstream 이후 도구 12개(chrome_batch, chrome_set_work_tab,
  * chrome_wait_for, chrome_scroll_collect, chrome_storage, chrome_save_pdf, chrome_emulate,
  * chrome_network_rules, chrome_extract, chrome_find, chrome_shortcut,
  * chrome_request_user_consent)를 추가했다. 2026-09-04 이전에는 이 12개가 레지스트리에
@@ -50,7 +50,7 @@ const NATIVE_ONLY_REASON =
 
 /**
  * 48 tool name → handler 매핑 (upstream 36 + fork 12).
- * Tool 이름은 auto-chrome-mcp-shared 의 TOOL_NAMES 와 1:1 일치.
+ * Tool 이름은 posendy-chrome-shared 의 TOOL_NAMES 와 1:1 일치.
  */
 export const TOOL_REGISTRY: Record<string, ToolHandler> = {
   // -------- 🟢 1:1 매핑 (MVP — 3개 진짜 구현) --------
@@ -106,7 +106,7 @@ export const TOOL_REGISTRY: Record<string, ToolHandler> = {
   ),
 
   // -------- 🔴 stub (fork-added tools, not yet triaged for this transport) --------
-  // 2026-09-04: 이 12개는 auto-chrome-mcp fork 가 upstream 의 33-도구 설계 이후 추가했고,
+  // 2026-09-04: 이 12개는 posendy-chrome fork 가 upstream 의 33-도구 설계 이후 추가했고,
   // 이 레지스트리(design 문서 §4 의 33 도구 표)에는 한 번도 반영되지 않아 완전히 빠져
   // 있었다 — 즉 폴백 모드에서 부르면 TOOL_REGISTRY 에 키가 없어 안내 없이 실패했다.
   // 개별 Playwright 구현 없이 우선 공통 native-only stub 으로 등록해 이유가 담긴 에러를

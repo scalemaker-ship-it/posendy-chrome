@@ -8,11 +8,11 @@ import {
 } from '@/utils/render-keepalive';
 import { BaseBrowserToolExecutor } from '../base-browser';
 import { waitForContentSettle, type ContentSample } from '@/utils/adaptive-wait';
-// auto-chrome-mcp fork: 지연 로딩이 끝났는지 보려면 "요청이 진행 중인가"도 알아야 한다.
+// posendy-chrome fork: 지연 로딩이 끝났는지 보려면 "요청이 진행 중인가"도 알아야 한다.
 import { NetworkIdleWatcher } from './wait-for';
 
 /**
- * auto-chrome-mcp fork: chrome_scroll_collect — 무한 스크롤/지연 로딩 페이지의 내용을
+ * posendy-chrome fork: chrome_scroll_collect — 무한 스크롤/지연 로딩 페이지의 내용을
  * 한 번의 MCP 호출로 모아온다. (스크롤 → 읽기 → 스크롤 → 읽기 왕복 제거)
  *
  * 가상 스크롤(virtualized list)처럼 앞부분 DOM 이 언로드되는 페이지를 위해,
@@ -49,7 +49,7 @@ interface PassResult {
   error?: string;
   scrollHeight: number;
   scrollTop: number;
-  /** auto-chrome-mcp fork: 스크롤 직후 "더 붙었는지" 판정용 기준값 (요소 수) */
+  /** posendy-chrome fork: 스크롤 직후 "더 붙었는지" 판정용 기준값 (요소 수) */
   nodeCount?: number;
   text?: string;
   links?: CollectedLink[];
@@ -376,7 +376,7 @@ export function appendWithOverlap(accumulated: string, snapshot: string): string
   return `${accumulated}\n---\n${snapshot}`;
 }
 
-/** auto-chrome-mcp fork: 이만큼 새 요청이 없어야 "네트워크가 조용하다"고 본다 */
+/** posendy-chrome fork: 이만큼 새 요청이 없어야 "네트워크가 조용하다"고 본다 */
 const SCROLL_NETWORK_QUIET_MS = 200;
 
 function clamp(value: number, min: number, max: number): number {
@@ -390,7 +390,7 @@ class ScrollCollectTool extends BaseBrowserToolExecutor {
   name = 'chrome_scroll_collect';
 
   /**
-   * auto-chrome-mcp fork: 스크롤 직후 새 콘텐츠가 붙고 멈출 때까지만 기다린다.
+   * posendy-chrome fork: 스크롤 직후 새 콘텐츠가 붙고 멈출 때까지만 기다린다.
    * 관측이 불가능하면(주입 실패 등) 상한(delayMs)까지 기다리므로 예전 동작과 같다.
    */
   private async waitForLazyContent(
@@ -480,7 +480,7 @@ class ScrollCollectTool extends BaseBrowserToolExecutor {
     // 핸들은 fn 이 끝난 뒤에 읽는다 — 프레임 펌프가 도중에 죽으면 assist 가 내려간다.
     let keepAlive: RenderKeepAlive | null = null;
 
-    // auto-chrome-mcp fork: 진행 중인 요청 수를 세어 "아직 불러오는 중"을 안정으로 오인하지 않는다.
+    // posendy-chrome fork: 진행 중인 요청 수를 세어 "아직 불러오는 중"을 안정으로 오인하지 않는다.
     // webRequest 를 쓸 수 없는 환경에서는 페이지의 performance 신호로 폴백한다.
     let networkWatcher: NetworkIdleWatcher | null = null;
     try {
@@ -594,7 +594,7 @@ class ScrollCollectTool extends BaseBrowserToolExecutor {
 
           if (pass < maxScrolls - 1) {
             // 지연은 페이지가 아니라 백그라운드에서 기다린다 (페이지 스크립트를 블로킹하지 않도록).
-            // auto-chrome-mcp fork: 예전에는 무조건 delayMs 를 기다렸다. 이제는 문서가 자란 뒤
+            // posendy-chrome fork: 예전에는 무조건 delayMs 를 기다렸다. 이제는 문서가 자란 뒤
             // 수치가 연속 3회 같고 진행 중인 요청도 없을 때만 다음 패스로 넘어가고, 그 밖에는
             // 예전처럼 delayMs 까지 기다린다(지연 로딩을 놓치지 않기 위해).
             await this.waitForLazyContent(

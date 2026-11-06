@@ -13,7 +13,7 @@ import {
 } from './origin';
 
 /**
- * auto-chrome-mcp fork — Origin / Host 판정 회귀 테스트.
+ * posendy-chrome fork — Origin / Host 판정 회귀 테스트.
  *
  * 예전 CORS 검사는 `origin.startsWith('http://127.0.0.1')` 였다. 그래서
  * `http://127.0.0.1.attacker.example` 같은 원격 origin 이 로컬로 취급됐다
@@ -50,10 +50,10 @@ describe('security/origin', () => {
   test('진짜 loopback origin 은 포트에 상관없이 허용된다', () => {
     for (const origin of [
       'http://127.0.0.1',
-      'http://127.0.0.1:12320',
+      'http://127.0.0.1:12330',
       'http://localhost:5173',
       'https://localhost',
-      'http://[::1]:12320',
+      'http://[::1]:12330',
     ]) {
       expect(isLoopbackOrigin(origin)).toBe(true);
       expect(isAllowedCorsOrigin(origin)).toBe(true);
@@ -70,7 +70,7 @@ describe('security/origin', () => {
   });
 
   test('경로·쿼리가 붙은 값은 origin 으로 신뢰하지 않는다', () => {
-    expect(parseOrigin('http://127.0.0.1:12320/admin')).toBeNull();
+    expect(parseOrigin('http://127.0.0.1:12330/admin')).toBeNull();
     expect(parseOrigin('http://user@127.0.0.1')).toBeNull();
     expect(parseOrigin('not-a-url')).toBeNull();
     expect(parseOrigin('')).toBeNull();
@@ -100,17 +100,17 @@ describe('security/origin', () => {
   });
 
   test('Host 헤더는 loopback 이름만 받는다', () => {
-    expect(isAllowedHostHeader('127.0.0.1:12320', 12320)).toBe(true);
-    expect(isAllowedHostHeader('localhost:12320', 12320)).toBe(true);
-    expect(isAllowedHostHeader('[::1]:12320', 12320)).toBe(true);
+    expect(isAllowedHostHeader('127.0.0.1:12330', 12330)).toBe(true);
+    expect(isAllowedHostHeader('localhost:12330', 12330)).toBe(true);
+    expect(isAllowedHostHeader('[::1]:12330', 12330)).toBe(true);
     // 포트가 다르면 거절 (DNS rebinding 으로 다른 브리지를 노리는 요청)
-    expect(isAllowedHostHeader('127.0.0.1:12321', 12320)).toBe(false);
+    expect(isAllowedHostHeader('127.0.0.1:12330', 12330)).toBe(false);
     // 이름이 로컬이 아니면 거절 (DNS rebinding: attacker.example → 127.0.0.1)
-    expect(isAllowedHostHeader('evil.example:12320', 12320)).toBe(false);
-    expect(isAllowedHostHeader('127.0.0.1.attacker.example:12320', 12320)).toBe(false);
-    expect(isAllowedHostHeader('', 12320)).toBe(false);
-    expect(isAllowedHostHeader(undefined, 12320)).toBe(false);
-    expect(isAllowedHostHeader('127.0.0.1:12320/x', 12320)).toBe(false);
+    expect(isAllowedHostHeader('evil.example:12330', 12330)).toBe(false);
+    expect(isAllowedHostHeader('127.0.0.1.attacker.example:12330', 12330)).toBe(false);
+    expect(isAllowedHostHeader('', 12330)).toBe(false);
+    expect(isAllowedHostHeader(undefined, 12330)).toBe(false);
+    expect(isAllowedHostHeader('127.0.0.1:12330/x', 12330)).toBe(false);
   });
 
   test('listen 포트를 모르면(null) 포트는 검사하지 않고 이름만 본다', () => {
@@ -121,7 +121,7 @@ describe('security/origin', () => {
 
   test('포트 80 은 Host 헤더에서 생략될 수 있다', () => {
     expect(isAllowedHostHeader('127.0.0.1', 80)).toBe(true);
-    expect(isAllowedHostHeader('127.0.0.1', 12320)).toBe(false);
-    expect(parseHostHeader('[::1]:12320')).toEqual({ hostname: '[::1]', port: '12320' });
+    expect(isAllowedHostHeader('127.0.0.1', 12330)).toBe(false);
+    expect(parseHostHeader('[::1]:12330')).toEqual({ hostname: '[::1]', port: '12330' });
   });
 });

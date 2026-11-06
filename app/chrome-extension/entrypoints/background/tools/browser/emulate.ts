@@ -1,10 +1,10 @@
 import { createErrorResponse, ToolResult } from '@/common/tool-handler';
 import { BaseBrowserToolExecutor } from '../base-browser';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { cdpSessionManager } from '@/utils/cdp-session-manager';
 
 /**
- * auto-chrome-mcp fork(B3): chrome_emulate — 모바일·반응형 화면 확인.
+ * posendy-chrome fork(B3): chrome_emulate — 모바일·반응형 화면 확인.
  *
  * CDP Emulation 도메인으로 화면 크기 / 픽셀 밀도 / 터치 / User-Agent 를 바꾼다.
  * 창 크기를 실제로 바꾸지 않으므로 백그라운드 작업 탭에서도 그대로 쓸 수 있고,

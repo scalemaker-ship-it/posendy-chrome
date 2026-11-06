@@ -4,7 +4,7 @@ import { BaseBrowserToolExecutor } from '../base-browser';
 import { sleep } from '@/utils/adaptive-wait';
 
 /**
- * auto-chrome-mcp fork: chrome_wait_for — "너무 일찍 클릭 / 빈 페이지 읽기" 실패를 없애는 대기 도구.
+ * posendy-chrome fork: chrome_wait_for — "너무 일찍 클릭 / 빈 페이지 읽기" 실패를 없애는 대기 도구.
  *
  * selector / text / networkIdleMs / documentReady 조건을 폴링으로 확인하고, 지정한 조건이
  * 모두(AND) 성립하면 즉시 반환한다. 타임아웃은 도구 실패가 아니라 "정보"로 취급해
@@ -55,7 +55,7 @@ const DEFAULT_TIMEOUT_MS = 15000;
 const MAX_TIMEOUT_MS = 60000;
 const DEFAULT_POLL_MS = 250;
 const MIN_POLL_MS = 100;
-/** auto-chrome-mcp fork: DOM 변화로 깨어난 뒤 다시 확인하기까지의 최소 간격(과열 방지) */
+/** posendy-chrome fork: DOM 변화로 깨어난 뒤 다시 확인하기까지의 최소 간격(과열 방지) */
 const CHANGE_WAKE_MIN_MS = 50;
 const MAX_NETWORK_IDLE_MS = 30000;
 
@@ -111,7 +111,7 @@ function probePageState(selector: string | null, text: string | null): PageProbe
 }
 
 /**
- * auto-chrome-mcp fork: 폴링 간격을 그대로 기다리지 않고 **DOM 변화로 깨어나기** 위한 in-page 대기.
+ * posendy-chrome fork: 폴링 간격을 그대로 기다리지 않고 **DOM 변화로 깨어나기** 위한 in-page 대기.
  *
  * 페이지 컨텍스트에서 MutationObserver / readystatechange / load 를 걸어 두고, 변화가 생기면
  * 즉시(최소 간격 minMs 뒤) 반환한다. 변화가 없으면 sliceMs 까지만 기다린다 — 그래서 최악의
@@ -256,7 +256,7 @@ class WaitForTool extends BaseBrowserToolExecutor {
   name = 'chrome_wait_for';
 
   /**
-   * auto-chrome-mcp fork: 다음 확인까지 기다린다.
+   * posendy-chrome fork: 다음 확인까지 기다린다.
    * 페이지에 주입할 수 있으면 DOM 변화(또는 readystatechange/load)로 깨어나 즉시 돌아오고,
    * 주입이 불가능하거나 변화가 없으면 예전과 같은 폴링 간격(sliceMs)까지 기다린다.
    *
@@ -489,7 +489,7 @@ class WaitForTool extends BaseBrowserToolExecutor {
 
 export const waitForTool = new WaitForTool();
 
-// ===== auto-chrome-mcp fork (A2): navigate 후 로딩 완료 대기 =====
+// ===== posendy-chrome fork (A2): navigate 후 로딩 완료 대기 =====
 // chrome_navigate 가 이동 직후 곧바로 반환하면 read_page/click 이 빈 페이지를 보게 된다.
 // 아래 헬퍼로 navigate 안에서 로드 상태를 기다린 뒤 결과에 실제 상태를 실어 보낸다.
 
@@ -560,7 +560,7 @@ function urlCommitted(tabUrl: string | null, targetUrl: string | undefined): boo
 }
 
 /**
- * auto-chrome-mcp fork: navigate 가 커밋되기 전까지는 **이전 문서**가 그대로 살아 있고
+ * posendy-chrome fork: navigate 가 커밋되기 전까지는 **이전 문서**가 그대로 살아 있고
  * readyState 도 'complete' 라, 그것만 보면 "이미 로드 끝"으로 오판한다(실측: waitedMs 1~7ms,
  * 결과 url/title 도 이전 페이지 것). 그래서 내비게이션이 시작됐다는 신호를 navigate 호출
  * **전에** 걸어 두고, 그 신호를 로딩 판정에 함께 쓴다.

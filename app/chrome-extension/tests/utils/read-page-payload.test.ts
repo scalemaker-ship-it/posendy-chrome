@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — chrome_read_page 응답 계약 회귀 테스트 (task E3).
+ * posendy-chrome fork — chrome_read_page 응답 계약 회귀 테스트 (task E3).
  *
  * 계약:
  *   - 정상 경로(트리 성공, sparse 아님): elements/count/fallbackUsed/fallbackSource/reason 는

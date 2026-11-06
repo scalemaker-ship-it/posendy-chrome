@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — chrome_get_web_content HTML 경로 상한/diff 회귀 테스트.
+ * posendy-chrome fork — chrome_get_web_content HTML 경로 상한/diff 회귀 테스트.
  *
  * 재현하려는 실패: 텍스트 경로에는 상한(100k) + reader + diff 가 다 있었는데 HTML 경로만
  * 무방비였다. `htmlContent:true` 로 무거운 페이지를 한 번 읽으면 document.documentElement

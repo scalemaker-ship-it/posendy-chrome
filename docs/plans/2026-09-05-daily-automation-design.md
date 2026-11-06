@@ -114,7 +114,7 @@
 
 ## 5. 알림
 
-- 실패(`failed`·`timeout`·`interrupted`·`login_required`·`user_took_over_tab`) 시 `chrome.notifications.create` 로 한 줄: 제목 `Auto Chrome MCP 예약 실패`, 본문 `<name>: <errorCode 또는 status> (step <index>)`. 본문에 넣는 값은 **allowlist** `name`·`errorCode`·`failedStep.index` 뿐이고 오류 문구·결과값은 넣지 않는다. 왜: 오류 문구에는 페이지 텍스트가 섞이고, 알림은 마스킹 경로를 거치지 않는다. 성공·`stopped`·`skipped_queue` 는 조용하다. 예약 옵션 `notify` 기본 `true`.
+- 실패(`failed`·`timeout`·`interrupted`·`login_required`·`user_took_over_tab`) 시 `chrome.notifications.create` 로 한 줄: 제목 `POSENDY Chrome 예약 실패`, 본문 `<name>: <errorCode 또는 status> (step <index>)`. 본문에 넣는 값은 **allowlist** `name`·`errorCode`·`failedStep.index` 뿐이고 오류 문구·결과값은 넣지 않는다. 왜: 오류 문구에는 페이지 텍스트가 섞이고, 알림은 마스킹 경로를 거치지 않는다. 성공·`stopped`·`skipped_queue` 는 조용하다. 예약 옵션 `notify` 기본 `true`.
 - 폭주 방지: 예약 레코드의 `failStreak` 가 연속 실패 수. 알림은 `failStreak` 가 1 과 3 일 때만 보낸다. 4회 이상은 보내지 않고 `schedules` 응답의 `failStreak` 로만 드러낸다. 성공하면 0 으로 돌린다. 왜: 15분마다 도는 예약이 밤새 실패하면 알림 30개가 쌓인다.
 - 알림 클릭 동작은 없다(권한·UI 를 늘리지 않는다). 아침에 Claude 가 `history` 로 읽는 것이 기본 경로다.
 

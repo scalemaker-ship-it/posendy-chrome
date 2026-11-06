@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — chrome_batch 이미지 보존 회귀 테스트.
+ * posendy-chrome fork — chrome_batch 이미지 보존 회귀 테스트.
  *
  * 재현하려는 실패: 스키마는 `click -> fill -> click -> screenshot` 체인을 권하는데,
  * batch 는 스텝 결과에서 **텍스트만** 이어붙이고 image content 를 통째로 버렸다.

@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — HeartbeatWatchdog unit tests.
+ * posendy-chrome fork — HeartbeatWatchdog unit tests.
  *
  * silent-death 감지 로직(연속 무응답 → onDead) 이 정확히 동작하는지 검증.
  * tick() 을 직접 호출해 타이머 없이 결정론적으로 테스트한다.

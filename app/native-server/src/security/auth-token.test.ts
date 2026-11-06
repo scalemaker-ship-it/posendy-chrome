@@ -45,7 +45,7 @@ const mockLoosePermissionsFor = (value: string) => {
 };
 
 /**
- * auto-chrome-mcp fork — 브리지 bearer 토큰 파일 회귀 테스트.
+ * posendy-chrome fork — 브리지 bearer 토큰 파일 회귀 테스트.
  *
  * 브리지는 listen 전에 무작위 토큰을 만들어 소유자만 읽을 수 있는 파일로 남기고,
  * 같은 패키지의 stdio 프록시가 그걸 읽어 Authorization 헤더로 보낸다.
@@ -55,7 +55,7 @@ const tempRoots: string[] = [];
 const freshStateDir = (): string => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'acm-token-test-'));
   tempRoots.push(dir);
-  process.env[STATE_DIR_ENV] = path.join(dir, '.auto-chrome-mcp');
+  process.env[STATE_DIR_ENV] = path.join(dir, '.posendy-chrome');
   return process.env[STATE_DIR_ENV] as string;
 };
 
@@ -619,14 +619,14 @@ describe('security/auth-token', () => {
 
   test('parseIcaclsAces 는 첫 줄의 대상 경로를 떼고 신원만 뽑는다', () => {
     const output = [
-      'C:\\Users\\me\\.auto-chrome-mcp\\auth-token MACHINE\\user:(F)',
+      'C:\\Users\\me\\.posendy-chrome\\auth-token MACHINE\\user:(F)',
       '                                           NT AUTHORITY\\SYSTEM:(I)(F)',
       '',
       '1개의 파일을 처리했습니다. 0개의 파일을 처리하지 못했습니다.',
       '',
     ].join('\n');
 
-    expect(parseIcaclsAces(output, 'C:\\Users\\me\\.auto-chrome-mcp\\auth-token')).toEqual([
+    expect(parseIcaclsAces(output, 'C:\\Users\\me\\.posendy-chrome\\auth-token')).toEqual([
       'MACHINE\\user',
       'NT AUTHORITY\\SYSTEM',
     ]);

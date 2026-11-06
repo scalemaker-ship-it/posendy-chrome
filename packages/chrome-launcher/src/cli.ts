@@ -42,7 +42,7 @@ Options:
   --help, -h         Show this help
 
 Outputs:
-  ~/.auto-chrome-mcp/cdp-port  → active CDP port (consumed by bridge)
+  ~/.posendy-chrome/cdp-port  → active CDP port (consumed by bridge)
 `);
     process.exit(0);
   }

@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — 도구 워치독 회귀 테스트.
+ * posendy-chrome fork — 도구 워치독 회귀 테스트.
  *
  * 재현하려는 실패: content script 가 sendResponse 를 영영 안 부르면 도구 호출이 끝나지
  * 않고, 탭 단위 직렬화 때문에 같은 탭의 이후 호출이 전부 그 뒤에 줄을 서서 영구 대기했다.

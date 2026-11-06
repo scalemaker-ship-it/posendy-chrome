@@ -1,7 +1,7 @@
 // engine/logging/run-logger.ts — run logs, overlay and persistence
 import type { RunLogEntry, RunRecord, Flow } from '../../types';
 import { appendRun } from '../../flow-store';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { handleCallTool } from '@/entrypoints/background/tools';
 import { resolveRunTab, runToolArgs, type RunTabContext } from '../tab-context';
 

@@ -1,11 +1,11 @@
 import { createErrorResponse, ToolResult } from '@/common/tool-handler';
 import { BaseBrowserToolExecutor } from '../base-browser';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { cdpSessionManager } from '@/utils/cdp-session-manager';
 import { saveArtifactToDownloads } from '@/utils/artifact-path';
 
 /**
- * auto-chrome-mcp fork(B2): chrome_save_pdf — 현재 페이지를 PDF 로 저장한다.
+ * posendy-chrome fork(B2): chrome_save_pdf — 현재 페이지를 PDF 로 저장한다.
  *
  * CDP `Page.printToPDF` 로 인쇄본을 만들어 다운로드 폴더에 저장한다. 스크린샷과 달리
  * 텍스트가 살아 있고 여러 페이지를 온전히 담으므로 공고문·계약서·리포트 아카이빙에 맞다.

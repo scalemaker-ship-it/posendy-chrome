@@ -11,7 +11,7 @@ import {
 import { areTemplatesActive } from '@/utils/step-template';
 
 /**
- * auto-chrome-mcp fork: 여러 도구 호출을 한 번의 MCP 왕복으로 묶어 실행한다.
+ * posendy-chrome fork: 여러 도구 호출을 한 번의 MCP 왕복으로 묶어 실행한다.
  * click → fill → click → screenshot 같은 연쇄 작업에서 왕복 지연을 크게 줄인다.
  *
  * 실행 루프 자체는 chrome_shortcut 과 공유한다 (./batch-runner.ts).
@@ -20,7 +20,7 @@ import { areTemplatesActive } from '@/utils/step-template';
 interface BatchToolParams {
   steps: RunnerStep[];
   continueOnError?: boolean;
-  /** auto-chrome-mcp fork(P1): 레인 이름 — step 마다 그대로 전달된다. */
+  /** posendy-chrome fork(P1): 레인 이름 — step 마다 그대로 전달된다. */
   lane?: string;
   _mcpSessionId?: string;
   /** 값 전달 치환을 강제로 켠다 (새 흐름 키가 하나라도 있으면 자동으로 켜진다). */
@@ -28,7 +28,7 @@ interface BatchToolParams {
   /** 응답에 실을 `as` 이름 목록. 없으면 results 필드를 아예 싣지 않는다. */
   return?: string[];
   /**
-   * auto-chrome-mcp fork(2026-09-05): 지금 하는 작업을 한 문구로. 실행하는 동안 MCP 탭
+   * posendy-chrome fork(2026-09-05): 지금 하는 작업을 한 문구로. 실행하는 동안 MCP 탭
    * 그룹 라벨이 이 문구가 되고, 끝나면 "MCP" 로 돌아간다. 무간섭 모드에서는 탭이 배경에
    * 조용히 열리므로 사용자가 무엇이 도는지 아는 유일한 표시가 그룹 라벨이다.
    */
@@ -36,7 +36,7 @@ interface BatchToolParams {
 }
 
 /**
- * auto-chrome-mcp fork: batch 안에서 실행하면 안 되는 도구들.
+ * posendy-chrome fork: batch 안에서 실행하면 안 되는 도구들.
  * - chrome_batch: 중첩 금지 (무한 재귀/폭주 방지)
  * - 나머지: 사용자 대면 상호작용이거나 세션 상태를 바꿔 batch 뒤 단계의 전제를 깨뜨림
  */
@@ -49,7 +49,7 @@ const DISALLOWED_STEP_TOOLS = new Set<string>([
 ]);
 
 /**
- * auto-chrome-mcp fork: 순환 import 를 피하기 위한 invoker 주입.
+ * posendy-chrome fork: 순환 import 를 피하기 위한 invoker 주입.
  * tools/index.ts 가 setBatchToolInvoker(handleCallTool) 로 배선한다.
  * (batch.ts 가 tools/index.ts 를 직접 import 하면 index → browser → batch → index 순환)
  */

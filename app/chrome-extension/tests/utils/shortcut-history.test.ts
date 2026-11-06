@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — chrome_shortcut 실행 이력 (설계 구현 순서 1단계).
+ * posendy-chrome fork — chrome_shortcut 실행 이력 (설계 구현 순서 1단계).
  *
  * 계약: docs/plans/2026-09-05-daily-automation-design.md 4절.
  * 테스트 이름 앞의 번호는 같은 문서 10절 체크리스트 번호다 (9, 10, 11, 18).

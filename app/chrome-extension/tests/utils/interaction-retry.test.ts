@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — click/fill 의 "일시적 실패 1회 자동 재시도".
+ * posendy-chrome fork — click/fill 의 "일시적 실패 1회 자동 재시도".
  *
  * 계약:
  *  - **전송 전 실패**(가림, zero_size, 뷰포트 밖, detach)만 한 번 더 시도한다.

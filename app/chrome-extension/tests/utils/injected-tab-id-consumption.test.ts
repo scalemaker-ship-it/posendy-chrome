@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — 게이트가 주입한 top-level tabId 를 핸들러가 실제로 소비하는가.
+ * posendy-chrome fork — 게이트가 주입한 top-level tabId 를 핸들러가 실제로 소비하는가.
  *
  * 배경(2026-09-04 Codex 3차 검토, 항목 2): work-tab-gate 는 TAB_ID_INJECT_TOOLS 에 대해
  * `args.tabId` 를 주입해 사용자 탭 대신 세션 작업 탭을 대상으로 만든다. 그런데 아래 네 경로는

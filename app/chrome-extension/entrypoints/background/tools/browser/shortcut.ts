@@ -1,6 +1,6 @@
 import { createErrorResponse, ToolResult } from '@/common/tool-handler';
 import { BaseBrowserToolExecutor } from '../base-browser';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import {
   MAX_STEPS,
   collectFlowParamNames,
@@ -46,7 +46,7 @@ import {
 import { checkFlowScheduleTarget, commitSchedule } from '../../flow-schedule';
 
 /**
- * auto-chrome-mcp fork: chrome_shortcut — chrome_batch 의 step 목록을 이름 붙여 저장해두고
+ * posendy-chrome fork: chrome_shortcut — chrome_batch 의 step 목록을 이름 붙여 저장해두고
  * 나중에 이름만으로 재실행하는 "저장된 매크로". 반복되는 로그인 흐름·정기 수집 루틴처럼
  * 세션이 바뀌어도 다시 쓰고 싶은 작업을 chrome.storage.local 에 영속 저장한다.
  *
@@ -66,7 +66,7 @@ interface ShortcutToolParams {
   steps?: ShortcutStep[];
   description?: string;
   continueOnError?: boolean;
-  /** auto-chrome-mcp fork(P1): 레인 이름 — step 마다 그대로 전달된다. */
+  /** posendy-chrome fork(P1): 레인 이름 — step 마다 그대로 전달된다. */
   lane?: string;
   _mcpSessionId?: string;
   /** action="save": 값 전달 치환을 강제로 켠다. */
@@ -117,7 +117,7 @@ interface StoredShortcut {
    */
   templates?: boolean;
   /**
-   * auto-chrome-mcp fork(2026-09-05 데일리 자동화 설계 9절 예시 (a)): 저장 시점의 `return`
+   * posendy-chrome fork(2026-09-05 데일리 자동화 설계 9절 예시 (a)): 저장 시점의 `return`
    * 이름. 예약 실행에는 호출자가 없어 `return` 을 줄 수 없으므로, 무엇을 이력에 남길지는
    * 저장 때 정해 둬야 한다. 수동 `run` 은 인자로 준 `return` 이 우선이다.
    */
@@ -132,7 +132,7 @@ const MAX_NAME_LENGTH = 64;
 const STORAGE_KEY = 'mcpShortcuts';
 
 /**
- * auto-chrome-mcp fork: chrome_batch 의 DISALLOWED_STEP_TOOLS 와 같은 취지의 목록.
+ * posendy-chrome fork: chrome_batch 의 DISALLOWED_STEP_TOOLS 와 같은 취지의 목록.
  * batch.ts 는 이 집합을 export 하지 않고(barrel 규약상 이 작업은 이 파일만 수정하도록
  * 지시받음) 이 파일에서 직접 import 할 경로도 없으므로, 동일 목록을 여기서 다시 정의하고
  * orchestrator 자기 자신(chrome_shortcut)을 추가한다 — 매크로 안에 매크로를 저장하는
@@ -154,7 +154,7 @@ export const SHORTCUT_DISALLOWED_STEP_TOOLS = new Set<string>([
 const STALE_TARGET_KEYS: ReadonlySet<string> = new Set(['tabId', 'windowId', 'tabIds']);
 
 /**
- * auto-chrome-mcp fork: 순환 import 를 피하기 위한 invoker 주입 (batch.ts 와 동일 패턴).
+ * posendy-chrome fork: 순환 import 를 피하기 위한 invoker 주입 (batch.ts 와 동일 패턴).
  * tools/index.ts 가 setShortcutToolInvoker(handleCallTool) 로 배선한다.
  */
 let invoker: ToolInvoker | null = null;
@@ -226,7 +226,7 @@ function validateSteps(steps: unknown, isV2: boolean): StepsValidation {
   }
 
   for (const raw of steps) {
-    // auto-chrome-mcp fork(2026-09-04 Codex 최종 검토 항목 5): 반복 묶음 항목에는 `tool` 이
+    // posendy-chrome fork(2026-09-04 Codex 최종 검토 항목 5): 반복 묶음 항목에는 `tool` 이
     // 없다. 예전에는 모든 top-level 항목에 tool 을 요구해, 설계 7절 예시 (b) 의 묶음을
     // shortcut 으로 저장하는 길이 아예 막혀 있었다(batch 로만 쓸 수 있었다).
     if (isRepeatGroup(raw)) {
@@ -628,7 +628,7 @@ class ShortcutTool extends BaseBrowserToolExecutor {
       description,
       createdAt: existing ? existing.createdAt : now,
       updatedAt: now,
-      // auto-chrome-mcp fork: 덮어쓰기는 새 정의로 취급 — 실행 횟수는 리셋한다.
+      // posendy-chrome fork: 덮어쓰기는 새 정의로 취급 — 실행 횟수는 리셋한다.
       runCount: 0,
       // 치환 활성 여부를 레코드에 함께 기록한다 (legacy 레코드는 이 필드가 없다).
       ...(isV2 ? { templates: true } : {}),

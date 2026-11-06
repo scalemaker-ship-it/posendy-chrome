@@ -1,9 +1,9 @@
 import { createErrorResponse, type ToolResult } from '@/common/tool-handler';
 import { summarizeDownloadUrl } from '@/utils/download-url-summary';
 import { ERROR_MESSAGES } from '@/common/constants';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { touchOwnedTab, describeClosedTab } from '@/utils/work-tab-manager';
-// auto-chrome-mcp fork(F2): 게이트 판정은 utils/work-tab-gate.ts 한곳에서만 한다.
+// posendy-chrome fork(F2): 게이트 판정은 utils/work-tab-gate.ts 한곳에서만 한다.
 // (이 모듈은 도구 레지스트리 전체를 끌어와 테스트에서 import 할 수 없으므로 판정을 분리했다.)
 import {
   applyBackgroundModeGate,
@@ -34,7 +34,7 @@ import { looksLikeLoginUrl } from '@/utils/login-detector';
 import { cdpSessionManager } from '@/utils/cdp-session-manager';
 import * as browserTools from './browser';
 import { setBatchToolInvoker } from './browser/batch';
-// auto-chrome-mcp fork: url 로 대상을 고르는 호출의 대상 탭을 잠금 전에 미리 해석한다.
+// posendy-chrome fork: url 로 대상을 고르는 호출의 대상 탭을 잠금 전에 미리 해석한다.
 // (barrel 로 재수출하면 함수가 toolsMap 에 섞이므로 직접 import — batch.ts 주석과 같은 이유)
 import { resolveUrlTargetTabId } from './browser/url-target';
 import { sleep } from '@/utils/adaptive-wait';
@@ -69,7 +69,7 @@ const GUARDED_ACTION_TOOLS = new Set<string>([
 ]);
 
 /**
- * auto-chrome-mcp fork: 오래 걸리는 게 정상인 도구들 — 사용자 입력 대기 · 장시간 수집.
+ * posendy-chrome fork: 오래 걸리는 게 정상인 도구들 — 사용자 입력 대기 · 장시간 수집.
  * 나머지는 utils/tool-watchdog.ts 의 기본 예산을 쓴다.
  */
 const WATCHDOG_OVERRIDES: Record<string, number> = {
@@ -92,7 +92,7 @@ export interface ToolCallParam {
   name: string;
   args: any;
   /**
-   * auto-chrome-mcp fork: chrome_batch·chrome_shortcut 이 흐름 제어 상한(100초)의
+   * posendy-chrome fork: chrome_batch·chrome_shortcut 이 흐름 제어 상한(100초)의
    * **절대 마감 시각**(epoch ms)을 step 마다 넘긴다.
    *
    * 상대값(남은 ms)이 아니라 절대 시각인 이유(항목 4): 게이트 조회·automation guard 지연·
@@ -101,7 +101,7 @@ export interface ToolCallParam {
    */
   deadlineAt?: number;
   /**
-   * auto-chrome-mcp fork(2026-09-05 데일리 자동화 설계 2절): **실행 컨텍스트 모드**.
+   * posendy-chrome fork(2026-09-05 데일리 자동화 설계 2절): **실행 컨텍스트 모드**.
    *
    * 예약 실행처럼 전역 토글과 무관하게 항상 무간섭이어야 하는 실행에서만 `true` 다.
    * 스키마에 없는 내부 전용 값이다. 러너는 이 필드로 넘기고, 흐름 실행(record-replay)은
@@ -120,7 +120,7 @@ export interface ToolCallParam {
 // 탭 단위 직렬화는 utils/tab-lock.ts 로 분리했다 (navigate 의 재사용 판정도 같은 busy 상태를 본다).
 
 /**
- * auto-chrome-mcp fork(F4): 도구 실패 시 대상 탭 화면을 JPEG 로 캡처해 결과에 첨부.
+ * posendy-chrome fork(F4): 도구 실패 시 대상 탭 화면을 JPEG 로 캡처해 결과에 첨부.
  * chrome.storage.local 'errorScreenshotOnFailure' (기본 ON) 로 끌 수 있다.
  */
 async function isErrorScreenshotEnabled(): Promise<boolean> {
@@ -133,7 +133,7 @@ async function isErrorScreenshotEnabled(): Promise<boolean> {
 }
 
 /**
- * auto-chrome-mcp fork: 실패 진단 자체가 매달리면 안 된다.
+ * posendy-chrome fork: 실패 진단 자체가 매달리면 안 된다.
  *
  * 실패 원인이 "페이지가 멎었다" 인 경우가 많은데, 멎은 렌더러에서는 Page.captureScreenshot
  * 도 영영 안 돌아온다. 워치독이 탭 락은 이미 풀어 줬어도, 진단이 매달리면 이 호출의 응답
@@ -154,7 +154,7 @@ async function captureFailureScreenshot(tabId: number): Promise<string | null> {
       }),
     ]);
     if (typeof shot?.data !== 'string' || shot.data.length === 0) return null;
-    // auto-chrome-mcp fork(T7): 원인 파악엔 축소본으로 충분 — 이미지 토큰 최소화
+    // posendy-chrome fork(T7): 원인 파악엔 축소본으로 충분 — 이미지 토큰 최소화
     try {
       const { compressImage } = await import('@/utils/image-utils');
       const compressed = await compressImage(`data:image/jpeg;base64,${shot.data}`, {
@@ -174,7 +174,7 @@ async function captureFailureScreenshot(tabId: number): Promise<string | null> {
 }
 
 /**
- * auto-chrome-mcp fork: 실패한 결과에 진단 정보를 붙인다 (사라진 탭 안내 + 실패 스크린샷).
+ * posendy-chrome fork: 실패한 결과에 진단 정보를 붙인다 (사라진 탭 안내 + 실패 스크린샷).
  * 도구가 에러 결과를 돌려준 경우와 예외를 던진 경우 **둘 다** 같은 도움을 받게 하려고 뽑아냈다.
  */
 async function attachFailureDiagnostics(
@@ -190,7 +190,7 @@ async function attachFailureDiagnostics(
     result.content.push({ type: 'text', text: JSON.stringify(missingHint) });
   }
 
-  // auto-chrome-mcp fork(F4): 도구 실패 시 현재 화면 자동 첨부 (원인 파악용)
+  // posendy-chrome fork(F4): 도구 실패 시 현재 화면 자동 첨부 (원인 파악용)
   if (primaryTabId === null || !(await isErrorScreenshotEnabled())) return;
   const jpegBase64 = await captureFailureScreenshot(primaryTabId);
   if (!jpegBase64) return;
@@ -218,13 +218,13 @@ export const handleCallTool = async (param: ToolCallParam) => {
     return createErrorResponse(`Tool ${param.name} not found`);
   }
 
-  // auto-chrome-mcp fork: 실패 진단(사라진 탭 안내 · 실패 스크린샷)은 예외로 끝난 호출에도
+  // posendy-chrome fork: 실패 진단(사라진 탭 안내 · 실패 스크린샷)은 예외로 끝난 호출에도
   // 붙어야 한다. 예전엔 tool 이 throw 하면 catch 가 맨 에러 문자열만 돌려줘, 정작 가장
   // 알고 싶은 실패에서 단서가 제일 적었다.
   let gatedArgs: any = param.args;
   let primaryTabId: number | null = null;
 
-  // auto-chrome-mcp fork(설계 2절 + 2026-09-05 발행 전 검토 2·3): 실행 컨텍스트 모드와
+  // posendy-chrome fork(설계 2절 + 2026-09-05 발행 전 검토 2·3): 실행 컨텍스트 모드와
   // 흐름 마감은 두 경로로 들어온다 - 러너는 ToolCallParam 으로, 흐름 실행(record-replay)은
   // 노드가 부르는 호출의 args 에 실어서. 여기서 한 번만 합친다.
   const carriedBackgroundMode = effectiveBackgroundModeOf(param.args);
@@ -266,14 +266,14 @@ export const handleCallTool = async (param: ToolCallParam) => {
       return createErrorResponse(invalidTabIdErrorText(param.name, param.args?.tabId));
     }
 
-    // auto-chrome-mcp fork(F2): 백그라운드 작업 모드에서 tabId 도, 이 세션·레인의 작업 탭도
+    // posendy-chrome fork(F2): 백그라운드 작업 모드에서 tabId 도, 이 세션·레인의 작업 탭도
     // 없으면 여기서 끝낸다. 예전에는 그대로 통과시켜, 도구 구현의 활성 탭 fallback 때문에
     // 사용자가 보고 있는 탭이 읽히고 조작됐다.
     if (gate.noWorkTab) {
       return createErrorResponse(noWorkTabErrorText(param.name));
     }
 
-    // auto-chrome-mcp fork(항목 3): 대상 탭을 스스로 고르는 도구(record_replay_flow_run)는
+    // posendy-chrome fork(항목 3): 대상 탭을 스스로 고르는 도구(record_replay_flow_run)는
     // 작업 탭을 주입해도 소비하지 않는다 — 모드 ON 에서는 실행 자체를 막는다.
     if (gate.unsupportedInBackgroundMode) {
       return createErrorResponse(backgroundModeUnsupportedErrorText(param.name));
@@ -297,7 +297,7 @@ export const handleCallTool = async (param: ToolCallParam) => {
     // 게이트 조회와 속도 제한 지연을 지나오는 동안 마감이 끝났을 수 있다.
     assertWithinFlowDeadline(param.name, deadlineAt, 'after the automation guard delay');
 
-    // auto-chrome-mcp fork(2026-09-04 Codex 최종 검토, 남은 항목):
+    // posendy-chrome fork(2026-09-04 Codex 최종 검토, 남은 항목):
     // 잠금·busy·touch 추적은 원래 args.tabId 하나만 봤다. 그런데 url 이 곧 대상 지정인
     // 호출(URL_SELECTS_TARGET_TOOLS)에는 게이트가 일부러 tabId 를 주입하지 않는다 —
     // 주입하면 도구가 tabId 분기로 빠져 url 이 통째로 무시되기 때문이다. 그래서 이
@@ -323,7 +323,7 @@ export const handleCallTool = async (param: ToolCallParam) => {
     ]);
     const lockTabId = REENTRANT_TOOLS.has(param.name) ? undefined : trackedTabId;
 
-    // auto-chrome-mcp fork(2026-09-05 Codex 재확인 항목 1): 흐름 실행이 쥔 탭 리스의 토큰.
+    // posendy-chrome fork(2026-09-05 Codex 재확인 항목 1): 흐름 실행이 쥔 탭 리스의 토큰.
     //
     // 노드가 부르는 도구 호출에는 `_leaseToken` 이 실려 온다. 그 토큰을 잠금에 넘겨야
     // "이 탭을 이미 쥔 run 이 다시 들어온 것" 과 "다른 세션이 같은 탭을 원하는 것" 이
@@ -338,7 +338,7 @@ export const handleCallTool = async (param: ToolCallParam) => {
         : undefined;
     if (leaseToken !== undefined) delete args[LEASE_TOKEN_ARG];
 
-    // auto-chrome-mcp fork: 팝업·새 창 인지 — 이 호출이 대상 탭(또는 세션 작업 탭)에서
+    // posendy-chrome fork: 팝업·새 창 인지 — 이 호출이 대상 탭(또는 세션 작업 탭)에서
     // 새 탭/팝업 창을 열었으면 결과에 알림을 첨부한다. 이게 없으면 모델은 팝업이
     // 열린 사실을 모르고 원래 탭에만 명령을 보내다 실패한다.
     const spawnWatchStart = Date.now();
@@ -352,7 +352,7 @@ export const handleCallTool = async (param: ToolCallParam) => {
       openerCandidates.push(sessionWorkTab);
     }
 
-    // auto-chrome-mcp fork(F2): 로그인 리다이렉트 감지용 — 실행 전 대상 탭 URL 기록
+    // posendy-chrome fork(F2): 로그인 리다이렉트 감지용 — 실행 전 대상 탭 URL 기록
     primaryTabId = openerCandidates.length > 0 ? openerCandidates[0] : null;
     let preCallUrl: string | null = null;
     if (primaryTabId !== null) {
@@ -363,7 +363,7 @@ export const handleCallTool = async (param: ToolCallParam) => {
       }
     }
 
-    // auto-chrome-mcp fork(P1): 이 탭을 지금 쓰고 있다고 표시 — 정리 로직이 살아 있는
+    // posendy-chrome fork(P1): 이 탭을 지금 쓰고 있다고 표시 — 정리 로직이 살아 있는
     // 병렬 작업 탭을 유휴로 오인해 닫지 않게 한다.
     touchOwnedTab(trackedTabId);
 
@@ -419,7 +419,7 @@ export const handleCallTool = async (param: ToolCallParam) => {
     }
 
     if (result && Array.isArray(result.content)) {
-      // auto-chrome-mcp fork(F5): 이 호출 중 시작된 다운로드를 결과에 첨부
+      // posendy-chrome fork(F5): 이 호출 중 시작된 다운로드를 결과에 첨부
       const downloads = getDownloadsSince(spawnWatchStart);
       if (downloads.length > 0) {
         result.content.push({
@@ -439,7 +439,7 @@ export const handleCallTool = async (param: ToolCallParam) => {
         });
       }
 
-      // auto-chrome-mcp fork(F2): 실행 후 대상 탭이 로그인 페이지로 "바뀐" 경우 경고
+      // posendy-chrome fork(F2): 실행 후 대상 탭이 로그인 페이지로 "바뀐" 경우 경고
       if (primaryTabId !== null && !looksLikeLoginUrl(preCallUrl)) {
         try {
           const postUrl = (await chrome.tabs.get(primaryTabId)).url ?? null;
@@ -478,20 +478,20 @@ export const handleCallTool = async (param: ToolCallParam) => {
   }
 };
 
-// auto-chrome-mcp fork: chrome_batch 가 step 을 같은 게이트(handleCallTool)로 재진입시키도록 배선.
+// posendy-chrome fork: chrome_batch 가 step 을 같은 게이트(handleCallTool)로 재진입시키도록 배선.
 // (barrel 재수출하면 toolsMap 에 함수가 섞이므로 직접 import — batch.ts 주석 참고)
 setBatchToolInvoker(handleCallTool);
 
-// auto-chrome-mcp fork: chrome_shortcut(run) 도 저장된 step 을 같은 게이트로 실행
+// posendy-chrome fork: chrome_shortcut(run) 도 저장된 step 을 같은 게이트로 실행
 import { setShortcutToolInvoker } from './browser/shortcut';
 setShortcutToolInvoker(handleCallTool);
 
-// auto-chrome-mcp fork(2026-09-05 데일리 자동화 설계 2절): 예약 실행도 같은 파이프라인을
+// posendy-chrome fork(2026-09-05 데일리 자동화 설계 2절): 예약 실행도 같은 파이프라인을
 // 지난다. MCP 세션이 없을 뿐 게이트·워치독·탭 잠금은 그대로다.
 import { setScheduleToolInvoker } from '../schedule-runner';
 setScheduleToolInvoker(handleCallTool);
 
-// auto-chrome-mcp fork(2026-09-05 사이드패널 2단계 D): 흐름 예약도 도구와 **같은** 실행
+// posendy-chrome fork(2026-09-05 사이드패널 2단계 D): 흐름 예약도 도구와 **같은** 실행
 // 본체를 쓴다. 예약 러너가 이 모듈을 직접 import 하면 도구 레지스트리의 순환 import 에
 // 끌려들어가므로, 배선은 여기서 한다 (invoker 와 같은 이유·같은 자리).
 import { setScheduledFlowRunner } from '../schedule-runner';

@@ -1,5 +1,5 @@
 /**
- * 대상 탭 가드 (auto-chrome-mcp fork).
+ * 대상 탭 가드 (posendy-chrome fork).
  *
  * 거의 모든 도구가 `tryGetTab(args.tabId) || getActiveTab...` 꼴로 대상을 정한다. 그래서
  * 탭이 닫힌 뒤 같은 tabId 로 호출하면 조용히 **사용자가 보고 있는 탭**이 대상이 됐다 —
@@ -12,7 +12,7 @@ import { createErrorResponse, type ToolResult } from '@/common/tool-handler';
 import { describeClosedTab } from '@/utils/work-tab-manager';
 
 /**
- * auto-chrome-mcp fork(P1): '탭이 없다' 류 실패에 붙일 설명. 대상이 아닌 실패면 null.
+ * posendy-chrome fork(P1): '탭이 없다' 류 실패에 붙일 설명. 대상이 아닌 실패면 null.
  */
 export function describeMissingTab(result: any, tabId: unknown): Record<string, unknown> | null {
   if (typeof tabId !== 'number') return null;
@@ -37,7 +37,7 @@ export function describeMissingTab(result: any, tabId: unknown): Record<string, 
 }
 
 /**
- * auto-chrome-mcp fork: 명시된 대상 탭이 이미 사라졌으면 도구를 돌리기 전에 끊는다.
+ * posendy-chrome fork: 명시된 대상 탭이 이미 사라졌으면 도구를 돌리기 전에 끊는다.
  *
  * 거의 모든 도구가 `tryGetTab(args.tabId) || getActiveTab...` 꼴로 대상을 정한다.
  * 그래서 탭이 닫힌 뒤 같은 tabId 로 호출하면, 조용히 **사용자가 보고 있는 탭**이 대상이

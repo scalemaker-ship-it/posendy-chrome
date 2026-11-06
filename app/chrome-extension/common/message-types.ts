@@ -3,7 +3,7 @@
  * Note: Native message types are imported from the shared package
  */
 
-import type { RealtimeEvent } from 'auto-chrome-mcp-shared';
+import type { RealtimeEvent } from 'posendy-chrome-shared';
 
 // Message targets for routing
 export enum MessageTarget {

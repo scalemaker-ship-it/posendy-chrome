@@ -18,7 +18,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { BACKGROUND_MESSAGE_TYPES } from '@/common/message-types';
 import type { ToolResult } from '@/common/tool-handler';
 

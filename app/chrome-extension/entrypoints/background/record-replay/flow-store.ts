@@ -1,5 +1,5 @@
 import type { Flow, RunRecord, NodeBase, Edge } from './types';
-import { stepsToDAG, type RRNode, type RREdge } from 'auto-chrome-mcp-shared';
+import { stepsToDAG, type RRNode, type RREdge } from 'posendy-chrome-shared';
 import { NODE_TYPES } from '@/common/node-types';
 import { BACKGROUND_MESSAGE_TYPES } from '@/common/message-types';
 import { IndexedDbStorage, ensureMigratedFromLocal } from './storage/indexeddb-manager';

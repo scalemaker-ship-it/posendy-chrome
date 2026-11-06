@@ -6,9 +6,9 @@ import { checkExtensionAuth, resolveExtensionAuthPorts } from './doctor';
 import { STATE_DIR_ENV, getStateDir, getTokenFilePath } from '../security/auth-token';
 
 /**
- * auto-chrome-mcp fork — doctor 의 stale-extension 검사가 고정 포트만 보던 회귀.
+ * posendy-chrome fork — doctor 의 stale-extension 검사가 고정 포트만 보던 회귀.
  *
- * 예전에는 `checkExtensionAuth(EXPECTED_PORT)` 라 12320 하나만 조회했다. 그래서
+ * 예전에는 `checkExtensionAuth(EXPECTED_PORT)` 라 12330 하나만 조회했다. 그래서
  * `.mcp.json` 의 `env.CHROME_PORT` 로 포트를 바꿔 쓰거나 팝업에서 동적 포트를 쓰는
  * 설치에서는, 확장이 토큰 없이 브리지를 두드려 401 을 받고 있어도 doctor 가
  * "the extension sends the bridge token" 이라고 답했다.
@@ -22,7 +22,7 @@ const TOKEN = 'a'.repeat(64);
 const freshStateDir = (): void => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'acm-doctor-test-'));
   tempRoots.push(dir);
-  process.env[STATE_DIR_ENV] = path.join(dir, '.auto-chrome-mcp');
+  process.env[STATE_DIR_ENV] = path.join(dir, '.posendy-chrome');
   fs.mkdirSync(getStateDir(), { recursive: true });
   fs.writeFileSync(getTokenFilePath(), `${TOKEN}\n`);
 };
@@ -72,7 +72,7 @@ describe('doctor / extension token support', () => {
   });
 
   test('커스텀 포트의 브리지가 stale 카운트를 주면 warn 이 된다', async () => {
-    // 12320 은 아무도 안 듣고, 사용자가 .mcp.json 으로 지정한 12345 에만 브리지가 있다.
+    // 12330 은 아무도 안 듣고, 사용자가 .mcp.json 으로 지정한 12345 에만 브리지가 있다.
     const seen = mockBridges({ 12345: { staleClientRejections: 3 } });
 
     const ports = resolveExtensionAuthPorts({ configuredPort: 12345 });
@@ -88,22 +88,22 @@ describe('doctor / extension token support', () => {
 
   test('여러 포트에 걸쳐 stale 카운트를 합산한다', async () => {
     mockBridges({
-      12320: { staleClientRejections: 0 },
+      12330: { staleClientRejections: 0 },
       12345: { staleClientRejections: 2 },
     });
 
-    const result = await checkExtensionAuth([12320, 12345]);
+    const result = await checkExtensionAuth([12330, 12345]);
 
     expect(result.check.status).toBe('warn');
     const details = result.check.details as Record<string, unknown>;
     expect(details.staleClientRejections).toBe(2);
-    expect(details.reportingPorts).toEqual([12320, 12345]);
+    expect(details.reportingPorts).toEqual([12330, 12345]);
   });
 
   test('응답한 브리지가 모두 0 이면 ok 다', async () => {
-    mockBridges({ 12320: { staleClientRejections: 0 } });
+    mockBridges({ 12330: { staleClientRejections: 0 } });
 
-    const result = await checkExtensionAuth([12320, 12345]);
+    const result = await checkExtensionAuth([12330, 12345]);
 
     expect(result.check.status).toBe('ok');
     expect(result.check.message).toContain('token');
@@ -113,7 +113,7 @@ describe('doctor / extension token support', () => {
   test('아무 포트도 응답하지 않으면 검사하지 않았다고 말한다 (통과했다고 하지 않는다)', async () => {
     mockBridges({});
 
-    const result = await checkExtensionAuth([12320, 12345]);
+    const result = await checkExtensionAuth([12330, 12345]);
 
     expect(result.check.status).toBe('ok');
     expect(result.check.message).toContain('not checked');
@@ -123,11 +123,11 @@ describe('doctor / extension token support', () => {
   // 넣어서, 12300번대의 아무 서비스나 200 만 돌려주면 그쪽으로 브리지 토큰이 나갔다.
   // 토큰이 붙는 조회는 사용자가 지정한 포트(env·설정)와 포크 기본 포트로만 간다.
   test('resolveExtensionAuthPorts 는 env·설정·기본 포트만 모은다', () => {
-    expect(resolveExtensionAuthPorts({ envPort: '12345', configuredPort: 12320 })).toEqual([
-      12345, 12320,
+    expect(resolveExtensionAuthPorts({ envPort: '12345', configuredPort: 12330 })).toEqual([
+      12345, 12330,
     ]);
 
     // 값이 없거나 포트가 될 수 없으면 버린다. 기본 포트는 언제나 후보에 남는다.
-    expect(resolveExtensionAuthPorts({ envPort: 'abc', configuredPort: 0 })).toEqual([12320]);
+    expect(resolveExtensionAuthPorts({ envPort: 'abc', configuredPort: 0 })).toEqual([12330]);
   });
 });

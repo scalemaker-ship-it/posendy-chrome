@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — work-tab-manager unit tests (task C1, background work mode).
+ * posendy-chrome fork — work-tab-manager unit tests (task C1, background work mode).
  *
  * 세션별 MCP 작업 탭 추적기의 계약을 검증한다:
  *   - 세션별 set/get 왕복
@@ -78,7 +78,7 @@ function installChromeMocks(): ChromeHarness {
         }),
         removeListener: vi.fn(),
       },
-      // auto-chrome-mcp fork: 작업 탭 이동 시 페이지 표시기를 다시 붙이는 리스너용
+      // posendy-chrome fork: 작업 탭 이동 시 페이지 표시기를 다시 붙이는 리스너용
       onUpdated: {
         addListener: vi.fn((listener: (tabId: number, info: unknown) => void) => {
           tabUpdatedListeners.push(listener);
@@ -116,7 +116,7 @@ async function loadModule(): Promise<WorkTabManager> {
   return await import('@/utils/work-tab-manager');
 }
 
-describe('work-tab-manager (auto-chrome-mcp fork — 세션별 MCP 작업 탭)', () => {
+describe('work-tab-manager (posendy-chrome fork — 세션별 MCP 작업 탭)', () => {
   let h: ChromeHarness;
 
   beforeEach(() => {
@@ -289,7 +289,7 @@ describe('work-tab-manager (auto-chrome-mcp fork — 세션별 MCP 작업 탭)',
 
     expect(await mod.getAllWorkTabs()).toEqual({ 'session-c': 43 });
     expect(h.sessionStore.mcpWorkTabs).toEqual({
-      // auto-chrome-mcp fork: owned = MCP 가 직접 만든 탭인지 (재사용 대상 판정용)
+      // posendy-chrome fork: owned = MCP 가 직접 만든 탭인지 (재사용 대상 판정용)
       'session-c': { tabId: 43, lastUsedAt: expect.any(Number), owned: false },
     });
   });

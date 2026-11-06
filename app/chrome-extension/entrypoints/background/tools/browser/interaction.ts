@@ -1,9 +1,9 @@
 import { createErrorResponse, ToolResult } from '@/common/tool-handler';
 import { BaseBrowserToolExecutor } from '../base-browser';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { TOOL_MESSAGE_TYPES } from '@/common/message-types';
 import { TIMEOUTS, ERROR_MESSAGES } from '@/common/constants';
-// auto-chrome-mcp fork: iframe 안의 요소를 찾기 위한 프레임 탐색 공용 모듈
+// posendy-chrome fork: iframe 안의 요소를 찾기 위한 프레임 탐색 공용 모듈
 import {
   isElementNotFoundError,
   probeActionFor,
@@ -26,10 +26,10 @@ interface ClickToolParams {
   coordinates?: Coordinates; // Coordinates to click at (x, y relative to viewport)
   waitForNavigation?: boolean; // Whether to wait for navigation to complete after click
   timeout?: number; // Timeout in milliseconds for waiting for the element or navigation
-  // auto-chrome-mcp fork(A1): 요소가 아직 렌더되지 않았을 때 기다릴 시간(ms).
+  // posendy-chrome fork(A1): 요소가 아직 렌더되지 않았을 때 기다릴 시간(ms).
   // 기본 2000 — SPA/지연 렌더에서 "실패 → wait_for → 재클릭" 왕복을 없앤다. 0 이면 즉시 실패.
   waitForElementMs?: number;
-  // auto-chrome-mcp fork: frameId 를 주면 프레임 탐색 없이 해당 프레임에서 바로 실행한다.
+  // posendy-chrome fork: frameId 를 주면 프레임 탐색 없이 해당 프레임에서 바로 실행한다.
   // 생략하면 top frame 을 먼저 시도하고, 요소를 못 찾은 경우에만 iframe 들을 탐색한다.
   frameId?: number; // Target frame for ref/selector resolution
   double?: boolean; // Perform double click when true
@@ -41,7 +41,7 @@ interface ClickToolParams {
   windowId?: number; // when no tabId, pick active tab from this window
 }
 
-// auto-chrome-mcp fork(A1): 요소 대기 기본값·상한
+// posendy-chrome fork(A1): 요소 대기 기본값·상한
 const DEFAULT_WAIT_FOR_ELEMENT_MS = 2000;
 const MAX_WAIT_FOR_ELEMENT_MS = 30000;
 
@@ -50,7 +50,7 @@ function normalizeWaitForElementMs(value: unknown): number {
   return Math.min(MAX_WAIT_FOR_ELEMENT_MS, Math.max(0, value));
 }
 
-// ===== auto-chrome-mcp fork: 전송 전 실패에 한해 1회 자동 재시도 =====
+// ===== posendy-chrome fork: 전송 전 실패에 한해 1회 자동 재시도 =====
 //
 // click/fill 은 실패하면 그대로 끝나서, 모델이 같은 호출을 손으로 반복하곤 했다.
 // "잠깐 뒤면 될 일"만 골라 한 번 더 시도한다.
@@ -347,7 +347,7 @@ class ClickTool extends BaseBrowserToolExecutor {
   name = TOOL_NAMES.BROWSER.CLICK;
 
   /**
-   * auto-chrome-mcp fork: top frame 에서 요소를 못 찾았을 때 하위 iframe 들을 탐색한다.
+   * posendy-chrome fork: top frame 에서 요소를 못 찾았을 때 하위 iframe 들을 탐색한다.
    * probe 는 조회 전용 메시지라 부수효과가 없다.
    */
   private async findTargetFrame(
@@ -368,7 +368,7 @@ class ClickTool extends BaseBrowserToolExecutor {
   }
 
   /**
-   * auto-chrome-mcp fork: 재시도 판정용 — 같은 탭·같은 프레임에서 **고정한 ref** 의 상태만
+   * posendy-chrome fork: 재시도 판정용 — 같은 탭·같은 프레임에서 **고정한 ref** 의 상태만
    * 다시 조회한다. selector 를 다시 해석하지 않으므로 DOM 이 재정렬돼도 대상이 바뀌지 않는다.
    */
   private async probeRefState(
@@ -387,7 +387,7 @@ class ClickTool extends BaseBrowserToolExecutor {
   }
 
   /**
-   * auto-chrome-mcp fork: 재시도 직전에 selector 를 **한 번만** ref 로 고정한다.
+   * posendy-chrome fork: 재시도 직전에 selector 를 **한 번만** ref 로 고정한다.
    *
    * 같은 탭·같은 프레임에서만 조회하며, 못 찾으면 null 을 돌려 재시도 자체를 막는다.
    * injectContentScript 는 `${this.name}_ping` 으로 "이미 있음"을 판정하는데 그 ping 은
@@ -459,9 +459,9 @@ class ClickTool extends BaseBrowserToolExecutor {
       let finalRef = args.ref;
       let finalSelector = selector;
 
-      // auto-chrome-mcp fork: frameId 를 명시하면 그 프레임만 대상으로 하고 탐색을 건너뛴다.
+      // posendy-chrome fork: frameId 를 명시하면 그 프레임만 대상으로 하고 탐색을 건너뛴다.
       const explicitFrameId = typeof frameId === 'number' ? frameId : undefined;
-      // auto-chrome-mcp fork: 생략하면 top frame(0)으로 **정규화**한다.
+      // posendy-chrome fork: 생략하면 top frame(0)으로 **정규화**한다.
       // frameId 를 비워 두면 chrome.tabs.sendMessage 가 탭의 모든 프레임에 뿌려져, 첫 시도에
       // 응답한 프레임과 pin/probe/재전송이 향하는 프레임이 달라질 수 있다(다른 요소를 누르게 된다).
       // helper 주입도 어차피 top frame 만 대상이므로 0 으로 고정하는 편이 실제 동작과 일치한다.
@@ -495,7 +495,7 @@ class ClickTool extends BaseBrowserToolExecutor {
           resolveError = error instanceof Error ? error.message : String(error);
         }
 
-        // auto-chrome-mcp fork: top frame 에서 XPath 를 못 찾으면 iframe 들을 탐색해 다시 시도한다.
+        // posendy-chrome fork: top frame 에서 XPath 를 못 찾으면 iframe 들을 탐색해 다시 시도한다.
         if (!(resolved && resolved.success && resolved.ref) && explicitFrameId === undefined) {
           const hit = await this.findTargetFrame(tab.id, { selector, isXPath: true });
           if (hit) {
@@ -568,7 +568,7 @@ class ClickTool extends BaseBrowserToolExecutor {
       // Send click message to content script
       const tabId = tab.id;
       const urlBefore = tab.url;
-      // auto-chrome-mcp fork: 재시도 직전 "그 사이 문서가 바뀌었는지" 비교할 기준값.
+      // posendy-chrome fork: 재시도 직전 "그 사이 문서가 바뀌었는지" 비교할 기준값.
       // URL 이 같아도 같은 주소로 다시 로드하거나 POST 하면 documentId 가 바뀐다.
       // iframe 폴백으로 대상 프레임이 바뀌면 아래 deliver 에서 그 프레임 기준으로 다시 잡는다.
       let frameBefore = await readFrameState(tabId, targetFrameId);
@@ -576,7 +576,7 @@ class ClickTool extends BaseBrowserToolExecutor {
         try {
           return await this.sendMessageToTab(tabId, clickMessage, targetFrameId);
         } catch (error) {
-          // auto-chrome-mcp fork: top frame 에서 "요소 없음"이면 iframe 들을 탐색해 재시도한다.
+          // posendy-chrome fork: top frame 에서 "요소 없음"이면 iframe 들을 탐색해 재시도한다.
           // 좌표 클릭, 명시적 frameId, 연결 오류 등은 기존과 동일하게 그대로 실패시킨다.
           const message = error instanceof Error ? error.message : String(error);
           const canSearchFrames =
@@ -594,7 +594,7 @@ class ClickTool extends BaseBrowserToolExecutor {
 
           resolvedFrame = hit;
           targetFrameId = hit.frameId;
-          // auto-chrome-mcp fork: 기준값을 top frame 에서 잡아 두면 프레임이 바뀐 것만으로
+          // posendy-chrome fork: 기준값을 top frame 에서 잡아 두면 프레임이 바뀐 것만으로
           // documentId 가 달라져 "이동했다"고 오판하고 재시도가 항상 막힌다.
           // 대상 프레임이 확정된 지금, 그 프레임의 문서를 기준값으로 다시 잡는다.
           frameBefore = await readFrameState(tabId, hit.frameId);
@@ -608,7 +608,7 @@ class ClickTool extends BaseBrowserToolExecutor {
       try {
         result = await deliver();
       } catch (error) {
-        // auto-chrome-mcp fork: 전송 전에 멈춘 실패만 1회 재시도한다 (스키마 변경 없음).
+        // posendy-chrome fork: 전송 전에 멈춘 실패만 1회 재시도한다 (스키마 변경 없음).
         const decision = classifyInteractionFailure(error);
         if (!decision.retryable) {
           if (decision.reason === 'post_dispatch_ambiguous') {
@@ -656,7 +656,7 @@ class ClickTool extends BaseBrowserToolExecutor {
               retryError instanceof Error ? retryError.message : String(retryError)
             }`,
           );
-          // auto-chrome-mcp fork: 재시도를 보낸 뒤 응답을 잃었으면(포트·컨텍스트 끊김) 그 동작이
+          // posendy-chrome fork: 재시도를 보낸 뒤 응답을 잃었으면(포트·컨텍스트 끊김) 그 동작이
           // 이미 먹었을 수 있다. 원래 오류만 돌려주면 "아무 일도 없었다"로 읽혀 두 번 실행된다.
           const responseLost =
             classifyInteractionFailure(retryError).reason === 'post_dispatch_ambiguous';
@@ -693,20 +693,20 @@ class ClickTool extends BaseBrowserToolExecutor {
         clickMethod,
       };
 
-      // auto-chrome-mcp fork: 일시적 실패로 한 번 다시 시도했음을 알린다.
+      // posendy-chrome fork: 일시적 실패로 한 번 다시 시도했음을 알린다.
       if (retried && retryReason) {
         payload.retried = true;
         payload.retryReason = retryReason;
       }
 
-      // auto-chrome-mcp fork(A3): 요소에 직접 이벤트를 쐈지만 클릭 시점에 가려져 있던 경우 경고.
+      // posendy-chrome fork(A3): 요소에 직접 이벤트를 쐈지만 클릭 시점에 가려져 있던 경우 경고.
       // 사이트가 무시했을 수 있으므로 모델이 결과를 확인하도록 유도한다.
       if (result.obstruction) {
         payload.obstruction = result.obstruction;
         if (result.warning) payload.warning = result.warning;
       }
 
-      // auto-chrome-mcp fork: top frame 이 아닌 프레임에서 실행된 경우에만 프레임 정보를 덧붙인다.
+      // posendy-chrome fork: top frame 이 아닌 프레임에서 실행된 경우에만 프레임 정보를 덧붙인다.
       // (top frame 기본 경로의 응답 형식은 그대로 유지)
       if (targetFrameId !== 0) {
         payload.frameId = targetFrameId;
@@ -727,10 +727,10 @@ class ClickTool extends BaseBrowserToolExecutor {
       console.error('Error in click operation:', error);
       const message = error instanceof Error ? error.message : String(error);
 
-      // auto-chrome-mcp fork(A3): 클릭이 "가려져서" 실패한 경우 무엇이 가리는지 함께 보고한다.
+      // posendy-chrome fork(A3): 클릭이 "가려져서" 실패한 경우 무엇이 가리는지 함께 보고한다.
       // (기존에는 elementFromPoint 로 알아내고도 버려서 모델이 같은 시도를 반복했다.)
       const diag = (error as Error & { response?: any })?.response;
-      // auto-chrome-mcp fork: 재시도 여부는 **기존 오류 문구 뒤 꼬리표**로만 알린다.
+      // posendy-chrome fork: 재시도 여부는 **기존 오류 문구 뒤 꼬리표**로만 알린다.
       // (응답 형태를 JSON 으로 바꾸면 기존 호출부의 문자열 처리가 깨진다.)
       const note = retryNoteFor(error);
 
@@ -764,12 +764,12 @@ interface FillToolParams {
   ref?: string; // Element ref from accessibility tree
   // Accept string | number | boolean for broader form input coverage
   value: string | number | boolean;
-  // auto-chrome-mcp fork: frameId 를 주면 프레임 탐색 없이 해당 프레임에서 바로 실행한다.
+  // posendy-chrome fork: frameId 를 주면 프레임 탐색 없이 해당 프레임에서 바로 실행한다.
   // 생략하면 top frame 을 먼저 시도하고, 요소를 못 찾은 경우에만 iframe 들을 탐색한다.
   frameId?: number;
   tabId?: number; // target existing tab id
   windowId?: number; // when no tabId, pick active tab from this window
-  // auto-chrome-mcp fork(A1): 입력 대상이 아직 렌더되지 않았을 때 기다릴 시간(ms). 기본 2000.
+  // posendy-chrome fork(A1): 입력 대상이 아직 렌더되지 않았을 때 기다릴 시간(ms). 기본 2000.
   waitForElementMs?: number;
 }
 
@@ -780,7 +780,7 @@ class FillTool extends BaseBrowserToolExecutor {
   name = TOOL_NAMES.BROWSER.FILL;
 
   /**
-   * auto-chrome-mcp fork: top frame 에서 요소를 못 찾았을 때 하위 iframe 들을 탐색한다.
+   * posendy-chrome fork: top frame 에서 요소를 못 찾았을 때 하위 iframe 들을 탐색한다.
    * probe 는 조회 전용 메시지라 부수효과가 없다.
    */
   private async findTargetFrame(
@@ -801,7 +801,7 @@ class FillTool extends BaseBrowserToolExecutor {
   }
 
   /**
-   * auto-chrome-mcp fork: 재시도 판정용 — 같은 탭·같은 프레임에서 **고정한 ref** 의 상태만
+   * posendy-chrome fork: 재시도 판정용 — 같은 탭·같은 프레임에서 **고정한 ref** 의 상태만
    * 다시 조회한다. selector 를 다시 해석하지 않는다.
    */
   private async probeRefState(
@@ -820,7 +820,7 @@ class FillTool extends BaseBrowserToolExecutor {
   }
 
   /**
-   * auto-chrome-mcp fork: 재시도 직전에 selector 를 **한 번만** ref 로 고정한다.
+   * posendy-chrome fork: 재시도 직전에 selector 를 **한 번만** ref 로 고정한다.
    *
    * 같은 탭·같은 프레임에서만 조회하며, 못 찾으면 null 을 돌려 재시도 자체를 막는다.
    * injectContentScript 는 `${this.name}_ping` 으로 "이미 있음"을 판정하는데 그 ping 은
@@ -881,9 +881,9 @@ class FillTool extends BaseBrowserToolExecutor {
       let finalRef = ref;
       let finalSelector = selector;
 
-      // auto-chrome-mcp fork: frameId 를 명시하면 그 프레임만 대상으로 하고 탐색을 건너뛴다.
+      // posendy-chrome fork: frameId 를 명시하면 그 프레임만 대상으로 하고 탐색을 건너뛴다.
       const explicitFrameId = typeof frameId === 'number' ? frameId : undefined;
-      // auto-chrome-mcp fork: 생략하면 top frame(0)으로 **정규화**한다.
+      // posendy-chrome fork: 생략하면 top frame(0)으로 **정규화**한다.
       // frameId 를 비워 두면 chrome.tabs.sendMessage 가 탭의 모든 프레임에 뿌려져, 첫 시도에
       // 응답한 프레임과 pin/probe/재전송이 향하는 프레임이 달라질 수 있다(다른 요소를 누르게 된다).
       // helper 주입도 어차피 top frame 만 대상이므로 0 으로 고정하는 편이 실제 동작과 일치한다.
@@ -917,7 +917,7 @@ class FillTool extends BaseBrowserToolExecutor {
           resolveError = error instanceof Error ? error.message : String(error);
         }
 
-        // auto-chrome-mcp fork: top frame 에서 XPath 를 못 찾으면 iframe 들을 탐색해 다시 시도한다.
+        // posendy-chrome fork: top frame 에서 XPath 를 못 찾으면 iframe 들을 탐색해 다시 시도한다.
         if (!(resolved && resolved.success && resolved.ref) && explicitFrameId === undefined) {
           const hit = await this.findTargetFrame(tab.id, { selector, isXPath: true });
           if (hit) {
@@ -977,14 +977,14 @@ class FillTool extends BaseBrowserToolExecutor {
         selector: finalSelector,
         ref: finalRef,
         value,
-        // auto-chrome-mcp fork(A1): 아직 렌더되지 않은 입력칸을 짧게 기다린다.
+        // posendy-chrome fork(A1): 아직 렌더되지 않은 입력칸을 짧게 기다린다.
         waitForElementMs: normalizeWaitForElementMs(args.waitForElementMs),
       };
 
       // Send fill message to content script
       const tabId = tab.id;
       const urlBefore = tab.url;
-      // auto-chrome-mcp fork: 재시도 직전 "그 사이 문서가 바뀌었는지" 비교할 기준값.
+      // posendy-chrome fork: 재시도 직전 "그 사이 문서가 바뀌었는지" 비교할 기준값.
       // URL 이 같아도 같은 주소로 다시 로드하거나 POST 하면 documentId 가 바뀐다.
       // iframe 폴백으로 대상 프레임이 바뀌면 아래 deliver 에서 그 프레임 기준으로 다시 잡는다.
       let frameBefore = await readFrameState(tabId, targetFrameId);
@@ -992,7 +992,7 @@ class FillTool extends BaseBrowserToolExecutor {
         try {
           return await this.sendMessageToTab(tabId, fillMessage, targetFrameId);
         } catch (error) {
-          // auto-chrome-mcp fork: top frame 에서 "요소 없음"이면 iframe 들을 탐색해 재시도한다.
+          // posendy-chrome fork: top frame 에서 "요소 없음"이면 iframe 들을 탐색해 재시도한다.
           const message = error instanceof Error ? error.message : String(error);
           const canSearchFrames =
             explicitFrameId === undefined &&
@@ -1008,7 +1008,7 @@ class FillTool extends BaseBrowserToolExecutor {
 
           resolvedFrame = hit;
           targetFrameId = hit.frameId;
-          // auto-chrome-mcp fork: 기준값을 top frame 에서 잡아 두면 프레임이 바뀐 것만으로
+          // posendy-chrome fork: 기준값을 top frame 에서 잡아 두면 프레임이 바뀐 것만으로
           // documentId 가 달라져 "이동했다"고 오판하고 재시도가 항상 막힌다.
           // 대상 프레임이 확정된 지금, 그 프레임의 문서를 기준값으로 다시 잡는다.
           frameBefore = await readFrameState(tabId, hit.frameId);
@@ -1022,7 +1022,7 @@ class FillTool extends BaseBrowserToolExecutor {
       try {
         result = await deliver();
       } catch (error) {
-        // auto-chrome-mcp fork: 전송 전에 멈춘 실패만 1회 재시도한다 (스키마 변경 없음).
+        // posendy-chrome fork: 전송 전에 멈춘 실패만 1회 재시도한다 (스키마 변경 없음).
         const decision = classifyInteractionFailure(error);
         if (!decision.retryable) {
           if (decision.reason === 'post_dispatch_ambiguous') {
@@ -1069,7 +1069,7 @@ class FillTool extends BaseBrowserToolExecutor {
               retryError instanceof Error ? retryError.message : String(retryError)
             }`,
           );
-          // auto-chrome-mcp fork: 재시도를 보낸 뒤 응답을 잃었으면(포트·컨텍스트 끊김) 그 동작이
+          // posendy-chrome fork: 재시도를 보낸 뒤 응답을 잃었으면(포트·컨텍스트 끊김) 그 동작이
           // 이미 먹었을 수 있다. 원래 오류만 돌려주면 "아무 일도 없었다"로 읽혀 두 번 실행된다.
           const responseLost =
             classifyInteractionFailure(retryError).reason === 'post_dispatch_ambiguous';
@@ -1096,13 +1096,13 @@ class FillTool extends BaseBrowserToolExecutor {
         elementInfo: result.elementInfo,
       };
 
-      // auto-chrome-mcp fork: 일시적 실패로 한 번 다시 시도했음을 알린다.
+      // posendy-chrome fork: 일시적 실패로 한 번 다시 시도했음을 알린다.
       if (retried && retryReason) {
         payload.retried = true;
         payload.retryReason = retryReason;
       }
 
-      // auto-chrome-mcp fork: top frame 이 아닌 프레임에서 실행된 경우에만 프레임 정보를 덧붙인다.
+      // posendy-chrome fork: top frame 이 아닌 프레임에서 실행된 경우에만 프레임 정보를 덧붙인다.
       if (targetFrameId !== 0) {
         payload.frameId = targetFrameId;
         const info = resolvedFrame ?? (await resolveFrameInfo(tab.id, targetFrameId));
@@ -1121,7 +1121,7 @@ class FillTool extends BaseBrowserToolExecutor {
     } catch (error) {
       console.error('Error in fill operation:', error);
       const message = error instanceof Error ? error.message : String(error);
-      // auto-chrome-mcp fork: 재시도 여부는 기존 오류 문구 뒤 꼬리표로만 알린다.
+      // posendy-chrome fork: 재시도 여부는 기존 오류 문구 뒤 꼬리표로만 알린다.
       return createErrorResponse(`Error filling element: ${message}${retryNoteFor(error)}`);
     }
   }

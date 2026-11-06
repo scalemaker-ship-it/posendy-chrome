@@ -1,4 +1,4 @@
-# Upstream Diff — auto-chrome-mcp vs hangwin/mcp-chrome
+# Upstream Diff — posendy-chrome vs hangwin/mcp-chrome
 
 **Last sync**: 2026-05-25 (fork 생성일)
 **Baseline commit**: `f48e71751e00bc09725c7e173423cff4f2ccd12a` (upstream master @ Merge PR #272)
@@ -33,12 +33,12 @@
 
 | 컴포넌트              | upstream 이름                | fork 이름                                                        |
 | --------------------- | ---------------------------- | ---------------------------------------------------------------- |
-| monorepo root         | `mcp-chrome-bridge-monorepo` | `auto-chrome-mcp-monorepo`                                       |
-| native server npm pkg | `mcp-chrome-bridge`          | `auto-chrome-mcp-bridge`                                         |
-| extension             | `chrome-mcp-server`          | `auto-chrome-mcp-extension`                                      |
-| shared                | `chrome-mcp-shared`          | `auto-chrome-mcp-shared` (rename — npm publish 위해 unique name) |
+| monorepo root         | `mcp-chrome-bridge-monorepo` | `posendy-chrome-monorepo`                                       |
+| native server npm pkg | `mcp-chrome-bridge`          | `posendy-chrome-bridge`                                         |
+| extension             | `chrome-mcp-server`          | `posendy-chrome-extension`                                      |
+| shared                | `chrome-mcp-shared`          | `posendy-chrome-shared` (rename — npm publish 위해 unique name) |
 | wasm-simd             | `@chrome-mcp/wasm-simd`      | `@chrome-mcp/wasm-simd` (변경 X)                                 |
-| 신규                  | —                            | `auto-chrome-mcp-launcher`                                       |
+| 신규                  | —                            | `posendy-chrome-launcher`                                       |
 
 ## upstream 의도적 제거 (fork divergence)
 

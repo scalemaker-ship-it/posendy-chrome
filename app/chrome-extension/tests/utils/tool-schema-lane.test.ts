@@ -1,11 +1,11 @@
 /**
- * auto-chrome-mcp fork(P1) — 도구 스키마의 lane 인자 회귀 테스트.
+ * posendy-chrome fork(P1) — 도구 스키마의 lane 인자 회귀 테스트.
  *
  * lane 은 packages/shared/src/tools.ts 에서 스키마마다 손으로 넣지 않고 한 번에 주입한다.
  * 도구가 새로 추가돼도 자동으로 따라오는 대신, 주입이 조용히 깨질 수 있어 여기서 못박는다.
  */
 import { describe, expect, it } from 'vitest';
-import { TOOL_NAMES, TOOL_SCHEMAS } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES, TOOL_SCHEMAS } from 'posendy-chrome-shared';
 
 function schemaOf(name: string) {
   const tool = TOOL_SCHEMAS.find((t) => t.name === name);

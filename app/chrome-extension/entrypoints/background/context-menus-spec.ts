@@ -87,9 +87,9 @@ export const MENU_TEXT_KO: Readonly<Record<string, string>> = {
   menu_quick_panel: '빠른 패널',
   menu_userscripts: '유저스크립트 관리',
   menu_force_reconnect: '강제 재연결',
-  menu_page_parent: 'Auto Chrome MCP',
+  menu_page_parent: 'POSENDY Chrome',
   menu_page_mark_element: '이 요소 마킹',
-  menu_notification_title: 'Auto Chrome MCP',
+  menu_notification_title: 'POSENDY Chrome',
   menu_force_reconnect_ok: '강제 재연결 성공 (브리지 pid {0})',
   menu_force_reconnect_fail: '강제 재연결 실패 ({0} 단계)',
 };

@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — chrome_scroll_collect 의 스냅샷 합치기 규칙.
+ * posendy-chrome fork — chrome_scroll_collect 의 스냅샷 합치기 규칙.
  *
  * 2026-08-23 실측: 푸터나 "Loading" 스피너가 끝에 붙어 있는 페이지(=대부분의 무한 스크롤)는
  * 새 항목이 **가운데**로 들어와서 접두/접미 겹침이 둘 다 빗나갔고, 패스마다 페이지 전체가

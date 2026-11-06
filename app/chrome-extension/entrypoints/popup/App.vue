@@ -249,12 +249,12 @@
           </button>
 
           <ForceReconnect
-            :port="Number(nativeServerPort) || 12320"
+            :port="Number(nativeServerPort) || 12330"
             :open="showReconnect"
             @reconnected="handleReconnected"
           />
 
-          <DiagnosticReport :port="Number(nativeServerPort) || 12320" :open="showDiagnostic" />
+          <DiagnosticReport :port="Number(nativeServerPort) || 12330" :open="showDiagnostic" />
         </section>
       </div>
     </div>
@@ -357,6 +357,7 @@ import {
 import { useAgentTheme, type AgentThemeId } from '../sidepanel/composables/useAgentTheme';
 
 import ConfirmDialog from './components/ConfirmDialog.vue';
+import PosendyPanel from './components/PosendyPanel.vue';
 import LocalModelPage from './components/LocalModelPage.vue';
 import ForceReconnect from './components/ForceReconnect.vue';
 import DiagnosticReport from './components/DiagnosticReport.vue';
@@ -372,24 +373,24 @@ const currentView = ref<'home' | 'local-model'>('home');
 
 const nativeConnectionStatus = ref<'unknown' | 'connected' | 'disconnected'>('unknown');
 const isConnecting = ref(false);
-const nativeServerPort = ref<number>(12320);
+const nativeServerPort = ref<number>(12330);
 
-// auto-chrome-mcp fork: 강제포커스 정책 토글. true = MCP 도구가 OS 윈도우 포커스 가로채기 허용.
+// posendy-chrome fork: 강제포커스 정책 토글. true = MCP 도구가 OS 윈도우 포커스 가로채기 허용.
 // false = Chrome 이 다른 앱 앞으로 안 튀어나옴 (탭 전환·창 생성은 여전히 동작).
 const forceFocusEnabled = ref<boolean>(false);
 
-// auto-chrome-mcp fork: 백그라운드 작업 모드 토글. true(기본) = MCP 도구가 사용자의 탭·포커스를
+// posendy-chrome fork: 백그라운드 작업 모드 토글. true(기본) = MCP 도구가 사용자의 탭·포커스를
 // 건드리지 않고 MCP 작업 탭에서 동작. false = 이전처럼 작업 탭을 앞으로 가져옴.
 const backgroundModeEnabled = ref<boolean>(true);
 
-// auto-chrome-mcp fork: 전용 작업 창 토글. true(v1.9.0 기본) = MCP 작업 탭을 별도
+// posendy-chrome fork: 전용 작업 창 토글. true(v1.9.0 기본) = MCP 작업 탭을 별도
 // "MCP 작업 창"에 모아 사용자 창과 분리. false = 사용자가 열어 둔 현재 창에 백그라운드 새 탭.
 const dedicatedWindowEnabled = ref<boolean>(true);
 
-// auto-chrome-mcp fork v1.9.0: 전용 작업 창을 화면에서 어떻게 숨길지.
+// posendy-chrome fork v1.9.0: 전용 작업 창을 화면에서 어떻게 숨길지.
 const workWindowPlacement = ref<WorkWindowPlacement>(DEFAULT_WORK_WINDOW_PLACEMENT);
 
-// auto-chrome-mcp fork: MCP 작업 탭 그룹 토글. true(기본) = 작업 탭을 초록색 탭 그룹
+// posendy-chrome fork: MCP 작업 탭 그룹 토글. true(기본) = 작업 탭을 초록색 탭 그룹
 // "MCP" 로 묶어 사용자 탭과 구분. false = 묶지 않음.
 const tabGroupEnabled = ref<boolean>(true);
 
@@ -444,10 +445,10 @@ const showMcpConfig = computed(() => {
   return nativeConnectionStatus.value === 'connected' && serverStatus.value.isRunning;
 });
 
-// auto-chrome-mcp fork v1.0.12: "MCP 서버 설정" JSON 박스 제거됨. Claude prompt 박스만 표시.
+// posendy-chrome fork v1.0.12: "MCP 서버 설정" JSON 박스 제거됨. Claude prompt 박스만 표시.
 // mcpConfigJson / copyMcpConfig / copyButtonText 도 함께 제거.
 
-// auto-chrome-mcp fork v1.0.10: Claude Code 자동 등록 prompt. 사용자가 npm root -g 출력값을
+// posendy-chrome fork v1.0.10: Claude Code 자동 등록 prompt. 사용자가 npm root -g 출력값을
 // 직접 채우기 귀찮으니 prompt 한 번 복사해서 터미널의 claude 에 붙여넣게 한다.
 // 본문은 i18n 키 popup_prompt_body 에 있고 포트만 치환한다.
 const claudePromptText = computed(() => {
@@ -908,7 +909,7 @@ const checkServerStatus = async () => {
   }
 };
 
-// auto-chrome-mcp fork v1.0.16: Force Reconnect 5단계 모두 success = 실제 연결됨.
+// posendy-chrome fork v1.0.16: Force Reconnect 5단계 모두 success = 실제 연결됨.
 // 이전에는 background polling 에 status 의존했는데 background 의 currentServerStatus 가
 // stale 한 케이스에서 popup 이 "연결되지 않음" stuck. force-reconnect 의 진짜 결과를
 // 신뢰해서 popup status 를 직접 강제 set. (background 도 별도로 sync 시도)
@@ -923,7 +924,7 @@ const handleReconnected = async (payload: {
   serverStatus.value = {
     ...serverStatus.value,
     isRunning: true,
-    port: Number(nativeServerPort.value) || 12320,
+    port: Number(nativeServerPort.value) || 12330,
     lastUpdated: Date.now(),
   };
 
@@ -943,7 +944,7 @@ const handleReconnected = async (payload: {
       serverStatus.value = {
         ...serverStatus.value,
         isRunning: true,
-        port: Number(nativeServerPort.value) || 12320,
+        port: Number(nativeServerPort.value) || 12330,
         lastUpdated: Date.now(),
       };
     }
@@ -1097,7 +1098,7 @@ const loadPortPreference = async () => {
   }
 };
 
-// auto-chrome-mcp fork: 강제포커스 토글의 load + toggle handler.
+// posendy-chrome fork: 강제포커스 토글의 load + toggle handler.
 const loadForceFocusPreference = async () => {
   try {
     forceFocusEnabled.value = await isForceFocusEnabled();
@@ -1117,7 +1118,7 @@ const toggleForceFocus = async () => {
   }
 };
 
-// auto-chrome-mcp fork: 백그라운드 작업 모드 토글의 load + toggle handler.
+// posendy-chrome fork: 백그라운드 작업 모드 토글의 load + toggle handler.
 const loadBackgroundModePreference = async () => {
   try {
     backgroundModeEnabled.value = await isBackgroundModeEnabled();
@@ -1137,7 +1138,7 @@ const toggleBackgroundMode = async () => {
   }
 };
 
-// auto-chrome-mcp fork: 전용 작업 창 토글의 load + toggle handler.
+// posendy-chrome fork: 전용 작업 창 토글의 load + toggle handler.
 const loadDedicatedWindowPreference = async () => {
   try {
     dedicatedWindowEnabled.value = (await getWorkWindowMode()) === 'dedicated';
@@ -1157,7 +1158,7 @@ const toggleDedicatedWindow = async () => {
   }
 };
 
-// auto-chrome-mcp fork: MCP 작업 탭 그룹 토글의 load + toggle handler.
+// posendy-chrome fork: MCP 작업 탭 그룹 토글의 load + toggle handler.
 const loadTabGroupPreference = async () => {
   try {
     tabGroupEnabled.value = await isMcpTabGroupEnabled();
@@ -1177,7 +1178,7 @@ const toggleTabGroup = async () => {
   }
 };
 
-// auto-chrome-mcp fork v1.9.0: 전용 작업 창 배치의 load + change handler.
+// posendy-chrome fork v1.9.0: 전용 작업 창 배치의 load + change handler.
 const loadWorkWindowPlacement = async () => {
   try {
     workWindowPlacement.value = await getWorkWindowPlacement();
@@ -1200,7 +1201,7 @@ const onPlacementChange = async (event: Event) => {
 };
 
 /**
- * auto-chrome-mcp fork v1.9.0: 무간섭 권장 설정으로 한 번에 되돌린다.
+ * posendy-chrome fork v1.9.0: 무간섭 권장 설정으로 한 번에 되돌린다.
  * 예전 버전에서 토글을 껐던 사용자는 저장값이 존중되므로 새 기본값이 저절로 적용되지 않는다.
  * 이 버튼이 그 유일한 통로다.
  */
@@ -1602,20 +1603,20 @@ onMounted(async () => {
     const onChanged = (changes: any, area: string) => {
       try {
         if (area !== 'local') return;
-        // auto-chrome-mcp fork: 다른 popup/탭이 force-focus 토글 바꿔도 즉시 반영.
+        // posendy-chrome fork: 다른 popup/탭이 force-focus 토글 바꿔도 즉시 반영.
         if (Object.prototype.hasOwnProperty.call(changes || {}, FORCE_FOCUS_STORAGE_KEY)) {
           forceFocusEnabled.value = changes[FORCE_FOCUS_STORAGE_KEY]?.newValue === true;
         }
-        // auto-chrome-mcp fork: 백그라운드 작업 모드도 동일하게 동기화 (기본값 true, false 만 OFF).
+        // posendy-chrome fork: 백그라운드 작업 모드도 동일하게 동기화 (기본값 true, false 만 OFF).
         if (Object.prototype.hasOwnProperty.call(changes || {}, BACKGROUND_MODE_STORAGE_KEY)) {
           backgroundModeEnabled.value = changes[BACKGROUND_MODE_STORAGE_KEY]?.newValue !== false;
         }
-        // auto-chrome-mcp fork: 작업 창 모드도 동일하게 동기화 (기본값 'current', 'dedicated' 만 ON).
+        // posendy-chrome fork: 작업 창 모드도 동일하게 동기화 (기본값 'current', 'dedicated' 만 ON).
         if (Object.prototype.hasOwnProperty.call(changes || {}, WORK_WINDOW_MODE_STORAGE_KEY)) {
           dedicatedWindowEnabled.value =
             changes[WORK_WINDOW_MODE_STORAGE_KEY]?.newValue === 'dedicated';
         }
-        // auto-chrome-mcp fork v1.9.0: 작업 창 배치.
+        // posendy-chrome fork v1.9.0: 작업 창 배치.
         if (
           Object.prototype.hasOwnProperty.call(changes || {}, WORK_WINDOW_PLACEMENT_STORAGE_KEY)
         ) {
@@ -1624,7 +1625,7 @@ onMounted(async () => {
             workWindowPlacement.value = next;
           }
         }
-        // auto-chrome-mcp fork: MCP 작업 탭 그룹 토글 (기본값 true, false 만 OFF).
+        // posendy-chrome fork: MCP 작업 탭 그룹 토글 (기본값 true, false 만 OFF).
         if (Object.prototype.hasOwnProperty.call(changes || {}, MCP_TAB_GROUP_STORAGE_KEY)) {
           tabGroupEnabled.value = changes[MCP_TAB_GROUP_STORAGE_KEY]?.newValue !== false;
         }

@@ -1,6 +1,6 @@
-# auto-chrome-mcp-launcher
+# posendy-chrome-launcher
 
-> Chrome launcher with `--remote-debugging-port=9222` for [auto-chrome-mcp](https://github.com/cw02326/auto-chrome-mcp) Playwright CDP fallback.
+> Chrome launcher with `--remote-debugging-port=9222` for [posendy-chrome](https://github.com/cw02326/posendy-chrome) Playwright CDP fallback.
 
 ## What it does
 
@@ -8,7 +8,7 @@
 2. **Detects user-data-dir** — default profile 자동 감지 → 로그인·북마크·확장 그대로
 3. **Auto-escalates CDP port** — 9222 점유 시 9223 → 9224 ... 자동 시도
 4. **Spawns Chrome** with `--remote-debugging-port` + `--restore-last-session`
-5. **Writes port file** to `~/.auto-chrome-mcp/cdp-port` (bridge 가 fallback transport 진입 시 읽음)
+5. **Writes port file** to `~/.posendy-chrome/cdp-port` (bridge 가 fallback transport 진입 시 읽음)
 
 ## Why a separate launcher?
 
@@ -19,7 +19,7 @@
 런처는 npm 에 따로 올리지 않는다. 저장소를 받아 빌드한 뒤 아래 bin 래퍼를 실행한다.
 
 ```bash
-corepack pnpm --filter auto-chrome-mcp-launcher build
+corepack pnpm --filter posendy-chrome-launcher build
 ```
 
 또는 GitHub Releases 의 `chrome-launcher-v<version>.tar.gz` 를 받아 푼다.
@@ -56,7 +56,7 @@ auto-chrome-launcher --binary=/path/to/chrome --user-data-dir=/path
 
 ## How fork's Playwright transport consumes this
 
-1. user runs `auto-chrome-launcher` once → CDP port written to `~/.auto-chrome-mcp/cdp-port`
+1. user runs `auto-chrome-launcher` once → CDP port written to `~/.posendy-chrome/cdp-port`
 2. bridge process 의 Playwright fallback transport 가 그 파일 읽고 `chromium.connectOverCDP(...)` 호출
 3. 같은 Chrome 인스턴스에 attach — 사용자 세션 그대로 사용
 

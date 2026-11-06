@@ -519,7 +519,7 @@ export interface SwitchTabParams {
   urlContains?: Resolvable<string>;
   titleContains?: Resolvable<string>;
   /**
-   * auto-chrome-mcp fork v1.9.0: true 면 백그라운드 작업 모드를 무시하고 탭을 실제로
+   * posendy-chrome fork v1.9.0: true 면 백그라운드 작업 모드를 무시하고 탭을 실제로
    * 앞으로 가져온다. 기본(미지정)은 무간섭 — 작업 탭 포인터만 바꾼다.
    */
   foreground?: boolean;

@@ -1,9 +1,9 @@
 import { createErrorResponse, ToolResult } from '@/common/tool-handler';
 import { BaseBrowserToolExecutor } from '../base-browser';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 
 /**
- * auto-chrome-mcp fork(B1): chrome_storage — 쿠키 / localStorage / sessionStorage 조회·조작.
+ * posendy-chrome fork(B1): chrome_storage — 쿠키 / localStorage / sessionStorage 조회·조작.
  *
  * 없어서 못 하던 것들을 가능하게 한다:
  *  - 로그인 세션 저장·복원 (쿠키 export → 나중에 import)

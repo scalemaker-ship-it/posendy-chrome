@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork(P1) — 병렬 에이전트 레인 격리 회귀 테스트.
+ * posendy-chrome fork(P1) — 병렬 에이전트 레인 격리 회귀 테스트.
  *
  * 재현하려는 실패: 한 Claude Code 세션에서 서브에이전트 4개를 동시에 띄우면 전원
  * tab_not_found 로 죽었다. 원인은 두 겹이었다.

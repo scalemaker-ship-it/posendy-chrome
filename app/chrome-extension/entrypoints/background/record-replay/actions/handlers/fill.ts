@@ -9,7 +9,7 @@
  */
 
 import { handleCallTool } from '@/entrypoints/background/tools';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { failed, invalid, ok } from '../registry';
 import type { ActionHandler } from '../types';
 import {
@@ -55,7 +55,7 @@ export const fillHandler: ActionHandler<'fill'> = {
     }
 
     // Ensure page is read before locating element
-    // auto-chrome-mcp fork: click.ts 와 같은 이유로 재생 중인 탭을 명시한다.
+    // posendy-chrome fork: click.ts 와 같은 이유로 재생 중인 탭을 명시한다.
     await handleCallTool({ name: TOOL_NAMES.BROWSER.READ_PAGE, args: actionToolArgs(ctx, {}) });
 
     // Resolve fill value

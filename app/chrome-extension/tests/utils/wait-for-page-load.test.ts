@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — navigate 로딩 대기(A2)의 "커밋 전 이전 문서" 경합 테스트.
+ * posendy-chrome fork — navigate 로딩 대기(A2)의 "커밋 전 이전 문서" 경합 테스트.
  *
  * 2026-08-23 실측 버그: tabs.update 직후에는 아직 이전 문서가 살아 있고 readyState 가
  * 'complete' 라, 대기가 1~7ms 만에 성공으로 끝나며 결과의 url·title 도 이전 페이지 것이

@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — content script 응답 대기 상한 회귀 테스트.
+ * posendy-chrome fork — content script 응답 대기 상한 회귀 테스트.
  *
  * 재현하려는 실패: chrome.tabs.sendMessage 는 상대가 sendResponse 를 영영 안 부르면
  * **영원히 pending** 이다 (헬퍼가 비동기 예외로 죽거나 페이지가 멎었을 때). 그러면 도구

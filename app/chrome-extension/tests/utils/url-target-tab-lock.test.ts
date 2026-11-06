@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — `url` 로 대상을 고르는 호출도 탭 잠금·busy/touch 추적을 받아야 한다.
+ * posendy-chrome fork — `url` 로 대상을 고르는 호출도 탭 잠금·busy/touch 추적을 받아야 한다.
  *
  * 재현하려는 실패(2026-09-04 Codex 최종 검토, 남은 항목):
  *   tools/index.ts 의 바깥쪽 잠금(withTabLock)과 busy·touch 추적은 `args.tabId` 로 걸린다.
@@ -17,7 +17,7 @@
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 
 const B = TOOL_NAMES.BROWSER;
 

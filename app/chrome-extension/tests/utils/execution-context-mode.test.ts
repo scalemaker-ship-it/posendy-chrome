@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — 실행 컨텍스트 모드 (설계 구현 순서 2단계).
+ * posendy-chrome fork — 실행 컨텍스트 모드 (설계 구현 순서 2단계).
  *
  * 계약: docs/plans/2026-09-05-daily-automation-design.md 2절.
  * 테스트 이름 앞의 번호는 같은 문서 10절 체크리스트 번호다 (5, 6).

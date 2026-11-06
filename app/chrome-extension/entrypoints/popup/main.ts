@@ -1,5 +1,5 @@
 import { createApp } from 'vue';
-import { NativeMessageType } from 'auto-chrome-mcp-shared';
+import { NativeMessageType } from 'posendy-chrome-shared';
 import './style.css';
 // 사이드패널·팝업·옵션이 함께 쓰는 디자인 토큰과 .ac-* 프리미티브.
 import '@/ui/theme.css';

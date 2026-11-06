@@ -10,7 +10,7 @@ import IconsResolver from 'unplugin-icons/resolver';
 config({ path: resolve(process.cwd(), '.env') });
 config({ path: resolve(process.cwd(), '.env.local') });
 
-// auto-chrome-mcp fork: deterministic extension ID via embedded public key.
+// posendy-chrome fork: deterministic extension ID via embedded public key.
 // 모든 사용자가 같은 ID (aogfhfajjknomcnmlkbjmihjbknlhbbi) 받음 → unpacked load 시에도
 // allowed_origins 가 자동으로 일치 → 사용자는 install 시 manual extension-id 입력 불요.
 // 사실상 upstream 의 Chrome Web Store ID 고정과 같은 효과.
@@ -46,7 +46,7 @@ export default defineConfig({
     permissions: [
       'nativeMessaging',
       'tabs',
-      // auto-chrome-mcp fork: MCP 작업 탭을 탭 그룹 "MCP"(green) 로 묶는다
+      // posendy-chrome fork: MCP 작업 탭을 탭 그룹 "MCP"(green) 로 묶는다
       // (utils/mcp-tab-group.ts). 권한이 없으면 그룹 API 가 조용히 실패한다.
       'tabGroups',
       'activeTab',
@@ -68,7 +68,7 @@ export default defineConfig({
       // automaticDownloads, camera, microphone, geolocation) — see
       // docs/plans/2026-05-29-site-permissions-design.md
       'contentSettings',
-      // auto-chrome-mcp fork(B1): chrome_storage 의 쿠키 조회·설정
+      // posendy-chrome fork(B1): chrome_storage 의 쿠키 조회·설정
       'cookies',
       // v1.0.34+: chrome.notifications API — consent 통과 후 OS layer 차단 감지 시
       // 사용자에게 OS 시스템 설정 deep link 알림 띄움
@@ -81,7 +81,7 @@ export default defineConfig({
     },
     action: {
       default_popup: 'popup.html',
-      default_title: 'Auto Chrome MCP',
+      default_title: 'POSENDY 브라우저 연결',
     },
     // Chrome Side Panel entry for workflow management
     // Ref: https://developer.chrome.com/docs/extensions/reference/api/sidePanel

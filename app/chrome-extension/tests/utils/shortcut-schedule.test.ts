@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — chrome_shortcut 예약 (설계 구현 순서 3단계).
+ * posendy-chrome fork — chrome_shortcut 예약 (설계 구현 순서 3단계).
  *
  * 계약: docs/plans/2026-09-05-daily-automation-design.md 1~3절.
  * 테스트 이름 앞의 번호는 위임 계약의 체크리스트 번호다 (1·2, 3, 4, 15, 19).
@@ -28,7 +28,7 @@ import {
   type ScheduleRecord,
 } from '@/utils/shortcut-schedule';
 import { shortcutTool } from '@/entrypoints/background/tools/browser/shortcut';
-import { TOOL_SCHEMAS } from 'auto-chrome-mcp-shared';
+import { TOOL_SCHEMAS } from 'posendy-chrome-shared';
 
 function body(result: any) {
   return JSON.parse(result.content[0].text);

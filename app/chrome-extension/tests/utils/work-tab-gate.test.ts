@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork(F2) — 백그라운드 작업 모드 게이트의 fail-closed 계약.
+ * posendy-chrome fork(F2) — 백그라운드 작업 모드 게이트의 fail-closed 계약.
  *
  * 재현하려는 실패: 새 세션에서 chrome_navigate 없이 chrome_click_element /
  * chrome_fill_or_select / chrome_read_page / chrome_screenshot 를 먼저 부르면,
@@ -20,7 +20,7 @@
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 
 const B = TOOL_NAMES.BROWSER;
 

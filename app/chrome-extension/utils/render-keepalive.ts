@@ -1,7 +1,7 @@
 import { cdpSessionManager } from '@/utils/cdp-session-manager';
 
 /**
- * auto-chrome-mcp fork: 백그라운드(비활성) 탭 렌더링 유지.
+ * posendy-chrome fork: 백그라운드(비활성) 탭 렌더링 유지.
  *
  * 크롬은 비활성 탭의 렌더링 프레임 생성을 멈춘다. 그래서 백그라운드 작업 탭에서는
  * requestAnimationFrame 이 돌지 않고, 무한 스크롤이 의존하는 IntersectionObserver 가

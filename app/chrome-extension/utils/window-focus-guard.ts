@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork: 새로 만든(또는 새 탭을 붙인) 창이 OS 포커스를 훔치는 것을 되돌리는
+ * posendy-chrome fork: 새로 만든(또는 새 탭을 붙인) 창이 OS 포커스를 훔치는 것을 되돌리는
  * 공용 장치.
  *
  * `chrome.windows.create({focused:false})` 는 "포커스를 주지 말라"는 요청일 뿐이라,

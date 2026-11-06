@@ -1,4 +1,4 @@
-# Auto Chrome MCP (구 auto-chrome-mcp)
+# POSENDY Chrome (구 posendy-chrome)
 
 > Fork of [hangwin/mcp-chrome](https://github.com/hangwin/mcp-chrome) with reliability fixes + Force Reconnect + Playwright CDP fallback.
 
@@ -41,10 +41,10 @@ upstream diff → [`UPSTREAM_DIFF.md`](./UPSTREAM_DIFF.md)
 
 ```bash
 # 1. bridge (npm)
-npm i -g auto-chrome-mcp-bridge
+npm i -g posendy-chrome-bridge
 
 # 2. extension (Chrome Web Store 사용 안 함 — Releases 의 .zip 사이드로드)
-# https://github.com/cw02326/auto-chrome-mcp/releases 에서 latest .zip 다운로드
+# https://github.com/cw02326/posendy-chrome/releases 에서 latest .zip 다운로드
 # chrome://extensions → Developer mode ON → Load unpacked → 폴더 선택
 
 # 3. Chrome Launcher (Playwright 폴백 사용할 때만)

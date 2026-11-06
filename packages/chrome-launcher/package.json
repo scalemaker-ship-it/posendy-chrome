@@ -1,7 +1,7 @@
 {
-  "name": "auto-chrome-mcp-launcher",
+  "name": "posendy-chrome-launcher",
   "version": "1.0.37",
-  "description": "Chrome Launcher with --remote-debugging-port=9222 for auto-chrome-mcp Playwright CDP fallback. Detects default Chrome binary + user-data-dir per OS (macOS/Windows/Linux).",
+  "description": "Chrome Launcher with --remote-debugging-port=9222 for posendy-chrome Playwright CDP fallback. Detects default Chrome binary + user-data-dir per OS (macOS/Windows/Linux).",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -26,11 +26,11 @@
     "cdp",
     "launcher"
   ],
-  "author": "cw02326 (auto-chrome-mcp fork)",
+  "author": "cw02326 (posendy-chrome fork)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cw02326/auto-chrome-mcp.git",
+    "url": "https://github.com/cw02326/posendy-chrome.git",
     "directory": "packages/chrome-launcher"
   },
   "engines": {

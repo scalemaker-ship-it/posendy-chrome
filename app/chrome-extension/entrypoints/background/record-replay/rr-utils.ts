@@ -5,12 +5,12 @@ import {
   TOOL_NAMES,
   topoOrder as sharedTopoOrder,
   mapNodeToStep as sharedMapNodeToStep,
-} from 'auto-chrome-mcp-shared';
+} from 'posendy-chrome-shared';
 import type { Edge as DagEdge, NodeBase as DagNode, Step } from './types';
 import { handleCallTool } from '../tools';
 import { createTab as createTabGuarded } from '@/utils/activation-guard';
 import { sleepWithSignal } from '@/utils/tool-watchdog';
-import { EDGE_LABELS } from 'auto-chrome-mcp-shared';
+import { EDGE_LABELS } from 'posendy-chrome-shared';
 import {
   RunTabError,
   markRunOwnedTab,

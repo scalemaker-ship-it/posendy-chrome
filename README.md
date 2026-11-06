@@ -1,4 +1,4 @@
-# Auto Chrome MCP
+# POSENDY Chrome
 
 > [hangwin/mcp-chrome](https://github.com/hangwin/mcp-chrome) 의 reliability fork — 5+ 개월 머지 안 된 핵심 PR 7개 흡수 + Force Reconnect + Diagnostic UI.
 > **stdio transport 강제** (HTTP 12306 안 씀). 웹스토어 등록 안 함 — npm + GitHub Release 사이드로드.
@@ -8,18 +8,18 @@
 **Windows** (PowerShell):
 
 ```powershell
-irm https://raw.githubusercontent.com/cw02326/auto-chrome-mcp/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/cw02326/posendy-chrome/main/install.ps1 | iex
 ```
 
 **macOS / Linux**:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cw02326/auto-chrome-mcp/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/cw02326/posendy-chrome/main/install.sh | bash
 ```
 
 스크립트가 대신 해주는 것:
 
-- ✅ 브리지 전역 설치 (`npm install -g auto-chrome-mcp-bridge`)
+- ✅ 브리지 전역 설치 (`npm install -g posendy-chrome-bridge`)
 - ✅ Native Messaging manifest 등록 + `doctor --fix` 자동 점검
 - ✅ 클로드 코드에 `chrome-mcp-stdio` 등록 (전역 — 어느 폴더에서 실행해도 사용 가능)
 - ✅ 최신 릴리스에서 확장 zip 내려받아 압축 해제 (+ 윈도우는 폴더와 `chrome://extensions` 자동 열기)
@@ -48,15 +48,15 @@ load 시에도 `allowed_origins` 자동 일치).
 ## 설치 — 직접 하고 싶다면
 
 ```bash
-npm install -g auto-chrome-mcp-bridge
+npm install -g posendy-chrome-bridge
 ```
 
 postinstall 이 자동으로 처리하는 것:
 
-- ✅ Native Messaging manifest 등록 (`com.autochromemcp.nativehost`)
-- ✅ 확장 zip 다운로드 → `~/Downloads/auto-chrome-mcp-extension-v<version>/`
+- ✅ Native Messaging manifest 등록 (`com.posendy.nativehost`)
+- ✅ 확장 zip 다운로드 → `~/Downloads/posendy-chrome-extension-v<version>/`
 - ✅ **클로드 코드가 설치돼 있으면** (`~/.claude/` 존재) 트러블슈팅 스킬도 설치 →
-  `~/.claude/skills/auto-chrome-mcp-doctor/SKILL.md`. 이후 "MCP 안 돼" 한 마디로 자동 진단·복구.
+  `~/.claude/skills/posendy-chrome-doctor/SKILL.md`. 이후 "MCP 안 돼" 한 마디로 자동 진단·복구.
   (이 스킬은 **문제 해결용**입니다 — 설치 수단이 아닙니다.)
 
 그 다음 클로드 코드에 등록:
@@ -64,20 +64,20 @@ postinstall 이 자동으로 처리하는 것:
 ```bash
 # macOS / Linux
 claude mcp add --scope user --transport stdio chrome-mcp-stdio \
-  -e CHROME_PORT=12320 -- node "$(npm root -g)/auto-chrome-mcp-bridge/dist/mcp/mcp-server-stdio.js"
+  -e CHROME_PORT=12330 -- node "$(npm root -g)/posendy-chrome-bridge/dist/mcp/mcp-server-stdio.js"
 ```
 
 ```powershell
 # Windows PowerShell
 claude mcp add --scope user --transport stdio chrome-mcp-stdio `
-  -e CHROME_PORT=12320 -- node "$((npm root -g).Trim())\auto-chrome-mcp-bridge\dist\mcp\mcp-server-stdio.js"
+  -e CHROME_PORT=12330 -- node "$((npm root -g).Trim())\posendy-chrome-bridge\dist\mcp\mcp-server-stdio.js"
 ```
 
 마지막으로 위의 **남은 2단계**(확장 로드 + 클로드 코드 재시작)를 진행하면 됩니다.
 
-> **자동 스킬 설치를 원하지 않으면:** `AUTO_CHROME_MCP_NO_SKILL=1 npm install -g auto-chrome-mcp-bridge`
+> **자동 스킬 설치를 원하지 않으면:** `AUTO_CHROME_MCP_NO_SKILL=1 npm install -g posendy-chrome-bridge`
 > 사용자 custom 스킬 (frontmatter `name` 이 다른 경우) 은 절대 덮어쓰지 않습니다.
-> 같은 스킬이 이미 있으면 `auto-chrome-mcp-version` 비교 후 새 버전일 때만 갱신합니다.
+> 같은 스킬이 이미 있으면 `posendy-chrome-version` 비교 후 새 버전일 때만 갱신합니다.
 
 ## 이 저장소 주소만 받고 설치를 맡은 AI 에이전트라면
 
@@ -87,7 +87,7 @@ claude mcp add --scope user --transport stdio chrome-mcp-stdio `
 2. 확장 로드는 **대신 해줄 수 없다.** 위 1단계를 사람에게 그대로 안내하고 기다린다 —
    `chrome://extensions` 는 스크립트·자동화가 접근할 수 없다.
 3. 사람이 확장을 로드했다고 하면, 클로드 코드 재시작을 안내한다. 재시작 전에는 도구가 안 보인다.
-4. 확인: `auto-chrome-mcp-bridge doctor` 가 모든 항목 OK 인지 본다 (12개 이상 — 설치된 브라우저 수와 OS 에 따라 늘어난다).
+4. 확인: `posendy-chrome-bridge doctor` 가 모든 항목 OK 인지 본다 (12개 이상 — 설치된 브라우저 수와 OS 에 따라 늘어난다).
    `Connectivity` 만 실패하면 크롬이 꺼져 있거나 확장이 아직 로드되지 않은 것이다.
 
 ## 무간섭 모드 (v1.9.0 기본값)
@@ -129,7 +129,7 @@ Downloads/mcp-screenshots/YYYY-MM-DD/<종류>_<이름>_<HHmmss>.<확장자>
 이 폴더 밖으로는 저장되지 않는다. 같은 이름이 겹치면 크롬이 알아서 번호를 붙인다.
 
 보관 기간이 지난 날짜 폴더는 **브리지가 시작할 때** 자동으로 정리된다. 기본값은 7일이 지나면
-보관 폴더로 옮기는 것이고, 설정은 `~/.auto-chrome-mcp/config.json` 에 둔다(파일이 없으면 기본값).
+보관 폴더로 옮기는 것이고, 설정은 `~/.posendy-chrome/config.json` 에 둔다(파일이 없으면 기본값).
 
 ```json
 {
@@ -141,22 +141,22 @@ Downloads/mcp-screenshots/YYYY-MM-DD/<종류>_<이름>_<HHmmss>.<확장자>
 
 - `artifactCleanup`: `archive`(기본, 보관 폴더로 이동) · `delete`(삭제) · `off`(정리 안 함)
 - `artifactRetentionDays`: 며칠이 지나면 정리할지. 기본 7. 정확히 7일 된 폴더도 대상이다.
-- `artifactArchiveDir`: 옮겨 둘 곳. 기본은 `~/auto-chrome-mcp-archive`.
+- `artifactArchiveDir`: 옮겨 둘 곳. 기본은 `~/posendy-chrome-archive`.
   실제 이동 위치는 `<보관 폴더>/YYYY-MM/YYYY-MM-DD/` 이고, 같은 이름이 있으면 접미사가 붙는다.
 
 정리 대상은 `mcp-screenshots` 아래 **날짜 이름 폴더 안의 일반 파일** 뿐이다. 그 밖의 파일,
 하위 폴더, 심볼릭 링크는 건드리지 않는다. 직접 돌려 보려면:
 
 ```bash
-auto-chrome-mcp-bridge artifacts            # 무엇이 정리될지만 보여준다 (변경 없음)
-auto-chrome-mcp-bridge artifacts --now      # 실제로 정리한다
+posendy-chrome-bridge artifacts            # 무엇이 정리될지만 보여준다 (변경 없음)
+posendy-chrome-bridge artifacts --now      # 실제로 정리한다
 ```
 
-마지막 실행 결과는 `~/.auto-chrome-mcp/artifacts-last-run.json` 에 남는다.
+마지막 실행 결과는 `~/.posendy-chrome/artifacts-last-run.json` 에 남는다.
 
 ## ⚠️ 사이트 권한 자동 허용 — 알아두세요
 
-auto-chrome-mcp 는 AI 자동화가 끊기지 않도록 Chrome 사이트 권한 prompt 를 **자동으로 처리**합니다 (v1.0.32+). 두 갈래로 동작:
+posendy-chrome 는 AI 자동화가 끊기지 않도록 Chrome 사이트 권한 prompt 를 **자동으로 처리**합니다 (v1.0.32+). 두 갈래로 동작:
 
 | 권한                | 처리 시점                      | 효과                                                                                     |
 | ------------------- | ------------------------------ | ---------------------------------------------------------------------------------------- |
@@ -213,12 +213,12 @@ auto-chrome-mcp 는 AI 자동화가 끊기지 않도록 Chrome 사이트 권한 
 설치가 꼬였다면:
 
 ```bash
-auto-chrome-mcp-bridge doctor          # 상태 점검 (12개 이상, 브라우저 수·OS 에 따라 늘어남)
-auto-chrome-mcp-bridge doctor --fix    # 자동 복구
-auto-chrome-mcp-bridge report --copy   # 진단 리포트 (이슈 등록용)
+posendy-chrome-bridge doctor          # 상태 점검 (12개 이상, 브라우저 수·OS 에 따라 늘어남)
+posendy-chrome-bridge doctor --fix    # 자동 복구
+posendy-chrome-bridge report --copy   # 진단 리포트 (이슈 등록용)
 ```
 
-브리지는 시작할 때 로컬 HTTP 인증 토큰을 `~/.auto-chrome-mcp/auth-token` 에 (소유자만 읽기) 만들고, MCP stdio 프록시가 그 파일을 읽어 인증한다. 이 파일이 없거나 남에게 읽히면 `doctor` 의 "Bridge auth token" 항목이 알려 준다. 지우면 브리지가 다음 시작 때 새로 만든다.
+브리지는 시작할 때 로컬 HTTP 인증 토큰을 `~/.posendy-chrome/auth-token` 에 (소유자만 읽기) 만들고, MCP stdio 프록시가 그 파일을 읽어 인증한다. 이 파일이 없거나 남에게 읽히면 `doctor` 의 "Bridge auth token" 항목이 알려 준다. 지우면 브리지가 다음 시작 때 새로 만든다.
 
 옛 확장 + 새 브리지 조합에서는 팝업의 강제 재연결이 401 이 나므로 확장도 함께 올려야 한다. 확장은 브리지가 네이티브 메시지로 넘겨준 토큰을 붙여야 `/admin/*` 과 `/mcp` 를 쓸 수 있다.
 

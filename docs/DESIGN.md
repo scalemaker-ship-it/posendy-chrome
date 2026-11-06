@@ -1,8 +1,8 @@
-# auto-chrome-mcp — Fork 설계 (2026-05-25)
+# posendy-chrome — Fork 설계 (2026-05-25)
 
 > **상태**: 디자인 합의 완료, implementation 미착수
 > **베이스**: [hangwin/mcp-chrome](https://github.com/hangwin/mcp-chrome) `master @ commit TBD` (11.7k stars, TS/Vue monorepo)
-> **fork repo**: `cw02326/auto-chrome-mcp` (예정, 별도 npm 패키지 + GitHub Releases 사이드로드 extension)
+> **fork repo**: `cw02326/posendy-chrome` (예정, 별도 npm 패키지 + GitHub Releases 사이드로드 extension)
 > **brainstorming 일자**: 2026-05-25
 > **합의 결정 5개**: (1) scope = L1+L2+L3+L4 풀패키지 / (2) Playwright 진입 = Chrome Launcher 별도 / (3) Force Reconnect = A→B→C 점진 escalation / (4) Playwright 미러 = 33 도구 전체 (native-only stub) / (5) fork 위치 = GitHub 별도 repo + npm 배포
 
@@ -70,7 +70,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────┐
-│                       auto-chrome-mcp (fork of hangwin/mcp-chrome)         │
+│                       posendy-chrome (fork of hangwin/mcp-chrome)         │
 ├─────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                 │
 │   Claude Code                                                                   │
@@ -79,7 +79,7 @@
 │      │  HTTP 12307/mcp (fallback, Playwright transport)                         │
 │      ▼                                                                          │
 │   ┌────────────────────────────────────────────┐                                │
-│   │  bridge process (auto-chrome-mcp-           │                                │
+│   │  bridge process (posendy-chrome-           │                                │
 │   │  bridge npm pkg)                           │                                │
 │   │                                            │                                │
 │   │  ┌────────────────┐  ┌───────────────────┐ │                                │
@@ -122,7 +122,7 @@
 - **12307** = Playwright CDP 폴백 (별도 포트, 별도 transport)
 - **9222** = Chrome CDP endpoint (launcher 가 활성화)
 - Playwright 폴백은 bridge 가 살아있는 동안에도 사용자 토글로 강제 전환 가능
-- bridge process = npm 글로벌 패키지, `npm i -g auto-chrome-mcp-bridge`
+- bridge process = npm 글로벌 패키지, `npm i -g posendy-chrome-bridge`
 
 ---
 
@@ -246,7 +246,7 @@ Connect 버튼 클릭 = 항상 5단계 자동 실행. 실패 시 escalation 권�
 
 ```
 ┌──────────────────────────────────────────────────┐
-│  Chrome MCP Server (auto-chrome-mcp fork)              │
+│  Chrome MCP Server (posendy-chrome fork)              │
 ├──────────────────────────────────────────────────┤
 │                                                  │
 │  [  ⚡ Force Reconnect  ]   ← 메인 액션 버튼      │
@@ -318,7 +318,7 @@ packages/chrome-launcher/
 2. detect-profile → user-data-dir 자동 감지
 3. ensure-port-free → 9222 점유 검사
      - 점유 X → 9222 사용
-     - 점유 O 가 auto-chrome-mcp 가 띄운 거면 → 그 인스턴스 재사용 (skip launch)
+     - 점유 O 가 posendy-chrome 가 띄운 거면 → 그 인스턴스 재사용 (skip launch)
      - 점유 O 가 다른 거면 → 9223 → 9224... escalation
 4. spawn:
    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
@@ -327,7 +327,7 @@ packages/chrome-launcher/
        --no-first-run --no-default-browser-check \
        --restore-last-session
 5. wait for CDP endpoint ready (GET http://localhost:9222/json/version)
-6. write port to ~/.auto-chrome-mcp/cdp-port (bridge 가 읽음)
+6. write port to ~/.posendy-chrome/cdp-port (bridge 가 읽음)
 ```
 
 ### Playwright CDP 폴백 동작
@@ -343,7 +343,7 @@ packages/chrome-launcher/
 │  on transport-failure (primary native msg) OR        │
 │  on user-toggle (UI 의 Playwright 모드 라디오):       │
 │                                                      │
-│  1. read ~/.auto-chrome-mcp/cdp-port                  │
+│  1. read ~/.posendy-chrome/cdp-port                  │
 │  2. browser = await chromium.connectOverCDP(         │
 │       `http://localhost:${port}`                     │
 │     )                                                │
@@ -384,14 +384,14 @@ extension popup → "Open Diagnostic Report" 클릭 → 별창 (`chrome-extensio
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│  Diagnostic Report — auto-chrome-mcp                               │
+│  Diagnostic Report — posendy-chrome                               │
 │                                          [Copy as JSON] [Run Self-Test] │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
 │  ─── Environment ───                                                    │
 │   OS              macOS 14.7 (darwin arm64)                             │
 │   Chrome          Version 140.0.7339.214                                │
-│   bridge npm      auto-chrome-mcp-bridge@1.2.0                           │
+│   bridge npm      posendy-chrome-bridge@1.2.0                           │
 │   extension       1.2.0 (matched ✅)                                    │
 │                                                                         │
 │  ─── Processes ───                                                      │
@@ -440,7 +440,7 @@ extension popup → "Open Diagnostic Report" 클릭 → 별창 (`chrome-extensio
 
 ```json
 {
-  "fork": "auto-chrome-mcp@1.2.0",
+  "fork": "posendy-chrome@1.2.0",
   "env": { "os": "darwin", "arch": "arm64", "chrome": "140.0.7339.214" },
   "processes": { "bridge": { "pid": 12345, "uptime_s": 192 } },
   "ports": { "12306": "bridge", "12307": null, "9222": "chrome" },
@@ -466,7 +466,7 @@ extension popup → "Open Diagnostic Report" 클릭 → 별창 (`chrome-extensio
 
 | 컴포넌트             | 배포 채널                                                                | 사용자 설치 방법                                                                                   |
 | -------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| **bridge** (npm pkg) | npm registry — `auto-chrome-mcp-bridge`                                  | `npm i -g auto-chrome-mcp-bridge` (원본과 충돌 X, 패키지명 다름)                                   |
+| **bridge** (npm pkg) | npm registry — `posendy-chrome-bridge`                                  | `npm i -g posendy-chrome-bridge` (원본과 충돌 X, 패키지명 다름)                                   |
 | **extension**        | ❌ Chrome Web Store 사용 안 함 (정책상 fork reject 위험 + 검수 2주 지연) | ✅ GitHub Releases 의 `.zip` → unpacked 사이드로드 (chrome://extensions 개발자모드 ON → 폴더 로드) |
 | **chrome-launcher**  | GitHub Releases 의 OS별 단일 셸                                          | macOS `.command` 더블클릭 / Windows `.bat` 더블클릭                                                |
 
@@ -475,7 +475,7 @@ extension popup → "Open Diagnostic Report" 클릭 → 별창 (`chrome-extensio
 ### Repo 초기 구조
 
 ```
-auto-chrome-mcp/                       ← cw02326/auto-chrome-mcp
+posendy-chrome/                       ← cw02326/posendy-chrome
 ├── README.md                               ← fork 의 motivation + 5 fix + 진입 방법
 ├── UPSTREAM_DIFF.md                        ← 우리 fork 가 upstream 대비 추가한 6 카테고리 명세
 ├── app/
@@ -540,14 +540,14 @@ on:
 jobs:
   publish:
     - pnpm install + pnpm build
-    - npm publish (auto-chrome-mcp-bridge, with --provenance)
+    - npm publish (posendy-chrome-bridge, with --provenance)
     - extension zip + chrome-launcher tarball → GitHub Release attach
     - self-test 8 회귀 → fail 시 release abort
 ```
 
 ---
 
-## 7. mcp-chrome (원본) vs auto-chrome-mcp (fork) 패치 비교표
+## 7. mcp-chrome (원본) vs posendy-chrome (fork) 패치 비교표
 
 ### 7.1 흡수한 기존 PR 7개 — root cause fix (모두 OPEN 인 채 upstream 머지 안 됨)
 
@@ -628,7 +628,7 @@ jobs:
 
 본 디자인이 합의된 상태이므로, implementation 단계로 넘어갈 때:
 
-1. **별도 worktree 생성** — `superpowers:using-git-worktrees` 활용해서 본 vault (`claude_lecture`) 와 격리. fork repo 는 `~/projects/auto-chrome-mcp/` 같은 별도 위치
+1. **별도 worktree 생성** — `superpowers:using-git-worktrees` 활용해서 본 vault (`claude_lecture`) 와 격리. fork repo 는 `~/projects/posendy-chrome/` 같은 별도 위치
 2. **upstream fork 떠서 베이스라인 commit hash 픽스** — `gh repo fork hangwin/mcp-chrome --clone --remote --org cw02326` (또는 본인 계정)
 3. **`superpowers:writing-plans` 로 implementation plan 작성** — 본 디자인의 L1→L2→L3→L4→L5 순서로 step-by-step plan
 4. **회귀 8 케이스 + Self-Test 인프라 먼저 구축** — TDD 원칙 (`superpowers:test-driven-development`)

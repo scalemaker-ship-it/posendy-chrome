@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — background-mode / mcp-window-manager 정책 접근자 테스트 (task C1).
+ * posendy-chrome fork — background-mode / mcp-window-manager 정책 접근자 테스트 (task C1).
  *
  * 두 모듈 모두 "기본값 true" 시맨틱: 키가 없으면(undefined) 켜짐, 명시적 false 만 꺼짐,
  * storage 읽기 실패 시에도 켜짐(fail-safe). setter 는 정해진 키에만 쓴다.
@@ -136,7 +136,7 @@ async function loadWindowManager(): Promise<McpWindowManager> {
   return await import('@/utils/mcp-window-manager');
 }
 
-describe('background-mode (auto-chrome-mcp fork — 백그라운드 작업 모드 정책)', () => {
+describe('background-mode (posendy-chrome fork — 백그라운드 작업 모드 정책)', () => {
   let h: ChromeHarness;
 
   beforeEach(() => {
@@ -182,7 +182,7 @@ describe('background-mode (auto-chrome-mcp fork — 백그라운드 작업 모�
   });
 });
 
-describe('mcp-window-manager (auto-chrome-mcp fork — 작업 창 모드)', () => {
+describe('mcp-window-manager (posendy-chrome fork — 작업 창 모드)', () => {
   let h: ChromeHarness;
 
   beforeEach(() => {

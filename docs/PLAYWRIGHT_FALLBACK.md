@@ -6,13 +6,13 @@
 
 ```bash
 # 1. bridge 설치
-npm i -g auto-chrome-mcp-bridge
+npm i -g posendy-chrome-bridge
 
 # 2. fallback transport 활성화 (env var)
 export MCP_PLAYWRIGHT_FALLBACK=1
 
 # 3. Chrome 을 launcher 로 띄움 (CDP 활성화 + default profile)
-auto-chrome-launcher      # ~/.auto-chrome-mcp/cdp-port 에 9222 박제
+auto-chrome-launcher      # ~/.posendy-chrome/cdp-port 에 9222 박제
 
 # 4. extension 연결 (popup → Connect)
 # bridge 는 12306 (native) + 12307 (fallback) 두 server 띄움
@@ -29,7 +29,7 @@ claude mcp add --transport http chrome-mcp-fallback http://127.0.0.1:12307/mcp
        │ CDP (Chrome DevTools Protocol)
        ▼
 ┌──────────────────────────────────────────────────────┐
-│  bridge process (auto-chrome-mcp-bridge)              │
+│  bridge process (posendy-chrome-bridge)              │
 │                                                      │
 │  ┌──────────────┐    ┌──────────────────────────┐    │
 │  │ Primary 12306│    │ Playwright 폴백 12307    │    │
@@ -45,7 +45,7 @@ claude mcp add --transport http chrome-mcp-fallback http://127.0.0.1:12307/mcp
 
 ## Tool coverage (48 도구)
 
-upstream 이 원래 설계했던 33개(design 문서 §4)에, auto-chrome-mcp fork 가 추가한 도구 12개를
+upstream 이 원래 설계했던 33개(design 문서 §4)에, posendy-chrome fork 가 추가한 도구 12개를
 더한 숫자다. `chrome_list_browsers` / `chrome_use_browser`는 stdio 프록시가 가로채 확장으로도
 Playwright 로도 전달되지 않으므로 이 표에 없다. `record_replay_flow_run` /
 `record_replay_list_published`는 MCP 도구 목록 자체에 노출되지 않아(의도적 보류) 역시 대상이

@@ -2,7 +2,7 @@ import type { Edge, Flow, NodeBase, Step, VariableDef } from '../types';
 import { TOOL_MESSAGE_TYPES } from '@/common/message-types';
 import { NODE_TYPES } from '@/common/node-types';
 import { STEP_TYPES } from '@/common/step-types';
-import { mapStepToNodeConfig, stepsToDAG, EDGE_LABELS } from 'auto-chrome-mcp-shared';
+import { mapStepToNodeConfig, stepsToDAG, EDGE_LABELS } from 'posendy-chrome-shared';
 
 /**
  * 클릭 유발 이동 판정 (2026-09-05 사이드패널 1단계 B).

@@ -18,7 +18,7 @@ export class FileHandler {
     // 예전에는 공유 tmp 의 고정 이름(`/tmp/chrome-mcp-uploads`)을 썼다. 같은 머신의 다른
     // 사용자가 그 경로를 먼저 만들고 파일명을 symlink 로 심어 두면, 업로드가 링크를 따라가
     // 링크 대상(남의 홈, 시스템 파일)을 덮어쓸 수 있었다. 이제 상태 디렉터리
-    // (`~/.auto-chrome-mcp/uploads`, 소유자 전용) 아래를 쓰고, 그마저 실패하면
+    // (`~/.posendy-chrome/uploads`, 소유자 전용) 아래를 쓰고, 그마저 실패하면
     // `mkdtempSync` 로 예측 불가능한 이름의 사용자 전용 디렉터리로 물러난다.
     //
     // 실제 생성은 첫 사용 시점(ensureTempDir)에 한다 — 모듈을 import 하기만 해도

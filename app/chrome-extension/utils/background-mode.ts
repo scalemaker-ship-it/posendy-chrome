@@ -1,5 +1,5 @@
 /**
- * Background work mode policy gate (auto-chrome-mcp fork).
+ * Background work mode policy gate (posendy-chrome fork).
  *
  * ON 이면 MCP 도구 실행이 사용자의 브라우징을 방해하지 않는다:
  *   - 도구 args 에 background 가 미지정이면 true 로 주입 (tools/index.ts handleCallTool 게이트)
@@ -31,7 +31,7 @@ export async function setBackgroundModeEnabled(enabled: boolean): Promise<void> 
 export const BACKGROUND_MODE_STORAGE_KEY = STORAGE_KEY;
 
 /**
- * auto-chrome-mcp fork(2026-09-05 데일리 자동화 설계 2절): **실행 컨텍스트 모드**.
+ * posendy-chrome fork(2026-09-05 데일리 자동화 설계 2절): **실행 컨텍스트 모드**.
  *
  * 예약 실행처럼 "전역 토글과 무관하게 항상 무간섭이어야 하는" 실행이 있다. 인자
  * `background: true` 만 덮는 방식으로는 부족하다. 전역 토글이 OFF 면 게이트가 작업 탭

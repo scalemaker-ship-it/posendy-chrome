@@ -1,10 +1,10 @@
 {
   "extensionName": {
-    "message": "Auto Chrome MCP",
+    "message": "POSENDY 브라우저 연결",
     "description": "확장 프로그램 이름"
   },
   "extensionDescription": {
-    "message": "크롬 브라우저와 연동하여 브라우저 기능을 제어하는 MCP 서버입니다.",
+    "message": "포샌디 브라우저 연결 확장이에요. 네이버 블로그 발행을 내 크롬에서 처리하고, AI 앱이 내 크롬을 MCP로 쓸 수 있게 해요.",
     "description": "확장 프로그램 설명"
   },
   "nativeServerConfigLabel": {
@@ -2062,7 +2062,7 @@
     "description": "Title of the local model page in the popup"
   },
   "popup_title": {
-    "message": "Auto Chrome MCP",
+    "message": "POSENDY Chrome",
     "description": "팝업 헤더 제목"
   },
   "popup_conn_meta": {
@@ -2543,7 +2543,7 @@
     }
   },
   "popup_prompt_body": {
-    "message": "지금 working dir (이 프로젝트 폴더) 의 .mcp.json 에 우리 chrome MCP (auto-chrome-mcp) 를 등록해줘. ~/.claude.json 같은 전역 설정에는 손대지 마.\n\n규칙:\n- 이름: \"chrome-mcp-stdio\"\n- transport: stdio (HTTP 안 씀)\n- command: \"node\"\n- args: [\"<npm root -g 출력값>/auto-chrome-mcp-bridge/dist/mcp/mcp-server-stdio.js\"]\n- env: { \"CHROME_PORT\": \"$PORT$\" }\n\n먼저 `npm root -g` 를 bash 로 실행해서 실제 경로 얻고, 그 다음에 working dir 의 .mcp.json (없으면 신설) 의 mcpServers.chrome-mcp-stdio 만 추가/갱신해줘. 기존 다른 server 항목은 보존.\n\n등록이 끝나면 아래 절차도 함께 안내해줘:\n1. Claude Code 를 Ctrl+C 두 번으로 종료 후 다시 실행 (mcp 서버 재로드)\n2. `/mcp` 입력해서 chrome-mcp-stdio 가 connected 상태인지 확인\n3. 확인 후 Esc 로 빠져나오기",
+    "message": "지금 working dir (이 프로젝트 폴더) 의 .mcp.json 에 우리 chrome MCP (posendy-chrome) 를 등록해줘. ~/.claude.json 같은 전역 설정에는 손대지 마.\n\n규칙:\n- 이름: \"chrome-mcp-stdio\"\n- transport: stdio (HTTP 안 씀)\n- command: \"node\"\n- args: [\"<npm root -g 출력값>/posendy-chrome-bridge/dist/mcp/mcp-server-stdio.js\"]\n- env: { \"CHROME_PORT\": \"$PORT$\" }\n\n먼저 `npm root -g` 를 bash 로 실행해서 실제 경로 얻고, 그 다음에 working dir 의 .mcp.json (없으면 신설) 의 mcpServers.chrome-mcp-stdio 만 추가/갱신해줘. 기존 다른 server 항목은 보존.\n\n등록이 끝나면 아래 절차도 함께 안내해줘:\n1. Claude Code 를 Ctrl+C 두 번으로 종료 후 다시 실행 (mcp 서버 재로드)\n2. `/mcp` 입력해서 chrome-mcp-stdio 가 connected 상태인지 확인\n3. 확인 후 Esc 로 빠져나오기",
     "description": "Claude Code 등록 prompt 본문",
     "placeholders": {
       "port": {
@@ -2608,7 +2608,7 @@
     "description": "아이콘 우클릭 메뉴"
   },
   "menu_page_parent": {
-    "message": "Auto Chrome MCP",
+    "message": "POSENDY Chrome",
     "description": "페이지 우클릭 메뉴의 부모"
   },
   "menu_page_mark_element": {
@@ -2616,7 +2616,7 @@
     "description": "페이지 우클릭 메뉴"
   },
   "menu_notification_title": {
-    "message": "Auto Chrome MCP",
+    "message": "POSENDY Chrome",
     "description": "우클릭 메뉴가 띄우는 알림 제목"
   },
   "menu_force_reconnect_ok": {

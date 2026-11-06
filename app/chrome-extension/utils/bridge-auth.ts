@@ -1,5 +1,5 @@
 /**
- * 브리지 HTTP 인증 토큰 (auto-chrome-mcp fork).
+ * 브리지 HTTP 인증 토큰 (posendy-chrome fork).
  *
  * 네이티브 호스트(브리지)는 loopback HTTP 서버를 띄운다. 같은 PC 안의 다른 프로그램이
  * 그 포트로 /admin/kill-self 나 /mcp 를 부를 수 있으므로, 브리지가 기동 시 만든 토큰을

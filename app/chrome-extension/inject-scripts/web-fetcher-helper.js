@@ -2674,7 +2674,7 @@ if (window.__WEB_FETCHER_HELPER_INITIALIZED__) {
   };
 
   /**
-   * auto-chrome-mcp fork: htmlContent 기본 상한.
+   * posendy-chrome fork: htmlContent 기본 상한.
    * 텍스트 경로(maxTotalLength: 100000) 와 같은 눈금으로 맞췄다 — 태그가 섞인 만큼
    * 실제 정보량은 더 적지만, 두 경로가 서로 다른 크기로 튀지 않게 하는 쪽을 택했다.
    */
@@ -2709,7 +2709,7 @@ if (window.__WEB_FETCHER_HELPER_INITIALIZED__) {
 
         const cleanedHtml = cleanHtmlContent(rawHtml);
 
-        // auto-chrome-mcp fork: HTML 경로에는 상한이 없어서 무거운 페이지 한 번에 수 MB 가
+        // posendy-chrome fork: HTML 경로에는 상한이 없어서 무거운 페이지 한 번에 수 MB 가
         // 그대로 모델 컨텍스트로 흘러갔다 (텍스트 경로는 100k 상한 + reader + diff 가 다 있었다).
         // 여기서 잘라 전송량 자체를 줄이고, 잘렸는지와 원문 길이를 함께 알린다.
         const htmlMaxChars =
@@ -2738,7 +2738,7 @@ if (window.__WEB_FETCHER_HELPER_INITIALIZED__) {
     // Get text content
     else if (request.action === 'getTextContent') {
       try {
-        // auto-chrome-mcp fork (T5): readerMode 는 배경 스크립트가 명시적으로 켤 때만 동작한다.
+        // posendy-chrome fork (T5): readerMode 는 배경 스크립트가 명시적으로 켤 때만 동작한다.
         // (content-indexer 등 다른 호출자는 플래그를 보내지 않으므로 기존 동작 유지)
         const readerMode = request.readerMode === true;
         const fullText = (document.body && document.body.innerText) || '';
@@ -3004,7 +3004,7 @@ if (window.__WEB_FETCHER_HELPER_INITIALIZED__) {
 
   /*
    * ---------------------------------------------------------------------------
-   * auto-chrome-mcp fork (T5): reader 모드 본문 추출
+   * posendy-chrome fork (T5): reader 모드 본문 추출
    *
    * 목적: get_web_content 기본 응답에서 nav/header/footer/광고/쿠키 배너 같은 보일러플레이트를
    * 걷어내 토큰을 줄인다. 원문 그대로가 필요하면 도구 인자 raw:true 로 언제든 되돌릴 수 있다.

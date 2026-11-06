@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — chrome_wait_for 의 "폴링 간격을 다 채우지 않고 DOM 변화로 깨어나기".
+ * posendy-chrome fork — chrome_wait_for 의 "폴링 간격을 다 채우지 않고 DOM 변화로 깨어나기".
  *
  * 예전에는 조건이 이미 충족됐어도 다음 폴링(기본 250ms)까지 무조건 기다렸다.
  * 이제는 페이지에 MutationObserver 를 걸어 두고 변화가 생기면 즉시 다시 확인한다.

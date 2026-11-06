@@ -16,7 +16,7 @@ import {
   type ElementPickerUiState,
 } from '@/shared/element-picker';
 import { BACKGROUND_MESSAGE_TYPES, TOOL_MESSAGE_TYPES } from '@/common/message-types';
-import type { PickedElement } from 'auto-chrome-mcp-shared';
+import type { PickedElement } from 'posendy-chrome-shared';
 
 // ============================================================
 // Message Types

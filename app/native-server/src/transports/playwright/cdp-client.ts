@@ -2,14 +2,14 @@
  * CDP client wrapper — chromium.connectOverCDP 의 fork 측 manager.
  *
  * 사용자가 chrome-launcher 로 띄운 Chrome (--remote-debugging-port=9222) 에 attach.
- * Port 는 ~/.auto-chrome-mcp/cdp-port 에서 읽음. attach 실패 시 명확한 에러.
+ * Port 는 ~/.posendy-chrome/cdp-port 에서 읽음. attach 실패 시 명확한 에러.
  */
 import { chromium, type Browser, type BrowserContext, type Page } from 'playwright';
 import { readFileSync, existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import path from 'node:path';
 
-const CDP_PORT_FILE = path.join(homedir(), '.auto-chrome-mcp', 'cdp-port');
+const CDP_PORT_FILE = path.join(homedir(), '.posendy-chrome', 'cdp-port');
 
 export interface CdpAttachState {
   browser: Browser;

@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — 백그라운드 탭 렌더링 유지(frame pump) 테스트.
+ * posendy-chrome fork — 백그라운드 탭 렌더링 유지(frame pump) 테스트.
  *
  * 이 모듈은 원래 `Page.startScreencast` 로 구현돼 있었고 테스트가 하나도 없었다.
  * 실브라우저에서 재 보니 스크린캐스트는 숨은 탭의 프레임을 되살리지 못했는데도

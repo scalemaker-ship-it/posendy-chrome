@@ -1,5 +1,5 @@
 /**
- * Force-focus policy gate (auto-chrome-mcp fork).
+ * Force-focus policy gate (posendy-chrome fork).
  *
  * v1.9.0 부터 구현체는 `utils/activation-guard.ts` 하나로 합쳤다. 탭 활성화와 윈도우 포커스가
  * 서로 다른 파일에 흩어져 있어 경로마다 조건이 어긋난 것이 무간섭 모드가 새던 원인이었다.

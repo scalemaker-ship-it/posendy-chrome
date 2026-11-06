@@ -4,7 +4,7 @@ import * as os from 'os';
 import * as path from 'path';
 
 /**
- * auto-chrome-mcp fork — stdio 프록시 최초 연결의 병렬 안전성 회귀 테스트 (Codex 지적 F6)
+ * posendy-chrome fork — stdio 프록시 최초 연결의 병렬 안전성 회귀 테스트 (Codex 지적 F6)
  * + 브리지 bearer 토큰 전달 (F1 클라이언트 측).
  *
  * F6: 예전 ensureMcpClient 는 `mcpClient = new Client(...)` 로 전역을 먼저 채운 뒤에
@@ -87,7 +87,7 @@ const loadModule = async () => {
 };
 
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'acm-stdio-auth-'));
-const stateDir = path.join(tempRoot, '.auto-chrome-mcp');
+const stateDir = path.join(tempRoot, '.posendy-chrome');
 const TOKEN = 'c'.repeat(64);
 
 const originalChromePort = process.env.CHROME_PORT;
@@ -98,7 +98,7 @@ describe('mcp-server-stdio — 최초 연결의 병렬 안전성 + 토큰 전달
     jest.spyOn(process, 'exit').mockImplementation(((code?: number) => {
       throw new Error(`unexpected process.exit(${code}) during test`);
     }) as never);
-    process.env.CHROME_PORT = '12320';
+    process.env.CHROME_PORT = '12330';
     process.env.AUTO_CHROME_MCP_HOME = stateDir;
     fs.mkdirSync(stateDir, { recursive: true });
     fs.writeFileSync(path.join(stateDir, 'auth-token'), `${TOKEN}\n`);
@@ -192,7 +192,7 @@ describe('mcp-server-stdio — 최초 연결의 병렬 안전성 + 토큰 전달
     await releaseConnects();
     await pending;
 
-    expect(transportRecords[0].url).toBe('http://127.0.0.1:12320/mcp');
+    expect(transportRecords[0].url).toBe('http://127.0.0.1:12330/mcp');
     expect(transportRecords[0].options?.requestInit?.headers).toEqual({
       Authorization: `Bearer ${TOKEN}`,
     });

@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — chrome_navigate 의 "이미 열린 탭" 재사용 범위 회귀 테스트.
+ * posendy-chrome fork — chrome_navigate 의 "이미 열린 탭" 재사용 범위 회귀 테스트.
  * (2026-09-05 Codex 4차 검토 항목 1·4·5)
  *
  * 항목 1: 재사용 범위가 호출 인자 `background` 에 묶여 있었다. 전역 백그라운드 작업 모드가
@@ -273,7 +273,7 @@ describe('항목 1 — 재사용 범위는 전역 모드가 정한다 (호출 �
   });
 
   it('회귀: file:// 도 마찬가지다 — background:false 로 사용자의 file: 탭을 잡지 않는다', async () => {
-    const fileUrl = 'file:///C:/PROJECTS/auto-chrome-mcp/README.md';
+    const fileUrl = 'file:///C:/PROJECTS/posendy-chrome/README.md';
     h = installChrome({ backgroundMode: true, tabs: [userTab(fileUrl)] });
     (chrome as unknown as { extension: unknown }).extension = {
       isAllowedFileSchemeAccess: vi.fn(async () => true),

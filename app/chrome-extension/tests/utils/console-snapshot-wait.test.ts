@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — chrome_console(snapshot) 의 플러시 대기.
+ * posendy-chrome fork — chrome_console(snapshot) 의 플러시 대기.
  *
  * 계약: 스냅샷은 **고정 2초**를 기다린다. "잠깐 조용해졌다"를 끝으로 보면 늦게 도착하는
  * 오류(예: 800ms 뒤 터지는 예외)를 통째로 놓친다. 콘솔은 그 늦은 한 줄을 보려고 쓰는 도구라

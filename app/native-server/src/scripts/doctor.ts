@@ -34,7 +34,7 @@ import {
   type BridgeIdentity,
 } from './port-probe';
 
-const EXPECTED_PORT = 12320;
+const EXPECTED_PORT = 12330;
 const SCHEMA_VERSION = 1;
 // v1.0.37: 옛날 hangwin (2025-10-09 이전, >=14) 의 install 경험을 그대로 복원.
 // 사용자 명시 요청 — engines.node 와 doctor MIN 모두 14 로 통일.
@@ -626,7 +626,7 @@ export function parsePortValue(value: unknown): number | null {
  * 붙으므로, **사용자가 지정한 포트와 포크 기본 포트만** 담는다.
  *
  * 고정 포트 하나만 보면 안 된다. `.mcp.json` 의 `env.CHROME_PORT` 로 포트를 바꿔 쓰는
- * 설치에서는 그 포트에 브리지가 있고, 12320 에는 아무도 없다. 그러면 401 카운트를 읽지
+ * 설치에서는 그 포트에 브리지가 있고, 12330 에는 아무도 없다. 그러면 401 카운트를 읽지
  * 못한 채 "확장이 토큰을 보낸다" 고 답하게 된다.
  *
  * 순서: env CHROME_PORT(stdio 프록시의 loadConfig 와 같은 우선순위) -> stdio-config.json 의
@@ -901,7 +901,7 @@ export async function buildPortChecks(input: PortChecksInput): Promise<PortCheck
         });
 
         // Connectivity check
-        // auto-chrome-mcp fork v1.0.30+: hardcoded port 만 ping 하면 false WARN 가능 - bridge 가
+        // posendy-chrome fork v1.0.30+: hardcoded port 만 ping 하면 false WARN 가능 - bridge 가
         // v1.0.19+ dynamic port 로 popup 의 사용자 입력 port 에서 listen 하므로. configured
         // port 의 /ping 성공 여부와 무관하게 이 PC 의 실제 listen port 들도 함께 본다.
         const pingUrl = new URL('/ping', url);
@@ -1372,7 +1372,7 @@ export async function collectDoctorReport(options: DoctorOptions): Promise<Docto
   checks.push(...portChecks.checks);
   nextSteps.push(...portChecks.nextSteps);
 
-  // Check 8: Bridge auth token (auto-chrome-mcp fork)
+  // Check 8: Bridge auth token (posendy-chrome fork)
   // 브리지는 listen 전에 무작위 bearer 토큰을 이 파일에 남기고, stdio 프록시가 그걸 읽어
   // Authorization 헤더로 보낸다. 파일이 없거나 남에게 읽히면 인증이 무력해진다.
   const tokenInspection = inspectTokenFile();
@@ -1435,7 +1435,7 @@ export async function collectDoctorReport(options: DoctorOptions): Promise<Docto
     nextSteps.push(tokenFix[0]);
   }
 
-  // Check 8b: 확장이 브리지 토큰을 실제로 쓰고 있는가 (auto-chrome-mcp fork)
+  // Check 8b: 확장이 브리지 토큰을 실제로 쓰고 있는가 (posendy-chrome fork)
   //
   // 확장이 보내는 START 메시지에는 auth 지원 여부가 없어서, 핸드셰이크만으로는 "토큰을
   // 받고도 안 쓰는 옛 확장"을 구분할 수 없다. 대신 브리지가 세어 둔 값을 읽는다:

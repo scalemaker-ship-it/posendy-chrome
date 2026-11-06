@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — CDP attach 동시성 회귀 테스트.
+ * posendy-chrome fork — CDP attach 동시성 회귀 테스트.
  *
  * 재현하려는 실패: attach 는 getTargets → (await) → chrome.debugger.attach 로 await 를 두 번
  * 건넌다. 같은 탭에 attach 가 동시에 들어오면 둘 다 "아무도 안 붙어 있다" 를 보고 각자

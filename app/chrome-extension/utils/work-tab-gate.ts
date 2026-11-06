@@ -1,5 +1,5 @@
 /**
- * 백그라운드 작업 모드 게이트 (auto-chrome-mcp fork).
+ * 백그라운드 작업 모드 게이트 (posendy-chrome fork).
  *
  * 도구 호출 인자를 "무간섭" 방향으로 보정하는 판정을 한곳에 모았다. 예전에는 이 판정이
  * entrypoints/background/tools/index.ts 안에 있었는데, 그 모듈은 도구 레지스트리 전체를
@@ -26,7 +26,7 @@
  *     없고, handleCallTool 이 ToolCallParam 에서 받은 값만 실어 준다.
  */
 
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { EFFECTIVE_BACKGROUND_MODE_ARG, isBackgroundModeEnabledFor } from '@/utils/background-mode';
 import { getWorkTabId, sessionKeyOf } from '@/utils/work-tab-manager';
 
@@ -130,7 +130,7 @@ export const TAB_ID_INJECT_TOOLS: ReadonlySet<string> = new Set<string>([
   B.SCROLL_COLLECT,
   B.EXTRACT,
   B.FIND,
-  // auto-chrome-mcp fork(B1~B4)
+  // posendy-chrome fork(B1~B4)
   B.STORAGE,
   B.SAVE_PDF,
   B.EMULATE,
@@ -562,7 +562,7 @@ export async function applyBackgroundModeGate(
     if (workTabId !== null) {
       patched.tabId = workTabId;
     } else if (requiresWorkTab(name, args)) {
-      // auto-chrome-mcp fork(F2): 여기서 막지 않으면 도구 구현이 사용자의 활성 탭으로
+      // posendy-chrome fork(F2): 여기서 막지 않으면 도구 구현이 사용자의 활성 탭으로
       // fallback 한다. 새 세션의 첫 호출이 사용자가 보던 페이지를 읽거나 클릭했다.
       return {
         args: patched,

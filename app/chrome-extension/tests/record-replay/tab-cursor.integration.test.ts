@@ -245,7 +245,7 @@ describe('tab cursor integration (M3-full batch 2)', () => {
       const result = await executor.execute(ctx, step as never, { tabId: TAB_ID });
 
       expect(result.executor).toBe('actions');
-      // auto-chrome-mcp fork v1.9.0: 창 생성은 mcp-window-manager 를 거친다 —
+      // posendy-chrome fork v1.9.0: 창 생성은 mcp-window-manager 를 거친다 —
       // 강제 포커스 기본 OFF 라 focused:false 로 만들고, 기본 배치(minimized)는 만든 뒤
       // windows.update 로 적용한다(create 인자의 state 는 크롬이 무시한다).
       expect(mocks.windowsCreate).toHaveBeenCalledWith(
@@ -267,7 +267,7 @@ describe('tab cursor integration (M3-full batch 2)', () => {
       const result = await executor.execute(ctx, step as never, { tabId: TAB_ID });
 
       expect(result.executor).toBe('actions');
-      // auto-chrome-mcp fork v1.9.0: 사용자 창에 만드는 탭은 활성화하지 않는다
+      // posendy-chrome fork v1.9.0: 사용자 창에 만드는 탭은 활성화하지 않는다
       // (activation-guard 가 active:true 를 false 로 강등).
       expect(mocks.tabsCreate).toHaveBeenCalledWith(
         expect.objectContaining({ url: 'https://example.com/new-page', active: false }),
@@ -332,7 +332,7 @@ describe('tab cursor integration (M3-full batch 2)', () => {
       expect(result.executor).toBe('actions');
       // v1.9.0: 백그라운드 작업 모드 기본 ON — 활성화하지 않는다.
       expect(mocks.tabsUpdate).not.toHaveBeenCalled();
-      // auto-chrome-mcp fork: window 포커스는 focusWindowIfAllowed 게이트 통과 시에만 — 기본 OFF 라 미호출
+      // posendy-chrome fork: window 포커스는 focusWindowIfAllowed 게이트 통과 시에만 — 기본 OFF 라 미호출
       expect(mocks.windowsUpdate).not.toHaveBeenCalled();
     });
 

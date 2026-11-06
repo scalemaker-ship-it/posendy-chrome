@@ -7,7 +7,7 @@ if (window.__FILL_HELPER_INITIALIZED__) {
 } else {
   window.__FILL_HELPER_INITIALIZED__ = true;
 
-  // auto-chrome-mcp fork(A1): 입력 대상이 아직 렌더되지 않았을 때 즉시 실패하지 않고 짧게 폴링한다.
+  // posendy-chrome fork(A1): 입력 대상이 아직 렌더되지 않았을 때 즉시 실패하지 않고 짧게 폴링한다.
   async function __acmWaitForSelectorElement(selector, timeoutMs) {
     let element = null;
     try {
@@ -121,7 +121,7 @@ if (window.__FILL_HELPER_INITIALIZED__) {
           };
         }
       } else {
-        // auto-chrome-mcp fork(A1): 아직 렌더되지 않았을 수 있으므로 짧게 기다린다.
+        // posendy-chrome fork(A1): 아직 렌더되지 않았을 수 있으므로 짧게 기다린다.
         element = await __acmWaitForSelectorElement(selector, waitForElementMs);
       }
       if (!element) {
@@ -440,7 +440,7 @@ if (window.__FILL_HELPER_INITIALIZED__) {
   }
 
   /**
-   * auto-chrome-mcp fork: iframe 탐색용 probe.
+   * posendy-chrome fork: iframe 탐색용 probe.
    * 부수효과 없이 "이 프레임에 해당 셀렉터/ref 요소가 있는가"만 확인한다.
    * background 의 frame-resolver 가 각 프레임에 이 메시지를 보내 대상 프레임을 고른다.
    * 주의: 응답에 `error` 키를 쓰면 sendMessageToTab 이 throw 하므로 probeError 를 쓴다.
@@ -511,7 +511,7 @@ if (window.__FILL_HELPER_INITIALIZED__) {
       sendResponse({ status: 'pong' });
       return false;
     } else if (request.action === 'chrome_fill_or_select_probe_selector') {
-      // auto-chrome-mcp fork: iframe 대상 프레임 탐색용 probe (조회 전용)
+      // posendy-chrome fork: iframe 대상 프레임 탐색용 probe (조회 전용)
       sendResponse(probeTarget(request.selector, request.ref, request.isXPath));
       return false;
     }

@@ -226,7 +226,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { STORAGE_KEYS } from '@/common/constants';
 
 type ListItem = {

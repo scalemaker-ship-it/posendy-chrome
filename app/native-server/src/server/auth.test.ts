@@ -15,11 +15,11 @@ import * as path from 'path';
 import { getStaleExtensionReport, resetStaleExtensionReport } from './auth-guard';
 
 /**
- * auto-chrome-mcp fork — 로컬 HTTP 브리지 인증 회귀 테스트 (Codex 지적 F1).
+ * posendy-chrome fork — 로컬 HTTP 브리지 인증 회귀 테스트 (Codex 지적 F1).
  *
  * 예전에는 `/mcp` 와 `/admin/*` 에 인증이 전혀 없었다. CORS 는 응답 읽기만 막고 요청
  * 실행은 못 막으므로, 아무 웹페이지나 다음 한 방으로 남의 브리지를 죽일 수 있었다:
- *   fetch('http://127.0.0.1:12320/admin/kill-self', { method: 'POST' })
+ *   fetch('http://127.0.0.1:12330/admin/kill-self', { method: 'POST' })
  * 게다가 CORS 검사가 startsWith('http://127.0.0.1') 라서
  * `http://127.0.0.1.attacker.example` 같은 원격 origin 도 로컬로 취급됐다.
  *
@@ -31,7 +31,7 @@ import { getStaleExtensionReport, resetStaleExtensionReport } from './auth-guard
  */
 const TOKEN = 'a'.repeat(64);
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'acm-server-auth-'));
-const stateDir = path.join(tempRoot, '.auto-chrome-mcp');
+const stateDir = path.join(tempRoot, '.posendy-chrome');
 
 let ServerInstance: any;
 let exitSpy: any;
@@ -70,7 +70,7 @@ afterEach(() => {
 
 const agent = () => supertest(ServerInstance.getInstance().server);
 
-describe('브리지 HTTP 인증 (auto-chrome-mcp fork)', () => {
+describe('브리지 HTTP 인증 (posendy-chrome fork)', () => {
   test('GET /ping 은 공개다 (확장 heartbeat)', async () => {
     const res = await agent().get('/ping');
     expect(res.status).toBe(200);
@@ -83,7 +83,7 @@ describe('브리지 HTTP 인증 (auto-chrome-mcp fork)', () => {
     // 살아 있는지는 여전히 토큰 없이 확인된다 (Force Reconnect 의 probe 가 이걸 쓴다).
     expect(res.status).toBe(200);
     expect(res.body.status).toBe('ok');
-    expect(res.body.fork).toBe('auto-chrome-mcp');
+    expect(res.body.fork).toBe('posendy-chrome');
     // 예전에는 여기서 pid·node 버전·메모리·transport 수가 그대로 나왔다.
     expect(res.body.bridge).toBeUndefined();
     expect(res.body.transports).toBeUndefined();

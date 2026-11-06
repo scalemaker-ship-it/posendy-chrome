@@ -9,7 +9,7 @@
 
 import { TOOL_MESSAGE_TYPES } from '@/common/message-types';
 import { handleCallTool } from '@/entrypoints/background/tools';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { ENGINE_CONSTANTS } from '../../engine/constants';
 import { waitForNavigationDone } from '../../engine/policies/wait';
 import { waitForNetworkIdle } from '../../rr-utils';

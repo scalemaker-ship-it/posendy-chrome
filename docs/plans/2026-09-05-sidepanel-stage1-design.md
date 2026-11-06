@@ -29,7 +29,7 @@
 - 방법: 팝업과 같은 `getMessage`(`utils/i18n.ts`) + `_locales/ko/messages.json` 키 추가. `_locales/en` 에도 같은 키를 영어로 추가(다른 로케일은 en 폴백이면 그대로). 키 이름은 `sidepanel_` 접두사.
 - `loading-texts.ts` 의 중국어 49개는 한국어 문구로 교체(키로 뺄 필요 없이 파일 안에서 한국어 배열로 둬도 됨).
 - 용어 통일: 흐름(flow), 발행(publish), 예약(schedule), 실행 이력(run history), 시험 실행(test run), 시작 URL, 변수, 민감값.
-- 합격: `rg -n "[\u4e00-\u9fff]" entrypoints/sidepanel components/workflows` 가 0건(주석 제외 아님, 주석도 한국어로). 영어 UI 문구 0건(코드 식별자·로그 제외). `pnpm --filter auto-chrome-mcp-extension build` 성공. vitest 기존 통과 유지.
+- 합격: `rg -n "[\u4e00-\u9fff]" entrypoints/sidepanel components/workflows` 가 0건(주석 제외 아님, 주석도 한국어로). 영어 UI 문구 0건(코드 식별자·로그 제외). `pnpm --filter posendy-chrome-extension build` 성공. vitest 기존 통과 유지.
 
 ### B. 페이지 이동 녹화 + 시작 URL + 도구 실행 시 탭 자동 열기 (opus, C 와 병렬)
 
@@ -67,9 +67,9 @@
 
 ## 검증 순서
 
-1. `pnpm build:shared` → `pnpm --filter auto-chrome-mcp-extension build` → `pnpm --filter auto-chrome-mcp-extension test` → `pnpm --filter auto-chrome-mcp-bridge test`.
+1. `pnpm build:shared` → `pnpm --filter posendy-chrome-extension build` → `pnpm --filter posendy-chrome-extension test` → `pnpm --filter posendy-chrome-bridge test`.
 2. Codex 교차 리뷰(diff 기준).
-3. 배포본 `C:/PROJECTS/auto-chrome-mcp-extension` 교체 + 확장 리로드(options.html 에서 `chrome.runtime.reload()`).
+3. 배포본 `C:/PROJECTS/posendy-chrome-extension` 교체 + 확장 리로드(options.html 에서 `chrome.runtime.reload()`).
 4. 실제 시연: example.com 또는 로그인 없는 사이트에서 녹화 → 저장하고 발행 → `record_replay_list_published` 1건 → `record_replay_flow_run` 성공.
 
 ## B 구현 메모 (2026-09-05 구현자 기록)

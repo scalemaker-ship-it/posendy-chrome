@@ -15,7 +15,7 @@
  *      단 토큰 판정은 공개 경로에서도 해 둔다. `/health` 가 상세(pid·node·메모리·세션 수)를
  *      줄지 말지 그 결과로 정한다.
  *   ④ Origin 헤더가 있으면 허용 목록(확장 origin / loopback) 안이어야 한다. 밖이면 403.
- *   ⑤ 나머지는 전부 `Authorization: Bearer <token>` 이 `~/.auto-chrome-mcp/auth-token` 과
+ *   ⑤ 나머지는 전부 `Authorization: Bearer <token>` 이 `~/.posendy-chrome/auth-token` 과
  *      일치해야 한다 (상수 시간 비교). 예외는 없다.
  *
  * 예전에는 확장 origin 을 신원으로 인정해 토큰 없이 통과시켰다. 그 예외는 제거했다:
@@ -31,7 +31,7 @@ import { isAllowedCorsOrigin, isAllowedHostHeader, isExtensionOrigin } from '../
 export const PUBLIC_PATHS: ReadonlySet<string> = new Set(['/ping', '/health']);
 
 /** 대체 헤더 — Authorization 을 쓰기 어려운 클라이언트용. */
-export const TOKEN_HEADER = 'x-auto-chrome-mcp-token';
+export const TOKEN_HEADER = 'x-posendy-chrome-token';
 
 export const normalizeRoutePath = (url: unknown): string => {
   const raw = typeof url === 'string' ? url : '';
@@ -128,7 +128,7 @@ export const decideAuthorization = (input: AuthDecisionInput): AuthDecision => {
     body: {
       error: ERROR_MESSAGES.UNAUTHORIZED,
       reason: 'unauthorized',
-      hint: `Send "Authorization: Bearer <token>" with the token in ${getTokenFilePath()}. The extension gets the same token in the SERVER_STARTED message; update the extension if its Force Reconnect returns 401. Run "auto-chrome-mcp-bridge doctor" if the token file is missing.`,
+      hint: `Send "Authorization: Bearer <token>" with the token in ${getTokenFilePath()}. The extension gets the same token in the SERVER_STARTED message; update the extension if its Force Reconnect returns 401. Run "posendy-chrome-bridge doctor" if the token file is missing.`,
     },
   };
 };

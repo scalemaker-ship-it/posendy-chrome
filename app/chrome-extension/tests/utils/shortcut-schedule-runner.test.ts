@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — chrome_shortcut 예약 실행기 (설계 구현 순서 3·4단계).
+ * posendy-chrome fork — chrome_shortcut 예약 실행기 (설계 구현 순서 3·4단계).
  *
  * 계약: docs/plans/2026-09-05-daily-automation-design.md 1·2·4·5절.
  * 테스트 이름 앞의 번호는 위임 계약의 체크리스트 번호다 (7, 8, 12, 13, 14, 15, 16, 17, 19)
@@ -508,7 +508,7 @@ describe('14. 알림은 연속 실패 1회째와 3회째만', () => {
     expect(h.notifications).toHaveLength(2);
     // 본문 allowlist: 이름·코드·step 번호 뿐. 페이지 텍스트가 새지 않는다.
     for (const notification of h.notifications) {
-      expect(notification.title).toBe('Auto Chrome MCP 예약 실패');
+      expect(notification.title).toBe('POSENDY Chrome 예약 실패');
       expect(notification.message).toMatch(/^job: [a-z][a-z0-9_]*( \(step \d+\))?$/);
       expect(notification.message).not.toContain('SECRETPAGE');
       expect(notification.message).not.toContain('점검');

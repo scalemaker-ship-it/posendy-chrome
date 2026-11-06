@@ -9,7 +9,7 @@
  */
 
 import { handleCallTool } from '@/entrypoints/background/tools';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { ENGINE_CONSTANTS } from '../../engine/constants';
 import {
   maybeQuickWaitForNav,
@@ -51,7 +51,7 @@ async function executeClick<T extends 'click' | 'dblclick'>(
   }
 
   // Ensure page is read before locating element
-  // auto-chrome-mcp fork: tabId 를 빼면 게이트가 이 세션의 작업 탭을 주입하거나(모드 ON)
+  // posendy-chrome fork: tabId 를 빼면 게이트가 이 세션의 작업 탭을 주입하거나(모드 ON)
   // 도구 구현이 사용자의 활성 탭으로 fallback 한다(모드 OFF). 재생 중인 탭을 명시한다.
   await handleCallTool({ name: TOOL_NAMES.BROWSER.READ_PAGE, args: actionToolArgs(ctx, {}) });
 

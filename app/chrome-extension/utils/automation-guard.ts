@@ -1,5 +1,5 @@
 /**
- * Automation guard (auto-chrome-mcp fork) — 차단(밴) 예방 안전장치.
+ * Automation guard (posendy-chrome fork) — 차단(밴) 예방 안전장치.
  *
  * E1. 도메인별 속도 제한(soft throttle): 같은 도메인에 액션성 도구 호출이 몰리면
  *     초과분에 지연을 넣어 버스트를 완만하게 만든다. 차단하지 않고 속도만 늦춘다.
@@ -20,7 +20,7 @@ const REPEAT_LIMIT = 12; // 동일 호출 12회 연속이면 루프 폭주로 �
 const STORAGE_KEY = 'automationGuardEnabled';
 
 /**
- * auto-chrome-mcp fork: 인메모리 캐시. 이 가드는 액션성 도구 호출마다 평가되므로
+ * posendy-chrome fork: 인메모리 캐시. 이 가드는 액션성 도구 호출마다 평가되므로
  * `chrome.storage.local.get` 을 매번 부르면 낭비가 크다(work-tab-manager 의 캐시 패턴 참고).
  * null 이면 "아직 캐시 없음"이고, 그 외에는 캐시된 값을 그대로 쓴다.
  * popup 에서 직접 storage 를 바꿔도 `chrome.storage.onChanged` 로 즉시 반영된다.
@@ -101,7 +101,7 @@ async function resolveDomain(args: any): Promise<string> {
 }
 
 /**
- * auto-chrome-mcp fork(P1): 세션 + 레인 버킷. work-tab-manager 의 sessionKeyOf 와 같은 규칙이지만,
+ * posendy-chrome fork(P1): 세션 + 레인 버킷. work-tab-manager 의 sessionKeyOf 와 같은 규칙이지만,
  * 가드는 chrome API 부작용 없는 순수 모듈로 두려고 여기에 따로 둔다.
  */
 function sessionBucketOf(args: any): string {
@@ -115,7 +115,7 @@ function stableKey(name: string, args: any): string {
   try {
     const clone = { ...(args ?? {}) };
     delete clone._mcpSessionId;
-    // auto-chrome-mcp fork(P1): lane 은 '누가' 를 가리킬 뿐 호출 내용이 아니다.
+    // posendy-chrome fork(P1): lane 은 '누가' 를 가리킬 뿐 호출 내용이 아니다.
     // 반복 키에서 빼고, 대신 세션 버킷을 레인 단위로 쪼갠다.
     delete clone.lane;
     return `${name}:${JSON.stringify(clone)}`;
@@ -136,7 +136,7 @@ export async function applyAutomationGuard(name: string, args: any): Promise<Gua
   if (!(await isAutomationGuardEnabled())) return null;
 
   const now = Date.now();
-  // auto-chrome-mcp fork(P1): 레인별 버킷. 병렬 에이전트가 같은 일을 하더라도
+  // posendy-chrome fork(P1): 레인별 버킷. 병렬 에이전트가 같은 일을 하더라도
   // 서로의 반복 카운터를 밀어 runaway 로 오판되지 않게 한다.
   const sessionId = sessionBucketOf(args);
 

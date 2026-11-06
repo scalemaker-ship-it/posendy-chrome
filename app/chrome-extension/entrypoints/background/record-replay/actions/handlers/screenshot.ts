@@ -6,7 +6,7 @@
  */
 
 import { handleCallTool } from '@/entrypoints/background/tools';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { failed, invalid, ok } from '../registry';
 import type { ActionHandler } from '../types';
 import { actionToolArgs, resolveString } from './common';
@@ -65,7 +65,7 @@ export const screenshotHandler: ActionHandler<'screenshot'> = {
         storeBase64: true,
         // 참조로 남기려면 파일이 실제로 있어야 한다.
         saveToDownloads: true,
-        // auto-chrome-mcp fork: 스크린샷 도구는 base64 를 MCP image 블록으로만 내보낸다.
+        // posendy-chrome fork: 스크린샷 도구는 base64 를 MCP image 블록으로만 내보낸다.
         // 여기서는 크기(bytes) 계산에만 쓰고 변수에는 넣지 않는다 (검토 항목 7).
         includeBase64InText: true,
         fullPage: action.params.fullPage === true,

@@ -27,12 +27,12 @@ design 의 핵심 결정 (D-1/D-2/D-3) 은 모두 유지. agent chat **기능** 
 | `pnpm-lock.yaml` 에서 `better-sqlite3` / `drizzle-orm` / `@anthropic-ai/claude-agent-sdk` | grep hit 0                                                  |
 | `pnpm build:shared / build:native / build:extension`                                      | 3개 모두 성공                                               |
 | chrome extension chunk 에서 agent-chat 흔적                                               | 0 (useAgentTheme chunk 만 잔존 = design 토큰)               |
-| `pnpm --filter auto-chrome-mcp-bridge test` (jest)                                        | **13/13 pass**                                              |
+| `pnpm --filter posendy-chrome-bridge test` (jest)                                        | **13/13 pass**                                              |
 | 타입 에러 baseline 비교                                                                   | HEAD: 125 → after change: 118 (7 감소, 0 새 에러 introduce) |
 
 ## 1. Problem
 
-### 1-A. `npm i -g auto-chrome-mcp-bridge` 가 Python 설치를 요구한다
+### 1-A. `npm i -g posendy-chrome-bridge` 가 Python 설치를 요구한다
 
 옛날 hangwin 은 안 그랬는데, 우리 fork 부터 (정확히는 **hangwin 의 2025-12-15 commit `704e04d` "feat: add cli agent" 이후 baseline 을 따라간 우리 fork 부터**) Python / VS Build Tools / Xcode CLT 설치를 요구하기 시작.
 
@@ -45,7 +45,7 @@ design 의 핵심 결정 (D-1/D-2/D-3) 은 모두 유지. agent chat **기능** 
 
 세 의존성 모두 **`app/native-server/src/agent/` 하나의 디렉토리에서만 사용**. 우리 fork 의 명시적 타겟 시나리오 (Claude Code → chrome-mcp-stdio → 33 MCP 도구) 에는 전혀 안 쓰임.
 
-### 1-B. Windows 사용자의 `~/Downloads/auto-chrome-mcp-extension-v1.0.X/` 폴더가 비어있다
+### 1-B. Windows 사용자의 `~/Downloads/posendy-chrome-extension-v1.0.X/` 폴더가 비어있다
 
 `app/native-server/src/scripts/postinstall.ts:59-67` 의 Windows extension 다운로드 분기가 silent fail.
 
@@ -64,7 +64,7 @@ await runCmd('powershell', [
 
 ## 2. Goals
 
-1. `npm i -g auto-chrome-mcp-bridge` 가 **Python / VS Build Tools / Xcode CLT 일절 요구하지 않게** 만들기. 옛날 hangwin (2025-12-15 이전) install 경험 복원.
+1. `npm i -g posendy-chrome-bridge` 가 **Python / VS Build Tools / Xcode CLT 일절 요구하지 않게** 만들기. 옛날 hangwin (2025-12-15 이전) install 경험 복원.
 2. Windows postinstall 의 extension 다운로드 단계를 **robust** 하게: 다운로드 실패는 loud failure 로, 빈 폴더 절대 생성 안 함.
 3. 위 두 가지가 우리 fork 의 **명시적 기능 (Force Reconnect, Playwright CDP fallback, Diagnostic UI, MCP 33 도구)** 에 영향 없도록 한다.
 
@@ -111,7 +111,7 @@ app/native-server/src/server/routes/agent.ts   ← HTTP route 통째 삭제
 
 ### 5-3. 기존 사용자의 DB 파일
 
-`~/.auto-chrome-mcp/agent.db` (또는 `agent.sqlite`) 같은 파일이 있을 수 있음. 우리 fork 가 정식 release 안 했으니 dogfood 사용자 대상.
+`~/.posendy-chrome/agent.db` (또는 `agent.sqlite`) 같은 파일이 있을 수 있음. 우리 fork 가 정식 release 안 했으니 dogfood 사용자 대상.
 
 **조치**: postinstall 에서 잔존 DB 파일을 **silent 삭제** (없으면 no-op). 사용자 경고 없이 청소. 데이터 유실 risk 평가 → agent chat 세션 기록 외엔 없으므로 무시 가능.
 
@@ -277,7 +277,7 @@ curl 기반 macOS/Linux 분기에도 같은 robustness 추가:
 | Claude Code + MCP 도구만 쓰는 사용자 (= primary user) | ✅ 영향 없음. install 경험 ↑↑↑.                          | 그냥 `npm i -g` 새로 받기만 하면 됨.                                                     |
 | sidepanel 의 agent-chat 을 모르고 있던 사용자         | 영향 없음 (못 봤으니까)                                  | 없음                                                                                     |
 | sidepanel 의 agent-chat 을 실제로 쓰던 사용자         | 🟡 **기능 사라짐**. sidepanel 열어도 agent chat 탭 없음. | hangwin upstream (`hangwin/mcp-chrome` 1.0.29+) 으로 가야 함. README 에 안내 한 줄 추가. |
-| `~/.auto-chrome-mcp/agent.db` 가 있는 사용자          | 🟢 silent 삭제. 잃을 것은 chat 세션 기록뿐.              | 없음                                                                                     |
+| `~/.posendy-chrome/agent.db` 가 있는 사용자          | 🟢 silent 삭제. 잃을 것은 chat 세션 기록뿐.              | 없음                                                                                     |
 
 ## 9. Verification
 
@@ -287,9 +287,9 @@ curl 기반 macOS/Linux 분기에도 같은 robustness 추가:
 
 | OS                 | Node        | 검증 명령                         | 기대 결과                                                                                       |
 | ------------------ | ----------- | --------------------------------- | ----------------------------------------------------------------------------------------------- |
-| macOS arm64        | 24.x (최신) | `npm i -g auto-chrome-mcp-bridge` | Python 안 묻고 완료. native 모듈 컴파일 0                                                       |
-| Windows 11 x64     | 22.x LTS    | `npm i -g auto-chrome-mcp-bridge` | Python 안 묻고 완료. `~/Downloads/auto-chrome-mcp-extension-v*/` 에 manifest.json 포함 ~95 파일 |
-| Linux Ubuntu 22.04 | 20.x LTS    | `npm i -g auto-chrome-mcp-bridge` | Python 안 묻고 완료                                                                             |
+| macOS arm64        | 24.x (최신) | `npm i -g posendy-chrome-bridge` | Python 안 묻고 완료. native 모듈 컴파일 0                                                       |
+| Windows 11 x64     | 22.x LTS    | `npm i -g posendy-chrome-bridge` | Python 안 묻고 완료. `~/Downloads/posendy-chrome-extension-v*/` 에 manifest.json 포함 ~95 파일 |
+| Linux Ubuntu 22.04 | 20.x LTS    | `npm i -g posendy-chrome-bridge` | Python 안 묻고 완료                                                                             |
 
 **Python 묻는지 어떻게 알지?**: install 출력에 `node-gyp`, `python`, `gyp ERR!`, `Microsoft Visual C++ Build Tools` 단어가 등장하면 fail. `npm install --loglevel=verbose 2>&1 | grep -iE "python|node-gyp|gyp"` 에 hit 없으면 pass.
 
@@ -297,7 +297,7 @@ curl 기반 macOS/Linux 분기에도 같은 robustness 추가:
 
 | 기능                                            | 검증 방법                                                                        |
 | ----------------------------------------------- | -------------------------------------------------------------------------------- |
-| MCP 33 도구 (navigate, click, screenshot, etc.) | `pnpm --filter auto-chrome-mcp-bridge test` (jest) — 기존 13개 테스트 통과 유지  |
+| MCP 33 도구 (navigate, click, screenshot, etc.) | `pnpm --filter posendy-chrome-bridge test` (jest) — 기존 13개 테스트 통과 유지  |
 | Force Reconnect 5단계                           | popup → "강제 재연결" 버튼 → 정상 reconnect                                      |
 | Playwright CDP 폴백                             | 환경변수로 native 끄고 playwright 활성, MCP 도구 호출 가능                       |
 | Diagnostic Report                               | popup → 진단 리포트 → 4 stage 모두 ✓                                             |
@@ -307,9 +307,9 @@ curl 기반 macOS/Linux 분기에도 같은 robustness 추가:
 
 ### 9-3. Windows postinstall 회귀
 
-수동: Windows 11 머신에서 `npm i -g auto-chrome-mcp-bridge` → 다음 확인:
+수동: Windows 11 머신에서 `npm i -g posendy-chrome-bridge` → 다음 확인:
 
-- `~/Downloads/auto-chrome-mcp-extension-v1.0.36/` 안에 `manifest.json`, `background.js`, `assets/` 등 다 있음
+- `~/Downloads/posendy-chrome-extension-v1.0.36/` 안에 `manifest.json`, `background.js`, `assets/` 등 다 있음
 - `agent-chat-*.css` 는 없음 (= scope 2 결과)
 - `VERSION` 파일 정상 작성
 

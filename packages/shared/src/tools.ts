@@ -54,7 +54,7 @@ export const TOOL_NAMES = {
     SET_WORK_TAB: 'chrome_set_work_tab',
     WAIT_FOR: 'chrome_wait_for',
     SCROLL_COLLECT: 'chrome_scroll_collect',
-    // auto-chrome-mcp fork(B1~B4)
+    // posendy-chrome fork(B1~B4)
     STORAGE: 'chrome_storage',
     SAVE_PDF: 'chrome_save_pdf',
     EMULATE: 'chrome_emulate',
@@ -1578,7 +1578,7 @@ export const TOOL_SCHEMAS: Tool[] = [
       required: ['action'],
     },
   },
-  // ===== auto-chrome-mcp fork (B1~B4) =====
+  // ===== posendy-chrome fork (B1~B4) =====
   {
     name: TOOL_NAMES.BROWSER.STORAGE,
     description:
@@ -1743,7 +1743,7 @@ export const TOOL_SCHEMAS: Tool[] = [
 ];
 
 /**
- * auto-chrome-mcp fork(P1): 병렬 작업 레인 인자를 탭 대상 도구 전부에 주입한다.
+ * posendy-chrome fork(P1): 병렬 작업 레인 인자를 탭 대상 도구 전부에 주입한다.
  *
  * 왜 필요한가 — 한 Claude Code 세션의 서브에이전트들은 **같은 stdio 프로세스**를 공유한다.
  * 확장 입장에선 전부 같은 세션으로 보여, 세션당 작업 탭이 하나뿐이면 병렬 에이전트들이 서로의

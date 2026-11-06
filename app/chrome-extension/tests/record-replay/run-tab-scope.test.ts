@@ -12,7 +12,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 
 const USER_TAB_ID = 11; // 사용자가 보고 있는 탭
 const RUN_TAB_ID = 99; // run 이 고정된 탭

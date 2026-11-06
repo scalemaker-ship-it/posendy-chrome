@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork: chrome_shortcut 예약 실행 레코드.
+ * posendy-chrome fork: chrome_shortcut 예약 실행 레코드.
  *
  * 설계 계약: docs/plans/2026-09-05-daily-automation-design.md 1절 (구현 순서 3단계).
  *

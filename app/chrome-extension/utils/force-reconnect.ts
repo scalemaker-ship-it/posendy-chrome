@@ -53,7 +53,7 @@ export interface ForceReconnectTransport {
 }
 
 export interface ForceReconnectOptions {
-  /** Bridge HTTP port (default 12320 — v1.0.2 부터 fork 전용). */
+  /** Bridge HTTP port (default 12330 — v1.0.2 부터 fork 전용). */
   port?: number;
   /** Bridge host (default 127.0.0.1). */
   host?: string;
@@ -133,7 +133,7 @@ const emit = (
 export async function forceReconnect(
   opts: ForceReconnectOptions = {},
 ): Promise<ForceReconnectResult> {
-  const port = opts.port ?? 12320;
+  const port = opts.port ?? 12330;
   const host = opts.host ?? '127.0.0.1';
   const timeouts = { ...DEFAULT_TIMEOUTS, ...(opts.timeouts ?? {}) };
   const base = `http://${host}:${port}`;
@@ -449,7 +449,7 @@ export async function forceReconnect(
           params: {
             protocolVersion: '2024-11-05',
             capabilities: {},
-            clientInfo: { name: 'auto-chrome-mcp-supervisor', version: '1.0.0' },
+            clientInfo: { name: 'posendy-chrome-supervisor', version: '1.0.0' },
           },
         }),
         signal: AbortSignal.timeout(timeouts[step]),

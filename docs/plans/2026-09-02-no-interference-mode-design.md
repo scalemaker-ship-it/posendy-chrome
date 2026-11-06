@@ -120,7 +120,7 @@
 
 ## 손대지 않는 것
 
-- 배포 폴더 `C:\PROJECTS\auto-chrome-mcp-extension`의 이름·위치. 내용만 교체한다.
+- 배포 폴더 `C:\PROJECTS\posendy-chrome-extension`의 이름·위치. 내용만 교체한다.
 - 백업 폴더 두 개(`...-backup-1.4.2`, `...-backup-1.7.0`). 삭제는 사용자 확인 후 별도로.
 - npm 발행, GitHub 릴리스, `npm i -g`. 세션 안에서 실행하지 않는다.
 - 녹화·재생 기능의 다른 부분, Playwright 폴백, 사이트 권한 정책.
@@ -132,7 +132,7 @@
 ## 반영 절차
 
 1. 브랜치 `feat/no-interference-mode`에서 구현.
-2. `pnpm --filter chrome-extension test`(vitest)와 `pnpm --filter auto-chrome-mcp-bridge test`(jest) 통과. 기존 통과 수보다 줄면 안 된다.
+2. `pnpm --filter chrome-extension test`(vitest)와 `pnpm --filter posendy-chrome-bridge test`(jest) 통과. 기존 통과 수보다 줄면 안 된다.
 3. 확장 빌드 → 배포 폴더 내용 교체 → 확장 리로드(메모리 파일의 CDP 리로드 절차) → 실기 회귀 5단계.
 4. 결과 보고에는 실행한 명령과 종료 코드, 테스트 통과 수(전/후), 실기 회귀의 탭 id·창 id 실측값, 스크린샷 파일 경로를 포함한다. 하지 않은 검사를 했다고 쓰지 않는다.
 

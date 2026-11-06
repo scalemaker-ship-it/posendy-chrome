@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — windows.onRemoved 가 창 id 재사용 시 새 작업 창 표지를 지우지 않는다.
+ * posendy-chrome fork — windows.onRemoved 가 창 id 재사용 시 새 작업 창 표지를 지우지 않는다.
  *
  * 재현하려는 실패 (2026-09-04 Codex 2차 검토):
  *   이전 작업 창(id=123)의 지연된 onRemoved(123) 가 marker lock 뒤에서 대기하는 동안,

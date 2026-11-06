@@ -1,6 +1,6 @@
 import { createErrorResponse, ToolResult } from '@/common/tool-handler';
 import { BaseBrowserToolExecutor } from '../base-browser';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { TOOL_MESSAGE_TYPES } from '@/common/message-types';
 import {
   canvasToDataURL,
@@ -20,7 +20,7 @@ import { redactedArgsForLog } from '@/utils/log-redact';
 import { saveArtifactToDownloads } from '@/utils/artifact-path';
 
 /**
- * auto-chrome-mcp fork v1.9.0: 전용 작업 창(기본 배치 minimized) 안의 비활성 탭은 캡처할 수
+ * posendy-chrome fork v1.9.0: 전용 작업 창(기본 배치 minimized) 안의 비활성 탭은 캡처할 수
  * 없다. 대상이 그 창의 탭이면 캡처 직전에 활성화한다. 사용자 창은 건드리지 않는다.
  *
  * 2026-09-06(3단계 Codex 리뷰 2항): `skipPaintProbe` 는 주입 불가 탭에서 켠다. 페인트 확인
@@ -43,7 +43,7 @@ async function ensureActiveInWorkWindow(
       return;
     }
     // 활성화 직후 첫 프레임이 나올 때까지 기다린다.
-    // auto-chrome-mcp fork: rAF 두 번은 "한 번 그렸다"만 보장하므로 예전 고정 대기(150ms)를
+    // posendy-chrome fork: rAF 두 번은 "한 번 그렸다"만 보장하므로 예전 고정 대기(150ms)를
     // 하한으로 남기고, rAF 를 확인할 수 없는 탭(최소화된 창 등)에서는 300ms 까지만 기다린다.
     await waitForFramePaint(tab.id, {
       minWaitMs: WORK_WINDOW_ACTIVATION_PAINT_MIN_MS,
@@ -54,9 +54,9 @@ async function ensureActiveInWorkWindow(
   }
 }
 
-/** auto-chrome-mcp fork: 작업 창 탭 활성화 후 최소 대기(예전 고정 대기와 같은 값) */
+/** posendy-chrome fork: 작업 창 탭 활성화 후 최소 대기(예전 고정 대기와 같은 값) */
 const WORK_WINDOW_ACTIVATION_PAINT_MIN_MS = 150;
-/** auto-chrome-mcp fork: 페인트를 확인할 수 없을 때의 상한 */
+/** posendy-chrome fork: 페인트를 확인할 수 없을 때의 상한 */
 const WORK_WINDOW_ACTIVATION_PAINT_MAX_MS = 300;
 
 // Screenshot-specific constants
@@ -92,7 +92,7 @@ if (typeof __MAX_CAP_RATE === 'number' && __MAX_CAP_RATE > 0) {
 }
 
 /**
- * auto-chrome-mcp fork: 백그라운드(비활성) 탭 캡처 지원.
+ * posendy-chrome fork: 백그라운드(비활성) 탭 캡처 지원.
  *
  * chrome.tabs.captureVisibleTab 은 "윈도우에서 지금 보이는 탭"만 캡처하므로, MCP 도구가
  * 백그라운드 작업 탭을 대상으로 동작할 때 조용히 엉뚱한 탭을 찍는다.
@@ -102,13 +102,13 @@ if (typeof __MAX_CAP_RATE === 'number' && __MAX_CAP_RATE > 0) {
 const CDP_CAPTURE_TIMEOUT_MS = 20000; // 비활성 탭 합성 지연 시 무한 대기 방지
 const MAX_CDP_FULLPAGE_HEIGHT_PX = 16000; // Chrome 텍스처 한계(~16384) 안쪽 안전값
 
-// auto-chrome-mcp fork: captureVisibleTab 호출 최소 간격 (폴백 경로에만 적용)
+// posendy-chrome fork: captureVisibleTab 호출 최소 간격 (폴백 경로에만 적용)
 const MIN_CAPTURE_VISIBLE_TAB_INTERVAL_MS =
   typeof __MAX_CAP_RATE === 'number' && __MAX_CAP_RATE > 0 ? Math.ceil(1000 / __MAX_CAP_RATE) : 0;
 let lastCaptureVisibleTabAtMs = 0;
 
 /**
- * auto-chrome-mcp fork: captureVisibleTab 폴백 전용 래퍼.
+ * posendy-chrome fork: captureVisibleTab 폴백 전용 래퍼.
  * - 대상 탭이 자기 윈도우의 활성 탭이 아니면 다른 탭이 찍히므로, 캡처하지 않고 명확한 에러를 던진다.
  * - Chrome 의 captureVisibleTab 호출 빈도 제한을 이 지점에서만 적용한다.
  */
@@ -145,7 +145,7 @@ async function captureVisibleTabFallback(tabId: number, windowId?: number): Prom
 }
 
 /**
- * auto-chrome-mcp fork(2026-09-06): 콘텐츠 스크립트를 넣을 수 없는 탭인가.
+ * posendy-chrome fork(2026-09-06): 콘텐츠 스크립트를 넣을 수 없는 탭인가.
  *
  * chrome.scripting.executeScript 는 **확장 자신의 페이지**(chrome-extension://…, 사이드패널을
  * 탭으로 연 경우 포함)·devtools://·view-source: 에서 항상 실패한다
@@ -167,7 +167,7 @@ export function isNotInjectableUrl(url?: string): boolean {
 }
 
 /**
- * auto-chrome-mcp fork(2026-09-06): CDP 뷰포트 캡처 파라미터를 시도할 순서.
+ * posendy-chrome fork(2026-09-06): CDP 뷰포트 캡처 파라미터를 시도할 순서.
  *
  * 1순위는 예전과 완전히 동일하다. 다만 표면(surface)이 아직 없는 탭 — 보이지 않는 확장
  * 페이지 등 — 에서는 fromSurface 조합이 빈 데이터/에러로 끝난다. 헬퍼 주입으로 되돌아갈 수
@@ -188,7 +188,7 @@ function errorText(error: unknown): string {
 }
 
 /**
- * auto-chrome-mcp fork: 사용자 지정 filename 에서 확장자만 골라낸다.
+ * posendy-chrome fork: 사용자 지정 filename 에서 확장자만 골라낸다.
  * 경로·금지문자 처리는 utils/artifact-path.ts 가 맡는다(항상 날짜 폴더 안으로 들어간다).
  */
 function screenshotExtension(userFilename?: string): 'jpg' | 'png' {
@@ -196,7 +196,7 @@ function screenshotExtension(userFilename?: string): 'jpg' | 'png' {
 }
 
 /**
- * auto-chrome-mcp fork: 캡처된 이미지를 chrome.downloads 로 저장한다.
+ * posendy-chrome fork: 캡처된 이미지를 chrome.downloads 로 저장한다.
  * saveToDownloads 요청 시 모든 캡처 경로(CDP viewport/fullPage/element, captureVisibleTab 폴백) 이후
  * 공통으로 호출되며, 실패해도 스크린샷 자체는 성공으로 유지한다(호출부에서 saveError 만 첨부).
  * 저장 위치는 `mcp-screenshots/YYYY-MM-DD/` 하나로 통일된다.
@@ -204,7 +204,7 @@ function screenshotExtension(userFilename?: string): 'jpg' | 'png' {
 /**
  * data: URL 이 담고 있는 실제 바이트 수.
  *
- * auto-chrome-mcp fork(2026-09-05 Codex 재확인 항목 7): 저장된 파일 크기를 알려면 예전에는
+ * posendy-chrome fork(2026-09-05 Codex 재확인 항목 7): 저장된 파일 크기를 알려면 예전에는
  * 호출자가 base64 문자열 자체를 돌려받아 길이를 재야 했다(record-replay 스크린샷 노드가
  * 그랬다). 크기 하나 때문에 이미지 바이트를 통째로 나르는 셈이라, 여기서 크기만 계산해
  * 응답에 싣는다.
@@ -256,7 +256,7 @@ interface NormalizedLayoutMetrics {
 }
 
 /**
- * auto-chrome-mcp fork: Page.getLayoutMetrics 결과를 CSS 픽셀 기준으로 정규화한다.
+ * posendy-chrome fork: Page.getLayoutMetrics 결과를 CSS 픽셀 기준으로 정규화한다.
  * css* 필드(cssLayoutViewport/cssContentSize)를 우선 사용하고, 없으면 구 필드로 폴백.
  * CDP clip 좌표계도 CSS 픽셀이므로 여기서 나온 값을 그대로 clip 에 쓸 수 있다.
  */
@@ -285,7 +285,7 @@ function normalizeLayoutMetrics(metrics: any): NormalizedLayoutMetrics {
   };
 }
 
-/** auto-chrome-mcp fork: CDP 호출이 비활성 탭에서 매달리는 경우를 대비한 타임아웃 래퍼 */
+/** posendy-chrome fork: CDP 호출이 비활성 탭에서 매달리는 경우를 대비한 타임아웃 래퍼 */
 async function withCdpTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
   // 타임아웃이 이겨도 원본 promise 의 rejection 이 unhandled 로 남지 않게 한다
   void promise.catch(() => undefined);
@@ -306,7 +306,7 @@ async function withCdpTimeout<T>(promise: Promise<T>, label: string): Promise<T>
 }
 
 /**
- * auto-chrome-mcp fork: 스티칭 경로와 동일한 규칙으로 options.width/height 를 적용한다.
+ * posendy-chrome fork: 스티칭 경로와 동일한 규칙으로 options.width/height 를 적용한다.
  * (한쪽만 지정하면 비율 유지, 둘 다 지정하면 그대로 늘림. 출력은 물리 픽셀 = CSS * dpr)
  */
 async function resizeToRequestedSize(
@@ -353,16 +353,16 @@ interface ScreenshotToolParams {
   fullPage?: boolean;
   savePng?: boolean;
   maxHeight?: number; // Maximum height to capture in pixels (for infinite scroll pages)
-  // auto-chrome-mcp fork: 캡처 결과를 chrome.downloads 로 자동 저장하기 위한 옵션
+  // posendy-chrome fork: 캡처 결과를 chrome.downloads 로 자동 저장하기 위한 옵션
   saveToDownloads?: boolean;
   filename?: string;
   /**
-   * auto-chrome-mcp fork: true 면 모델 입력용 축소(긴 변 1568px)를 건너뛴다.
+   * posendy-chrome fork: true 면 모델 입력용 축소(긴 변 1568px)를 건너뛴다.
    * 이미지는 여전히 MCP image 블록으로 반환된다. 화질이 꼭 필요할 때의 탈출구.
    */
   fullResolution?: boolean;
   /**
-   * auto-chrome-mcp fork(internal): true 면 텍스트 JSON 에도 base64Data 를 넣는다.
+   * posendy-chrome fork(internal): true 면 텍스트 JSON 에도 base64Data 를 넣는다.
    * MCP 스키마에는 노출하지 않는다 — 모델에게 base64 를 텍스트로 주는 것이 바로
    * 이 수정이 없애려는 토큰 낭비이기 때문. 확장 내부에서 이미지 바이트가 필요한
    * 호출자(record-replay 워크플로 등)만 사용한다.
@@ -422,7 +422,7 @@ class ScreenshotTool extends BaseBrowserToolExecutor {
   name = TOOL_NAMES.BROWSER.SCREENSHOT;
 
   /**
-   * auto-chrome-mcp fork: 주입한 screenshot-helper 가 메시지를 받을 준비가 됐는지 확인한다.
+   * posendy-chrome fork: 주입한 screenshot-helper 가 메시지를 받을 준비가 됐는지 확인한다.
    * pong 이 오면 즉시, 응답이 없으면 예전 고정 대기와 같은 상한까지만 기다린다.
    */
   private async waitForScreenshotHelperReady(tabId: number): Promise<void> {
@@ -460,11 +460,11 @@ class ScreenshotTool extends BaseBrowserToolExecutor {
     const explicit = await this.tryGetTab(args.tabId);
     const tab = explicit || (await this.getActiveTabOrThrowInWindow(args.windowId));
 
-    // auto-chrome-mcp fork(2026-09-06): 주입 가능 여부를 활성화보다 **먼저** 판정한다.
+    // posendy-chrome fork(2026-09-06): 주입 가능 여부를 활성화보다 **먼저** 판정한다.
     // 활성화 경로가 페인트 확인에 executeScript 를 쓰기 때문이다(아래 함수 주석 참고).
     const notInjectable = isNotInjectableUrl(tab.url);
 
-    // auto-chrome-mcp fork v1.9.0: 최소화된 전용 작업 창에서는 **활성 탭만** 캡처된다
+    // posendy-chrome fork v1.9.0: 최소화된 전용 작업 창에서는 **활성 탭만** 캡처된다
     // (2026-09-02 실측: 비활성 탭은 CDP 캡처도 captureVisibleTab 도 실패한다).
     // 병렬 lane 처럼 작업 창에 탭이 여러 개일 때를 위해, 대상이 전용 작업 창의 탭이면
     // 캡처 전에 그 창 안에서 활성화한다. 창은 사용자 화면 밖이라 눈에 보이는 변화가 없다.
@@ -482,7 +482,7 @@ class ScreenshotTool extends BaseBrowserToolExecutor {
       );
     }
 
-    // auto-chrome-mcp fork(2026-09-06): 확장 자체 페이지 등은 콘텐츠 스크립트를 넣을 수 없다.
+    // posendy-chrome fork(2026-09-06): 확장 자체 페이지 등은 콘텐츠 스크립트를 넣을 수 없다.
     // 뷰포트 캡처는 CDP 만으로 되지만 fullPage/selector 는 헬퍼(주입)가 있어야 하므로,
     // 여기서 원인이 적힌 코드로 거절한다 — 예전에는 주입 실패 메시지로 끝나 원인이 가려졌다.
     if (notInjectable && (fullPage || selector)) {
@@ -496,7 +496,7 @@ class ScreenshotTool extends BaseBrowserToolExecutor {
     let finalImageDataUrl: string | undefined;
     let finalImageWidthCss: number | undefined;
     let finalImageHeightCss: number | undefined;
-    // auto-chrome-mcp fork: results 에서 base64 필드를 제거했다. 이미지 바이트는 절대
+    // posendy-chrome fork: results 에서 base64 필드를 제거했다. 이미지 바이트는 절대
     // 텍스트/JSON 응답에 섞지 않고 MCP image 블록으로만 내보낸다(토큰 폭발 방지).
     const results: any = { fileSaved: false };
     let originalScroll: { x: number; y: number } | null = null;
@@ -504,7 +504,7 @@ class ScreenshotTool extends BaseBrowserToolExecutor {
     let pageDetails: ScreenshotPageDetails | undefined;
 
     try {
-      // auto-chrome-mcp fork: CDP 는 대상 탭이 보이지 않아도 정확히 그 탭을 캡처하므로,
+      // posendy-chrome fork: CDP 는 대상 탭이 보이지 않아도 정확히 그 탭을 캡처하므로,
       // background 플래그와 무관하게 항상 1순위 경로로 사용한다.
       // 뷰포트 캡처는 콘텐츠 스크립트 없이 CDP 만으로 처리 가능.
       const canUseCdpCapture = !fullPage && !selector;
@@ -550,7 +550,7 @@ class ScreenshotTool extends BaseBrowserToolExecutor {
       if (!finalImageDataUrl) {
         // Always inject helper when we need pageDetails
         await this.injectContentScript(tab.id!, ['inject-scripts/screenshot-helper.js']);
-        // auto-chrome-mcp fork: 예전에는 헬퍼가 준비됐는지와 무관하게 100ms 를 쉬었다.
+        // posendy-chrome fork: 예전에는 헬퍼가 준비됐는지와 무관하게 100ms 를 쉬었다.
         // 이제는 ping 에 pong 이 오면 즉시 진행하고, 응답이 없을 때만 상한까지 기다린다.
         await this.waitForScreenshotHelperReady(tab.id!);
 
@@ -615,7 +615,7 @@ class ScreenshotTool extends BaseBrowserToolExecutor {
         throw new Error('Failed to capture image data');
       }
 
-      // auto-chrome-mcp fork: 캡처 성공 후(모든 경로 공통) saveToDownloads 요청 시 다운로드로 저장.
+      // posendy-chrome fork: 캡처 성공 후(모든 경로 공통) saveToDownloads 요청 시 다운로드로 저장.
       // 실패해도 스크린샷 자체는 성공 처리하고 saveError 만 응답에 첨부한다.
       let downloadsSaveResult:
         | {
@@ -633,7 +633,7 @@ class ScreenshotTool extends BaseBrowserToolExecutor {
         Object.assign(results, downloadsSaveResult);
       }
 
-      // auto-chrome-mcp fork: 모델에게 돌려줄 이미지를 먼저 만든다.
+      // posendy-chrome fork: 모델에게 돌려줄 이미지를 먼저 만든다.
       // 좌표 컨텍스트(screenshotWidth/Height)에는 "모델이 실제로 보는 이미지의 픽셀 크기"를
       // 기록해야 chrome_computer 의 좌표 역변환이 맞으므로, setContext 보다 앞에서 계산한다.
       // 주의: savePng / saveToDownloads 는 이 축소본이 아니라 원본(finalImageDataUrl)을 저장한다.
@@ -659,10 +659,10 @@ class ScreenshotTool extends BaseBrowserToolExecutor {
             // ignore
           }
           // Use pageDetails if available, otherwise fall back to final image dimensions
-          // auto-chrome-mcp fork: viewportWidth/Height 는 예전과 완전히 동일하게 "원본 CSS 뷰포트" 크기를 기록한다.
+          // posendy-chrome fork: viewportWidth/Height 는 예전과 완전히 동일하게 "원본 CSS 뷰포트" 크기를 기록한다.
           const viewportWidth = pageDetails?.viewportWidth ?? finalImageWidthCss;
           const viewportHeight = pageDetails?.viewportHeight ?? finalImageHeightCss;
-          // auto-chrome-mcp fork: 좌표 기준 프레임은 모델에게 넘어간 이미지의 실제 픽셀 크기.
+          // posendy-chrome fork: 좌표 기준 프레임은 모델에게 넘어간 이미지의 실제 픽셀 크기.
           // (이미지를 반환하지 않는 경로에서는 기존과 동일하게 CSS 기준 크기를 유지)
           const screenshotWidth = modelImage ? modelImage.width : finalImageWidthCss;
           const screenshotHeight = modelImage ? modelImage.height : finalImageHeightCss;
@@ -679,7 +679,7 @@ class ScreenshotTool extends BaseBrowserToolExecutor {
         console.warn('Failed to set screenshot context:', e);
       }
       if (storeBase64 === true && modelImage) {
-        // auto-chrome-mcp fork: 이미지를 텍스트(JSON) 안에 base64 로 넣어 돌려주면 MCP 클라이언트가
+        // posendy-chrome fork: 이미지를 텍스트(JSON) 안에 base64 로 넣어 돌려주면 MCP 클라이언트가
         // 이미지 1장에 텍스트 토큰 10만~30만개를 지불한다. 정식 MCP image 블록으로 분리하고
         // Claude 입력 최적 크기(긴 변 1568px)로 축소해 ~1-2k 토큰 수준으로 낮춘다.
         const base64Data = modelImage.dataUrl.replace(/^data:image\/[^;]+;base64,/, '');
@@ -698,7 +698,7 @@ class ScreenshotTool extends BaseBrowserToolExecutor {
           content: [
             {
               type: 'text',
-              // auto-chrome-mcp fork: 메타데이터만 텍스트로. base64 는 여기 절대 넣지 않는다.
+              // posendy-chrome fork: 메타데이터만 텍스트로. base64 는 여기 절대 넣지 않는다.
               // saveToDownloads 결과(있다면)는 예전과 동일하게 포함한다.
               text: JSON.stringify({
                 success: true,
@@ -716,7 +716,7 @@ class ScreenshotTool extends BaseBrowserToolExecutor {
                 ...(isDownscaled
                   ? { downscaledFrom: `${modelImage.originalWidth}x${modelImage.originalHeight}` }
                   : {}),
-                // auto-chrome-mcp fork: 254자짜리 note 문구를 매 호출 응답에서 반복하던 것을
+                // posendy-chrome fork: 254자짜리 note 문구를 매 호출 응답에서 반복하던 것을
                 // 제거했다(2026-09 최적화). 같은 설명(이미지가 별도 MCP image 블록으로 온다는 것,
                 // imageScale 로 좌표를 환산하는 법)은 tools.ts 의 chrome_screenshot 도구
                 // description 으로 옮겨야 한다 — 아직 옮기지 않았다면 CHANGELOG 참고
@@ -813,7 +813,7 @@ class ScreenshotTool extends BaseBrowserToolExecutor {
   }
 
   /**
-   * auto-chrome-mcp fork(2026-09-06): CDP 로 뷰포트를 캡처한다 (콘텐츠 스크립트 없이).
+   * posendy-chrome fork(2026-09-06): CDP 로 뷰포트를 캡처한다 (콘텐츠 스크립트 없이).
    *
    * variants 를 순서대로 시도한다. 일반 탭은 1개만 넘겨받아 예전과 동일하게 동작하고,
    * 주입 불가 탭(확장 자체 페이지 등)만 여러 조합을 시도한다 — 실패해도 되돌아갈 헬퍼
@@ -858,7 +858,7 @@ class ScreenshotTool extends BaseBrowserToolExecutor {
   }
 
   /**
-   * auto-chrome-mcp fork: CDP Page.captureScreenshot 실행 (타임아웃 + 빈 데이터 검증).
+   * posendy-chrome fork: CDP Page.captureScreenshot 실행 (타임아웃 + 빈 데이터 검증).
    * 호출자는 cdpSessionManager.withSession 안에서 호출해야 한다.
    */
   private async _cdpCaptureScreenshot(
@@ -879,7 +879,7 @@ class ScreenshotTool extends BaseBrowserToolExecutor {
   /**
    * Capture specific element
    *
-   * auto-chrome-mcp fork: CDP clip 캡처를 우선 사용한다. 대상 탭이 보이지 않아도 정확하고,
+   * posendy-chrome fork: CDP clip 캡처를 우선 사용한다. 대상 탭이 보이지 않아도 정확하고,
    * captureVisibleTab + crop 과 달리 뷰포트보다 큰 요소도 온전히 담을 수 있다.
    */
   async _captureElement(
@@ -913,7 +913,7 @@ class ScreenshotTool extends BaseBrowserToolExecutor {
     };
 
     // Small delay to ensure element is fully rendered after scrollIntoView
-    // auto-chrome-mcp fork: 여기는 "헬퍼 준비"가 아니라 **스크롤 후 실제 페인트**를 기다리는
+    // posendy-chrome fork: 여기는 "헬퍼 준비"가 아니라 **스크롤 후 실제 페인트**를 기다리는
     // 자리라 조건화하지 않았다. 헬퍼에 새 신호(rAF 응답) 메시지를 추가해야 하는데, 잘못 앞당기면
     // 스크롤 중간 프레임이 찍혀 스크린샷 품질이 조용히 나빠진다. 상한이 100ms 로 짧아 이득도 작다.
     await new Promise((resolve) => setTimeout(resolve, SCREENSHOT_CONSTANTS.SCRIPT_INIT_DELAY));
@@ -939,7 +939,7 @@ class ScreenshotTool extends BaseBrowserToolExecutor {
   }
 
   /**
-   * auto-chrome-mcp fork: 요소 영역을 CDP clip 으로 캡처.
+   * posendy-chrome fork: 요소 영역을 CDP clip 으로 캡처.
    * clip 은 문서(페이지) 좌표계의 CSS 픽셀이므로 뷰포트 기준 rect 에 스크롤 오프셋을 더한다.
    * 결과 이미지는 기존 crop 경로와 동일하게 물리 픽셀(= CSS * dpr) 해상도를 갖는다.
    */
@@ -990,7 +990,7 @@ class ScreenshotTool extends BaseBrowserToolExecutor {
   }
 
   /**
-   * auto-chrome-mcp fork: 전체 페이지를 CDP 한 번의 captureBeyondViewport 로 캡처.
+   * posendy-chrome fork: 전체 페이지를 CDP 한 번의 captureBeyondViewport 로 캡처.
    * 스크롤-스티칭이 필요 없고, 대상 탭이 보이지 않아도 동작한다.
    * 캡처가 불가능/위험하다고 판단되면 null 을 돌려 스티칭 경로로 넘긴다.
    */

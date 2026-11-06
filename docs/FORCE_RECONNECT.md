@@ -61,11 +61,11 @@ sleep 3 && curl -s http://127.0.0.1:12306/health | jq .bridge.pid
 
 Stage A 의 ③ spawn 실패 시. native messaging host manifest 가 손상되었거나 경로 mismatch 인 경우:
 
-- macOS: `~/Library/Application Support/Google/Chrome/NativeMessagingHosts/com.autochromemcp.nativehost.json`
-- Windows: `HKCU\Software\Google\Chrome\NativeMessagingHosts\com.autochromemcp.nativehost` (registry)
-- Linux: `~/.config/google-chrome/NativeMessagingHosts/com.autochromemcp.nativehost.json`
+- macOS: `~/Library/Application Support/Google/Chrome/NativeMessagingHosts/com.posendy.nativehost.json`
+- Windows: `HKCU\Software\Google\Chrome\NativeMessagingHosts\com.posendy.nativehost` (registry)
+- Linux: `~/.config/google-chrome/NativeMessagingHosts/com.posendy.nativehost.json`
 
-수동 fix: `auto-chrome-mcp-bridge register` 또는 `auto-chrome-mcp-bridge doctor --fix` 실행 (manifest 재생성).
+수동 fix: `posendy-chrome-bridge register` 또는 `posendy-chrome-bridge doctor --fix` 실행 (manifest 재생성).
 
 ### Stage C — Chrome restart with launcher
 

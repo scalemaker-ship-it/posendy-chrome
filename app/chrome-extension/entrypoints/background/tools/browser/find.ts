@@ -1,10 +1,10 @@
 import { createErrorResponse, ToolResult } from '@/common/tool-handler';
 import { BaseBrowserToolExecutor } from '../base-browser';
-// auto-chrome-mcp fork: iframe 안의 요소까지 찾기 위한 프레임 열거 유틸
+// posendy-chrome fork: iframe 안의 요소까지 찾기 위한 프레임 열거 유틸
 import { FRAME_COLLECT_MAX_FRAMES, listChildFrames } from './frame-resolver';
 
 /**
- * auto-chrome-mcp fork: chrome_find — "자연어로 요소 찾기" 도구.
+ * posendy-chrome fork: chrome_find — "자연어로 요소 찾기" 도구.
  *
  * 기존 흐름은 chrome_read_page 로 페이지 전체 트리를 읽어서 모델이 그 안에서 대상 요소를
  * 눈으로 골라내는 방식이었다. 대부분의 경우 모델이 원하는 건 "로그인 버튼" 하나인데
@@ -470,7 +470,7 @@ class FindTool extends BaseBrowserToolExecutor {
   name = 'chrome_find';
 
   /**
-   * auto-chrome-mcp fork: 하위 iframe 들에서 후보를 수집한다(allFrames=true 일 때만).
+   * posendy-chrome fork: 하위 iframe 들에서 후보를 수집한다(allFrames=true 일 때만).
    * read_page 와 동일하게 프레임마다 helper 주입을 보장한 뒤 메시지를 보낸다.
    * 실패한 프레임은 조용히 건너뛴다(iframe 하나 때문에 도구 전체가 실패하면 안 된다).
    */
@@ -621,7 +621,7 @@ class FindTool extends BaseBrowserToolExecutor {
     }
 
     let matches = scored.slice(0, maxResults).map((s, i) => toMatch(s, i + 1));
-    // auto-chrome-mcp fork: hint 는 응답 전체에 1회만 싣는다 — 이전에는 match 항목마다
+    // posendy-chrome fork: hint 는 응답 전체에 1회만 싣는다 — 이전에는 match 항목마다
     // 118자짜리 문구가 반복돼(maxResults=5 면 5회) 응답 크기를 불필요하게 부풀렸다.
     let text = JSON.stringify({ ...basePayload, matches, hint: MATCH_HINT });
     // 응답 상한 초과 시 순위가 낮은 매치부터 버린다(1위는 항상 남긴다).

@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — chrome_screenshot 주입 불가 탭 회귀 테스트.
+ * posendy-chrome fork — chrome_screenshot 주입 불가 탭 회귀 테스트.
  *
  * 배경: 확장 자체 페이지(chrome-extension://…/sidepanel.html)를 대상으로 뷰포트 캡처를
  * 부르면, CDP 캡처가 한 번 실패했을 때 헬퍼 주입 경로로 되돌아가

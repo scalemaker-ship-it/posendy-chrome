@@ -1,5 +1,5 @@
 /**
- * Activation guard (auto-chrome-mcp fork, v1.9.0 무간섭 모드).
+ * Activation guard (posendy-chrome fork, v1.9.0 무간섭 모드).
  *
  * "사용자 화면을 바꾸는 크롬 API" 를 한곳으로 모은 모듈이다. 경로마다 조건문을 붙이는
  * 방식은 v1.8.0 까지 여러 번 새어 나갔다 — web-fetcher·console·inject-script·
@@ -47,7 +47,7 @@ export interface ActivationOptions {
   /** 로그에 남길 호출자 이름 (예: 'gif-recorder'). */
   reason?: string;
   /**
-   * auto-chrome-mcp fork(2026-09-05 데일리 자동화 설계 2절): 이 호출의 도구 인자.
+   * posendy-chrome fork(2026-09-05 데일리 자동화 설계 2절): 이 호출의 도구 인자.
    * 인자에 실행 컨텍스트 모드가 실려 있으면 전역 토글보다 그 값을 먼저 본다 -
    * 예약 실행은 전역 토글이 OFF 여도 사용자 탭을 활성화하지 않는다.
    */

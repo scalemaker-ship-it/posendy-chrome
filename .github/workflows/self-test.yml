@@ -38,18 +38,18 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       # 패키지 이름은 package.json 기준. 예전 필터는 어떤 패키지와도 안 맞았다.
-      # 패키지 이름이 auto-chrome-mcp-bridge 로 바뀐 뒤 방치됐기 때문이다.
+      # 패키지 이름이 posendy-chrome-bridge 로 바뀐 뒤 방치됐기 때문이다.
       - name: Build shared
-        run: pnpm --filter auto-chrome-mcp-shared build
+        run: pnpm --filter posendy-chrome-shared build
 
       - name: Build native-server
-        run: pnpm --filter auto-chrome-mcp-bridge build
+        run: pnpm --filter posendy-chrome-bridge build
 
       - name: Build extension
-        run: pnpm --filter auto-chrome-mcp-extension build
+        run: pnpm --filter posendy-chrome-extension build
 
       - name: Build launcher
-        run: pnpm --filter auto-chrome-mcp-launcher build
+        run: pnpm --filter posendy-chrome-launcher build
 
       # chore/lint-gate: 4건(PropertyFormRenderer.vue prop 직접 변경 3건 — 기존
       # Property*.vue 컨벤션대로 vue/no-mutating-props 를 파일 상단에서 disable,
@@ -59,7 +59,7 @@ jobs:
       # 넣지 않았다(이 워크플로가 ubuntu-latest 이므로 Windows 국한 문제는 아니지만,
       # 이번 작업은 extension 4건만 정리했으므로 나머지 두 패키지는 별도로 확인할 것).
       - name: Lint (extension)
-        run: pnpm --filter auto-chrome-mcp-extension lint
+        run: pnpm --filter posendy-chrome-extension lint
 
       # fork 의 주력 회귀 스위트. 예전엔 CI 에 아예 없어서 809건이 로컬에서만 돌았다.
       - name: Vitest (extension regression suite)
@@ -74,6 +74,6 @@ jobs:
         if: matrix.node == '22'
         uses: actions/upload-artifact@v4
         with:
-          name: auto-chrome-mcp-extension
+          name: posendy-chrome-extension
           path: app/chrome-extension/.output/chrome-mv3/
           retention-days: 7

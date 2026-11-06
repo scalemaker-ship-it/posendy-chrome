@@ -10,7 +10,7 @@ import {
   ListPromptsRequestSchema,
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
-import { TOOL_SCHEMAS } from 'auto-chrome-mcp-shared';
+import { TOOL_SCHEMAS } from 'posendy-chrome-shared';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import * as fs from 'fs';
@@ -33,16 +33,16 @@ let connectPromise: Promise<Client> | null = null;
 let connectionGeneration = 0;
 const clientGenerations = new WeakMap<object, number>();
 
-// auto-chrome-mcp fork: 이 stdio 프로세스(=Claude Code 세션 1개당 1개)의 고유 세션 id.
+// posendy-chrome fork: 이 stdio 프로세스(=Claude Code 세션 1개당 1개)의 고유 세션 id.
 // 모든 tools/call 인자에 _mcpSessionId 로 실려 extension 까지 전달되고, extension 은 이 값(+ 호출자가
 // 준 lane)으로 "작업 탭" 버킷을 분리 관리한다 (버킷 상한 32). 인자는 strip 하지 않는다 —
 // navigate/close_tabs 가 같은 키를 다시 계산해야 하기 때문.
 const MCP_SESSION_ID = `stdio-${process.pid}-${Math.random().toString(36).slice(2, 8).padEnd(6, '0')}`;
 
 // Read configuration from stdio-config.json.
-// auto-chrome-mcp fork: .mcp.json 에서 전달된 env.CHROME_PORT 가 있으면 hardcoded 12320 을 override.
+// posendy-chrome fork: .mcp.json 에서 전달된 env.CHROME_PORT 가 있으면 hardcoded 12330 을 override.
 // 이걸 안 하면 같은 머신에서 두 Chrome profile 을 다른 port 로 띄워도 모든 Claude Code 세션이
-// 12320 으로만 요청해서 한 profile 의 extension 만 잡힘 (multi-profile 라우팅 버그).
+// 12330 으로만 요청해서 한 profile 의 extension 만 잡힘 (multi-profile 라우팅 버그).
 const loadConfig = () => {
   try {
     const configPath = path.join(__dirname, 'stdio-config.json');
@@ -64,9 +64,9 @@ const loadConfig = () => {
 };
 
 // ============================================================
-// auto-chrome-mcp fork: 브리지 인증 (bearer token)
+// posendy-chrome fork: 브리지 인증 (bearer token)
 // ============================================================
-// 브리지는 listen 전에 무작위 토큰을 ~/.auto-chrome-mcp/auth-token 에 (소유자만 읽기)
+// 브리지는 listen 전에 무작위 토큰을 ~/.posendy-chrome/auth-token 에 (소유자만 읽기)
 // 남긴다. 같은 사용자로 도는 이 프록시만 그 파일을 읽을 수 있다.
 // 토큰이 없으면 헤더를 안 붙인다 — 토큰을 모르는 옛 브리지와도 그대로 붙는다.
 
@@ -89,7 +89,7 @@ const describeAuthFailure = (error: any, url: string): Error => {
       `The bridge at ${url} rejected this connection (not authorized).`,
       `Auth token file: ${tokenPath} (${tokenState}).`,
       'What to check: 1) is the bridge running? the extension popup shows its port.',
-      '2) run "auto-chrome-mcp-bridge doctor" to verify the token file and permissions.',
+      '2) run "posendy-chrome-bridge doctor" to verify the token file and permissions.',
       '3) the token file is created by the bridge on startup, so reconnect the extension if it is missing.',
       `Original error: ${raw}`,
     ].join(' '),
@@ -97,7 +97,7 @@ const describeAuthFailure = (error: any, url: string): Error => {
 };
 
 // ============================================================
-// auto-chrome-mcp fork: 세션 중 브라우저(프로필) 전환 — multi-browser switching
+// posendy-chrome fork: 세션 중 브라우저(프로필) 전환 — multi-browser switching
 // ============================================================
 // Chrome profile 1개 = bridge 1개 = port 1개 (popup 에서 확인/변경).
 // 예전에는 CHROME_PORT 로 정한 url 이 프로세스 수명 내내 고정이라, 세션 도중 다른
@@ -112,7 +112,7 @@ const LIST_BROWSERS_TOOL = 'chrome_list_browsers';
 const USE_BROWSER_TOOL = 'chrome_use_browser';
 
 /** 아무 힌트도 없을 때 훑어볼 기본 후보 port 들 (popup 이 제안하는 값들과 동일). */
-const DEFAULT_CANDIDATE_PORTS = [12306, 12315, 12320, 12325];
+const DEFAULT_CANDIDATE_PORTS = [12306, 12315, 12330, 12325];
 /** /ping probe 타임아웃. 죽은 port 에서 오래 매달리지 않도록 짧게. */
 const PROBE_TIMEOUT_MS = 800;
 /** 세션 종료(DELETE) 타임아웃 — 기존 cleanup() 과 동일. */
@@ -245,7 +245,7 @@ export const LIST_BROWSERS_SCHEMA: Tool = {
     'List the Chrome browsers (profiles) available to this session and show which one is active. ' +
     'Each Chrome profile runs its own bridge server on its own port — one port = one browser profile, ' +
     "and the port is shown in that profile's extension popup. Probes the candidate ports (the active port, " +
-    'anything in the CHROME_PORTS env var, plus the defaults 12306/12315/12320/12325) via GET /ping and returns ' +
+    'anything in the CHROME_PORTS env var, plus the defaults 12306/12315/12330/12325) via GET /ping and returns ' +
     '{ success, activePort, browsers: [{ port, alive, version, url }] }. Handled locally by the stdio proxy: it never ' +
     'reaches the browser and does not touch any tab. Call this before chrome_use_browser to see what you can switch to.',
   inputSchema: {
@@ -389,7 +389,7 @@ const connectNewClient = async (stale: Client | null): Promise<Client> => {
     }
   }
 
-  // auto-chrome-mcp fork: config 의 url 이 아니라 "현재 활성 url" 을 연결 시점에 읽는다.
+  // posendy-chrome fork: config 의 url 이 아니라 "현재 활성 url" 을 연결 시점에 읽는다.
   // (chrome_use_browser 로 세션 도중 바뀔 수 있음 — 캐시하면 전환이 먹지 않는다)
   const url = getActiveUrl();
   const headers = authHeaders();
@@ -478,7 +478,7 @@ const cleanup = async () => {
   isCleaningUp = true;
 
   console.error('[stdio-mcp] Closing session...');
-  // auto-chrome-mcp fork: config 의 url 이 아니라 "현재" 활성 url 로 DELETE
+  // posendy-chrome fork: config 의 url 이 아니라 "현재" 활성 url 로 DELETE
   // (chrome_use_browser 로 전환한 뒤 종료해도 올바른 bridge 의 세션이 정리되도록)
   await terminateActiveSession();
   try {
@@ -492,13 +492,13 @@ const cleanup = async () => {
 
 export const setupTools = (server: Server) => {
   // List tools handler
-  // auto-chrome-mcp fork: extension 도구 + stdio 프록시 전용 브라우저 전환 도구 2개
+  // posendy-chrome fork: extension 도구 + stdio 프록시 전용 브라우저 전환 도구 2개
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: [...TOOL_SCHEMAS, LIST_BROWSERS_SCHEMA, USE_BROWSER_SCHEMA],
   }));
 
   // Call tool handler
-  // auto-chrome-mcp fork: ① 브라우저 전환 도구는 여기서 처리하고 forward 하지 않는다
+  // posendy-chrome fork: ① 브라우저 전환 도구는 여기서 처리하고 forward 하지 않는다
   //                  ② 나머지는 세션 id 주입 후 전달 (호출자가 명시한 _mcpSessionId 는 존중)
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const local = await handleLocalTool(request.params.name, request.params.arguments || {});

@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork v1.9.0 — 무간섭 모드 범용 회귀 (설계 K).
+ * posendy-chrome fork v1.9.0 — 무간섭 모드 범용 회귀 (설계 K).
  *
  * 경로별 단위 테스트는 **지금 있는 경로**만 지킨다. 앞으로 추가될 도구가 다시 사용자 탭을
  * 앞으로 끌어내는 것을 막으려면 "등록된 도구 전부"를 한 번씩 돌려 보는 그물이 필요하다.
@@ -25,7 +25,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // 도구 레지스트리 전체를 불러오는 스위트라 vite 캐시가 식었을 때 5초를 넘긴다(2026-09-05 실측 최대 6.3초). 로직 실패와 구분하기 위해 상한을 올린다.
 vi.setConfig({ testTimeout: 20000 });
 
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 
 const B = TOOL_NAMES.BROWSER;
 

@@ -1,11 +1,11 @@
 /**
  * port-probe.ts
  *
- * auto-chrome-mcp fork: 크로스 플랫폼 브리지 포트 탐색.
+ * posendy-chrome fork: 크로스 플랫폼 브리지 포트 탐색.
  *
  * doctor.ts 의 옛 `probeActiveBridgePorts` 는 `ps`/`lsof` 기반이라 Windows 에서 항상 빈
  * 결과를 냈다(주석에 "Unix only" 라고 명시돼 있었다). 그래서 확장이 옛 버전이라 401 을
- * 받고 있어도, 그리고 팝업이 기본 포트(12320) 가 아닌 동적 포트를 고른 설치에서도,
+ * 받고 있어도, 그리고 팝업이 기본 포트(12330) 가 아닌 동적 포트를 고른 설치에서도,
  * doctor 가 그걸 못 봤다.
  *
  * 설계: 파서는 순수 함수(문자열 in, 배열 out)로 두고 플랫폼별 명령 실행만 어댑터로
@@ -15,8 +15,8 @@
  * `netstat -ano -p tcp` 로 폴백한다.
  * macOS/Linux: `lsof -iTCP -sTCP:LISTEN -P -n`.
  *
- * 후보 포트는 브리지 기본 포트(12320)와 런처/팝업이 제안하는 포트들
- * (mcp-server-stdio.ts 의 DEFAULT_CANDIDATE_PORTS: 12306/12315/12320/12325)을 모두
+ * 후보 포트는 브리지 기본 포트(12330)와 런처/팝업이 제안하는 포트들
+ * (mcp-server-stdio.ts 의 DEFAULT_CANDIDATE_PORTS: 12306/12315/12330/12325)을 모두
  * 포함하는 범위 12300~12399 로 한정한다. 이 범위 안에서 실제로 LISTEN 중인 127.0.0.1
  * 포트만 후보로 삼고, 그중 `/ping` 에 짧은 타임아웃으로 응답한 포트를 "응답한 포트" 로
  * 본다.
@@ -90,7 +90,7 @@ export interface ProbeBridgePortsResult {
 // ============================================================================
 
 /**
- * mcp-server-stdio.ts 의 DEFAULT_CANDIDATE_PORTS(12306/12315/12320/12325, popup 이 제안하는
+ * mcp-server-stdio.ts 의 DEFAULT_CANDIDATE_PORTS(12306/12315/12330/12325, popup 이 제안하는
  * 값과 동일)를 전부 포함하는 넉넉한 범위. 그 상수는 export 되어 있지 않아 재사용할 수
  * 없어서(다른 파일 수정 금지 범위 밖), 여기서는 그 값들을 감싸는 범위로 대신한다.
  */
@@ -107,7 +107,7 @@ const DEFAULT_PROBE_DEADLINE_MS = 4000;
  * 브리지가 무인증 응답에 싣는 fork 이름. 정확히 이 값일 때만 우리 브리지로 본다
  * (server/routes/admin.ts 의 /health 본문과 같아야 한다).
  */
-export const EXPECTED_FORK = 'auto-chrome-mcp';
+export const EXPECTED_FORK = 'posendy-chrome';
 
 /** semver(major.minor.patch [-prerelease] [+build]). 이 형식이 아니면 식별하지 않는다. */
 const SEMVER_RE =
@@ -198,8 +198,8 @@ export function parsePowerShellNetTcpJson(output: string): PortListener[] {
 
 /**
  * `lsof -iTCP -sTCP:LISTEN -P -n` 출력을 파싱. 예:
- *   node    12345 user   23u  IPv4 0x1234      0t0  TCP 127.0.0.1:12320 (LISTEN)
- *   node    12345 user   24u  IPv6 0x5678      0t0  TCP [::1]:12320 (LISTEN)
+ *   node    12345 user   23u  IPv4 0x1234      0t0  TCP 127.0.0.1:12330 (LISTEN)
+ *   node    12345 user   24u  IPv6 0x5678      0t0  TCP [::1]:12330 (LISTEN)
  */
 export function parseLsofListenOutput(output: string): PortListener[] {
   const results: PortListener[] = [];

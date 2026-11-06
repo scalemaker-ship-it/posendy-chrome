@@ -1,22 +1,22 @@
 import { createErrorResponse, ToolResult } from '@/common/tool-handler';
 import { BaseBrowserToolExecutor } from '../base-browser';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { TOOL_MESSAGE_TYPES } from '@/common/message-types';
 import { activateTab, focusWindow as focusWindowIfAllowed } from '@/utils/activation-guard';
-// auto-chrome-mcp fork: url 분기가 사용자 창의 탭을 집지 않도록 세션 소유 탭으로만 조회한다.
+// posendy-chrome fork: url 분기가 사용자 창의 탭을 집지 않도록 세션 소유 탭으로만 조회한다.
 import { createTabForUrl, findTabByUrlInSessionScope } from './url-target';
-// auto-chrome-mcp fork(T2): 직전 읽기와 동일하면 본문을 다시 보내지 않기 위한 콘텐츠 해시 캐시
+// posendy-chrome fork(T2): 직전 읽기와 동일하면 본문을 다시 보내지 않기 위한 콘텐츠 해시 캐시
 import { diffCheck } from '@/utils/content-cache';
-// auto-chrome-mcp fork: iframe 안의 interactive elements 까지 수집하기 위한 프레임 열거 유틸
+// posendy-chrome fork: iframe 안의 interactive elements 까지 수집하기 위한 프레임 열거 유틸
 import { FRAME_COLLECT_MAX_FRAMES, listChildFrames } from './frame-resolver';
 import { redactedArgsForLog, redactUrlForLog } from '@/utils/log-redact';
-// auto-chrome-mcp fork: 새 탭 생성 후 고정 대기 대신 실제 로드 신호를 관측하기 위해 import
+// posendy-chrome fork: 새 탭 생성 후 고정 대기 대신 실제 로드 신호를 관측하기 위해 import
 // (navigate 가 쓰는 것과 같은 유틸 — wait-for.ts 는 이 작업 범위 밖이라 수정하지 않는다).
 import { waitForPageLoad } from './wait-for';
 
-/** auto-chrome-mcp fork: 새 탭 생성 후 로드 관측 상한 (예전 고정 대기보다 넉넉히 잡는다) */
+/** posendy-chrome fork: 새 탭 생성 후 로드 관측 상한 (예전 고정 대기보다 넉넉히 잡는다) */
 const WEB_FETCHER_LOAD_TIMEOUT_MS = 15000;
-/** auto-chrome-mcp fork: 관측 대기가 실패했을 때의 폴백 — 예전 고정 대기와 동일한 값 */
+/** posendy-chrome fork: 관측 대기가 실패했을 때의 폴백 — 예전 고정 대기와 동일한 값 */
 const WEB_FETCHER_LOAD_FALLBACK_MS = 3000;
 
 interface WebFetcherToolParams {
@@ -24,14 +24,14 @@ interface WebFetcherToolParams {
   textContent?: boolean; // get the visible text content of the current page. default: true
   url?: string; // optional URL to fetch content from (if not provided, uses active tab)
   selector?: string; // optional CSS selector to get content from a specific element
-  /** auto-chrome-mcp fork: htmlContent 반환 상한(문자). 미지정 시 helper 기본값(100k). */
+  /** posendy-chrome fork: htmlContent 반환 상한(문자). 미지정 시 helper 기본값(100k). */
   maxChars?: number;
   tabId?: number; // target existing tab id
   background?: boolean; // do not activate/focus
   windowId?: number; // target window id to pick active tab or create tab
-  // auto-chrome-mcp fork(T5): true 면 보일러플레이트 제거 없이 예전 그대로의 본문을 반환. default: false
+  // posendy-chrome fork(T5): true 면 보일러플레이트 제거 없이 예전 그대로의 본문을 반환. default: false
   raw?: boolean;
-  // auto-chrome-mcp fork(T2): 직전 호출과 내용이 같으면 본문 대신 unchanged 마커만 반환. default: true
+  // posendy-chrome fork(T2): 직전 호출과 내용이 같으면 본문 대신 unchanged 마커만 반환. default: true
   diff?: boolean;
 }
 
@@ -50,7 +50,7 @@ class WebFetcherTool extends BaseBrowserToolExecutor {
     const explicitTabId = args.tabId;
     const background = args.background === true;
     const windowId = args.windowId;
-    // auto-chrome-mcp fork: reader 모드가 기본. raw:true 면 예전 본문 그대로.
+    // posendy-chrome fork: reader 모드가 기본. raw:true 면 예전 본문 그대로.
     const raw = args.raw === true;
     const mode: 'reader' | 'raw' = raw ? 'raw' : 'reader';
     const useDiff = args.diff !== false;
@@ -72,7 +72,7 @@ class WebFetcherTool extends BaseBrowserToolExecutor {
       if (typeof explicitTabId === 'number') {
         tab = await chrome.tabs.get(explicitTabId);
       } else if (url) {
-        // auto-chrome-mcp fork: 백그라운드 작업 모드에서는 이 세션이 소유한 탭에서만 찾는다.
+        // posendy-chrome fork: 백그라운드 작업 모드에서는 이 세션이 소유한 탭에서만 찾는다.
         // 예전에는 chrome.tabs.query({}) 로 모든 창을 뒤져 사용자 탭이 걸렸다.
         const existing = await findTabByUrlInSessionScope(url, args);
         if (existing) {
@@ -91,7 +91,7 @@ class WebFetcherTool extends BaseBrowserToolExecutor {
 
           // Wait for page to load
           console.log('Waiting for page to load...');
-          // auto-chrome-mcp fork(2026-09): 고정 3000ms 대기 대신 실제 로드 신호(observed
+          // posendy-chrome fork(2026-09): 고정 3000ms 대기 대신 실제 로드 신호(observed
           // DOMContentLoaded)를 기다린다 — 로드가 더 빨리 끝나면 그만큼 빨리 돌아온다.
           // navigate 가 쓰는 것과 같은 유틸(common.ts 의 waitForPageLoad 호출 참고).
           // 새로 만든 탭이라 navigationStarted 추적은 필요 없다. 실패 시(예: 예상치 못한 에러)
@@ -129,7 +129,7 @@ class WebFetcherTool extends BaseBrowserToolExecutor {
       }
 
       // Optionally bring tab/window to foreground
-      // auto-chrome-mcp fork: windows.update({focused:true}) 는 강제포커스 정책 통과 시에만 호출.
+      // posendy-chrome fork: windows.update({focused:true}) 는 강제포커스 정책 통과 시에만 호출.
       if (!background) {
         // v1.9.0: 활성화 판정은 activation-guard 한곳에서만 한다.
         await activateTab(tab.id, { reason: 'web-fetcher' });
@@ -150,7 +150,7 @@ class WebFetcherTool extends BaseBrowserToolExecutor {
         const htmlResponse = await this.sendMessageToTab(tab.id, {
           action: TOOL_MESSAGE_TYPES.WEB_FETCHER_GET_HTML_CONTENT,
           selector: selector,
-          // auto-chrome-mcp fork: 상한을 helper 로 넘겨 전송량 자체를 줄인다.
+          // posendy-chrome fork: 상한을 helper 로 넘겨 전송량 자체를 줄인다.
           maxChars:
             typeof args.maxChars === 'number' && Number.isFinite(args.maxChars) && args.maxChars > 0
               ? args.maxChars
@@ -161,7 +161,7 @@ class WebFetcherTool extends BaseBrowserToolExecutor {
           const html: string =
             typeof htmlResponse.htmlContent === 'string' ? htmlResponse.htmlContent : '';
 
-          // auto-chrome-mcp fork(T2): 텍스트 경로와 같은 diff 규칙을 HTML 에도 적용한다.
+          // posendy-chrome fork(T2): 텍스트 경로와 같은 diff 규칙을 HTML 에도 적용한다.
           if (useDiff) {
             const diffKey = `get_web_content:${tab.id}:html:${selector ?? ''}`;
             const { unchanged, hash } = diffCheck(diffKey, html);
@@ -211,7 +211,7 @@ class WebFetcherTool extends BaseBrowserToolExecutor {
         const textResponse = await this.sendMessageToTab(tab.id, {
           action: TOOL_MESSAGE_TYPES.WEB_FETCHER_GET_TEXT_CONTENT,
           selector: selector,
-          // auto-chrome-mcp fork(T5): helper 는 이 플래그가 있을 때만 reader 추출을 한다
+          // posendy-chrome fork(T5): helper 는 이 플래그가 있을 때만 reader 추출을 한다
           // (content-indexer 등 다른 호출자는 기존 동작 유지).
           readerMode: !raw,
         });
@@ -220,7 +220,7 @@ class WebFetcherTool extends BaseBrowserToolExecutor {
           const finalText =
             typeof textResponse.textContent === 'string' ? textResponse.textContent : '';
 
-          // auto-chrome-mcp fork(T2): 직전 호출과 본문이 같으면 본문을 통째로 다시 보내지 않는다.
+          // posendy-chrome fork(T2): 직전 호출과 본문이 같으면 본문을 통째로 다시 보내지 않는다.
           if (useDiff) {
             const diffKey = `get_web_content:${tab.id}:${mode}:${selector ?? ''}`;
             const { unchanged, hash } = diffCheck(diffKey, finalText);
@@ -247,7 +247,7 @@ class WebFetcherTool extends BaseBrowserToolExecutor {
 
           result.textContent = finalText;
 
-          // auto-chrome-mcp fork(T5): 모델이 "잘려나간 게 있나?" 를 스스로 판단하고 raw:true 로
+          // posendy-chrome fork(T5): 모델이 "잘려나간 게 있나?" 를 스스로 판단하고 raw:true 로
           // 재요청할 수 있도록 추출 모드와 원문/반환 길이를 함께 알려준다.
           result.mode = typeof textResponse.mode === 'string' ? textResponse.mode : mode;
           if (typeof textResponse.fullTextChars === 'number') {
@@ -311,14 +311,14 @@ interface GetInteractiveElementsToolParams {
   selector?: string; // CSS selector to filter interactive elements
   includeCoordinates?: boolean; // Include element coordinates in the response (default: true)
   types?: string[]; // Types of interactive elements to include (default: all types)
-  // auto-chrome-mcp fork: true 면 top frame 외에 iframe 안의 요소도 함께 수집한다. default: false
+  // posendy-chrome fork: true 면 top frame 외에 iframe 안의 요소도 함께 수집한다. default: false
   allFrames?: boolean;
-  // auto-chrome-mcp fork(2026-09-04): 게이트가 주입하는 대상 탭. 없으면 활성 탭.
+  // posendy-chrome fork(2026-09-04): 게이트가 주입하는 대상 탭. 없으면 활성 탭.
   // 이 필드가 없어서 작업 탭 주입이 통째로 버려지고 사용자의 활성 탭이 읽혔다.
   tabId?: number;
 }
 
-/** auto-chrome-mcp fork: allFrames 수집 시 프레임당 / 전체 요소 상한 (read-page.ts 와 동일) */
+/** posendy-chrome fork: allFrames 수집 시 프레임당 / 전체 요소 상한 (read-page.ts 와 동일) */
 const FRAME_ELEMENTS_PER_FRAME = 50;
 const FRAME_ELEMENTS_TOTAL = 250;
 
@@ -326,7 +326,7 @@ class GetInteractiveElementsTool extends BaseBrowserToolExecutor {
   name = TOOL_NAMES.BROWSER.GET_INTERACTIVE_ELEMENTS;
 
   /**
-   * auto-chrome-mcp fork: 하위 iframe 들에서 interactive elements 를 수집한다(allFrames=true 일 때만).
+   * posendy-chrome fork: 하위 iframe 들에서 interactive elements 를 수집한다(allFrames=true 일 때만).
    * 프레임마다 개별적으로 helper 주입을 보장한 뒤 동일한 메시지를 보낸다.
    * 실패한 프레임은 조용히 건너뛴다 (top frame 결과는 항상 유지).
    */
@@ -391,7 +391,7 @@ class GetInteractiveElementsTool extends BaseBrowserToolExecutor {
     console.log(`Starting get interactive elements with options:`, redactedArgsForLog(args));
 
     try {
-      // auto-chrome-mcp fork(2026-09-04): 주입된 tabId 를 최우선으로 소비한다.
+      // posendy-chrome fork(2026-09-04): 주입된 tabId 를 최우선으로 소비한다.
       // 예전에는 이 값을 무시하고 currentWindow 활성 탭을 조회해 사용자 탭이 읽혔다.
       // windowId 는 소비하지 않는다 — 게이트의 WINDOW_ID_AWARE_TOOLS 에서 빠져 있고,
       // 창 지정만으로 통과시키지 않는 fail-closed 판정을 그대로 두기 위함이다.
@@ -423,7 +423,7 @@ class GetInteractiveElementsTool extends BaseBrowserToolExecutor {
       let elements: any[] = Array.isArray(result.elements) ? result.elements : [];
       let frameElementCount = 0;
 
-      // auto-chrome-mcp fork: iframe 안의 요소도 필요할 때만(allFrames:true) 추가로 모은다.
+      // posendy-chrome fork: iframe 안의 요소도 필요할 때만(allFrames:true) 추가로 모은다.
       if (allFrames) {
         try {
           const frameEls = await this.collectFrameInteractiveElements(tab.id, {

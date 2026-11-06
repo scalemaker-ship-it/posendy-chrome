@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork: chrome_shortcut 예약 실행기.
+ * posendy-chrome fork: chrome_shortcut 예약 실행기.
  *
  * 설계 계약: docs/plans/2026-09-05-daily-automation-design.md 1·2·4·5절
  * (구현 순서 3·4단계).
@@ -632,7 +632,7 @@ async function notifyFailure(
     await chrome.notifications.create(`mcp-shortcut-fail::${record.scheduleId}::${Date.now()}`, {
       type: 'basic',
       iconUrl: chrome.runtime.getURL('icon/128.png'),
-      title: 'Auto Chrome MCP 예약 실패',
+      title: 'POSENDY Chrome 예약 실패',
       message: `${record.name}: ${code}${step}`,
       priority: 1,
       requireInteraction: false,

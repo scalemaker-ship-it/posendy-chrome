@@ -1,4 +1,5 @@
 import { initNativeHostListener } from './native-host';
+import { initPosendyBridge } from './posendy';
 import {
   initSemanticSimilarityListener,
   initializeSemanticEngineIfCached,
@@ -12,15 +13,15 @@ import { initQuickPanelAgentHandler } from './quick-panel/agent-handler';
 import { initQuickPanelCommands } from './quick-panel/commands';
 import { initQuickPanelTabsHandler } from './quick-panel/tabs-handler';
 import { initializeTogglesIfMissing } from '@/utils/consent-storage';
-// auto-chrome-mcp fork(2026-09-05): chrome_shortcut 예약 실행. import 만으로 최상위
+// posendy-chrome fork(2026-09-05): chrome_shortcut 예약 실행. import 만으로 최상위
 // onAlarm 리스너가 등록된다 - 늦게 등록한 리스너는 워커를 깨우지 못한다.
 import { initShortcutScheduleRunner } from './schedule-runner';
-// auto-chrome-mcp fork(2026-09-05 사이드패널 2단계 D): 매일 작업 화면의 메시지 접점과
+// posendy-chrome fork(2026-09-05 사이드패널 2단계 D): 매일 작업 화면의 메시지 접점과
 // 예약 실패 알림 클릭 처리.
 import { initDailyMessages } from './daily-messages';
-// auto-chrome-mcp fork(2026-09-05 사이드패널 2단계): 사이드패널 여는 단축키.
+// posendy-chrome fork(2026-09-05 사이드패널 2단계): 사이드패널 여는 단축키.
 import { initSidepanelShortcut } from './sidepanel-shortcut';
-// auto-chrome-mcp fork(2026-09-06): 컨텍스트 메뉴는 이 모듈 하나가 소유한다.
+// posendy-chrome fork(2026-09-06): 컨텍스트 메뉴는 이 모듈 하나가 소유한다.
 // 기동할 때마다 removeAll 로 비우고 다시 만들며, 클릭도 여기서만 받는다.
 import { initContextMenus } from './context-menus';
 
@@ -106,13 +107,15 @@ export default defineBackground(() => {
     }
   });
 
-  // auto-chrome-mcp fork: 워커가 평가될 때마다 예약 상태를 맞춘다 (running -> interrupted,
+  // posendy-chrome fork: 워커가 평가될 때마다 예약 상태를 맞춘다 (running -> interrupted,
   // 고아 탭 정리, 없어진 알람 재생성, 지난 예약 1회 따라잡기).
   initShortcutScheduleRunner();
   // 매일 작업 탭이 부르는 메시지와 알림 클릭. 리스너는 워커 평가마다 등록된다.
   initDailyMessages();
 
   // Initialize core services
+  // POSENDY: Naver Blog publishing queue (API key from the popup)
+  initPosendyBridge();
   initNativeHostListener();
   initSemanticSimilarityListener();
   initStorageManagerListener();

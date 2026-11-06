@@ -1,6 +1,6 @@
 import { createErrorResponse, ToolResult } from '@/common/tool-handler';
 import { BaseBrowserToolExecutor } from '../base-browser';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { captureFrameOnAction, isAutoCaptureActive } from './gif-recorder';
 import {
   activateTab,
@@ -36,7 +36,7 @@ import {
   registerWorkWindowTab,
   type WorkWindowMode,
 } from '@/utils/mcp-window-manager';
-// auto-chrome-mcp fork(A2): navigate 후 로딩 완료 대기
+// posendy-chrome fork(A2): navigate 후 로딩 완료 대기
 import { waitForPageLoad, watchNavigationStart, type NavigateWaitUntil } from './wait-for';
 import { redactedArgsForLog, redactUrlForLog } from '@/utils/log-redact';
 import {
@@ -83,7 +83,7 @@ function isInvalidMatchPatternError(error: unknown): boolean {
 }
 
 /**
- * auto-chrome-mcp fork(버그 수정): "이미 열린 탭" 재사용 후보를 찾기 위한 chrome.tabs.query
+ * posendy-chrome fork(버그 수정): "이미 열린 탭" 재사용 후보를 찾기 위한 chrome.tabs.query
  * match pattern 목록을 만든다.
  *
  * 예전 구현은 모든 URL 을 웹 주소로 가정해 www 유무·http↔https 변형까지 만들었다.
@@ -151,14 +151,14 @@ interface NavigateToolParams {
   tabId?: number;
   windowId?: number;
   background?: boolean; // when true, do not activate tab or focus window
-  // auto-chrome-mcp fork: true 면 이 세션의 기존 작업 탭을 재사용하지 않고 새 탭을 만든다.
+  // posendy-chrome fork: true 면 이 세션의 기존 작업 탭을 재사용하지 않고 새 탭을 만든다.
   newTab?: boolean;
-  // auto-chrome-mcp fork(A2): 이동 후 어느 단계까지 기다릴지.
+  // posendy-chrome fork(A2): 이동 후 어느 단계까지 기다릴지.
   // 기본 'domcontentloaded' — 이동 직후 read_page/click 이 빈 페이지를 보는 문제를 없앤다.
   waitUntil?: NavigateWaitUntil;
   waitTimeoutMs?: number;
   /**
-   * auto-chrome-mcp fork(2026-09-05): 지금 하는 작업을 한 문구로. 작업 탭이 속한 창의
+   * posendy-chrome fork(2026-09-05): 지금 하는 작업을 한 문구로. 작업 탭이 속한 창의
    * MCP 탭 그룹 제목이 이 문구가 되고, 다음 task 나 batch 종료 전까지 유지된다.
    */
   task?: string;
@@ -185,7 +185,7 @@ class NavigateTool extends BaseBrowserToolExecutor {
   }
 
   /**
-   * auto-chrome-mcp fork: navigate 가 확정한 탭을 "MCP 작업 탭"으로 기록.
+   * posendy-chrome fork: navigate 가 확정한 탭을 "MCP 작업 탭"으로 기록.
    * 이후 tabId 미지정 도구 호출이 사용자의 활성 탭 대신 이 탭을 대상으로 한다.
    */
   private async rememberWorkTab(tabId?: number, sessionKey?: string, owned = false): Promise<void> {
@@ -196,7 +196,7 @@ class NavigateTool extends BaseBrowserToolExecutor {
       console.warn('[NavigateTool] Failed to record MCP work tab:', error);
     }
     if (!owned) return;
-    // auto-chrome-mcp fork: MCP 가 새 탭을 만들었으면 소유 목록에 넣고, 같은 세션이 앞서
+    // posendy-chrome fork: MCP 가 새 탭을 만들었으면 소유 목록에 넣고, 같은 세션이 앞서
     // 만들었던 유휴 탭을 정리한다 — 탭이 쌓이지 않게 하되 실행 중인 탭은 건드리지 않는다.
     try {
       await addOwnedTab(tabId, sessionKey);
@@ -207,7 +207,7 @@ class NavigateTool extends BaseBrowserToolExecutor {
   }
 
   /**
-   * auto-chrome-mcp fork(2026-09-05 Codex 4차 검토, 항목 1·4·5): "이미 열린 탭" 재사용 후보.
+   * posendy-chrome fork(2026-09-05 Codex 4차 검토, 항목 1·4·5): "이미 열린 탭" 재사용 후보.
    *
    * 항목 1 — 재사용 범위는 호출 인자 `background` 가 아니라 **전역 백그라운드 작업 모드**가
    *   정한다. 예전에는 `background === true` 일 때만 사용자 탭을 걸렀다. 모드가 켜져 있어도
@@ -285,7 +285,7 @@ class NavigateTool extends BaseBrowserToolExecutor {
   }
 
   /**
-   * auto-chrome-mcp fork: MCP 작업 탭을 만들 창을 판정한다.
+   * posendy-chrome fork: MCP 작업 탭을 만들 창을 판정한다.
    *
    * 백그라운드 작업 모드(게이트가 background:true 주입)이고 호출자가 windowId 를 명시하지
    * 않은 경우에만 동작하며, 창 모드에 따라 대상이 갈린다:
@@ -311,7 +311,7 @@ class NavigateTool extends BaseBrowserToolExecutor {
   }
 
   /**
-   * auto-chrome-mcp fork(F3): 이미 있는 탭을 대상으로 하는 분기(refresh · back · forward)의
+   * posendy-chrome fork(F3): 이미 있는 탭을 대상으로 하는 분기(refresh · back · forward)의
    * 대상 탭을 정한다. 해석 순서는 하나뿐이다:
    *
    *   1. 호출자가 명시한 tabId
@@ -343,7 +343,7 @@ class NavigateTool extends BaseBrowserToolExecutor {
   }
 
   /**
-   * auto-chrome-mcp fork v1.9.0(설계 H.4): 이 작업 탭을 재사용해도 되는가.
+   * posendy-chrome fork v1.9.0(설계 H.4): 이 작업 탭을 재사용해도 되는가.
    *
    * 'dedicated' 모드에서는 전용 작업 창 안의 탭만 재사용한다. 모드를 바꾸기 전에 사용자 창에
    * 만들어 둔 옛 작업 탭이 남아 있으면, 재사용할 때마다 사용자가 보는 창의 탭이 MCP 에
@@ -361,7 +361,7 @@ class NavigateTool extends BaseBrowserToolExecutor {
   }
 
   /**
-   * auto-chrome-mcp fork: 전용 작업 창을 만들 때 같이 생긴 about:blank 탭 정리 (best-effort).
+   * posendy-chrome fork: 전용 작업 창을 만들 때 같이 생긴 about:blank 탭 정리 (best-effort).
    * 방금 만든 탭은 건드리지 않고, url 이 정확히 'about:blank' 인 탭만 닫는다.
    * 창에 탭이 하나뿐이면 닫지 않는다 (창 자체가 사라지므로).
    */
@@ -382,11 +382,11 @@ class NavigateTool extends BaseBrowserToolExecutor {
   }
 
   /**
-   * auto-chrome-mcp fork(A2): 실제 내비게이션(executeNavigate) 뒤에 로딩 완료를 기다린다.
+   * posendy-chrome fork(A2): 실제 내비게이션(executeNavigate) 뒤에 로딩 완료를 기다린다.
    * 모든 반환 경로(새 탭/기존 탭/새 창/새로고침/뒤로가기)를 한곳에서 처리하기 위해 래핑한다.
    */
   async execute(args: NavigateToolParams): Promise<ToolResult> {
-    // auto-chrome-mcp fork(2026-09-05): task 를 주면 MCP 탭 그룹 제목이 그 문구가 된다.
+    // posendy-chrome fork(2026-09-05): task 를 주면 MCP 탭 그룹 제목이 그 문구가 된다.
     // 탭이 이 호출에서 새로 만들어지는 경우도 있으므로 **이동 전에** 현재 작업 제목을
     // 먼저 정해 둔다 (그룹이 생기는 순간 그 제목으로 만들어진다).
     const taskTitle =
@@ -526,7 +526,7 @@ class NavigateTool extends BaseBrowserToolExecutor {
       windowId,
       newTab: forceNewTab,
     } = args;
-    // auto-chrome-mcp fork: 세션 id + lane 으로 만든 작업 탭 버킷 키.
+    // posendy-chrome fork: 세션 id + lane 으로 만든 작업 탭 버킷 키.
     // lane 을 준 호출은 같은 stdio 세션 안에서도 자기만의 작업 탭을 갖는다 (병렬 에이전트 격리).
     const mcpSessionId = sessionKeyOf(args);
 
@@ -541,7 +541,7 @@ class NavigateTool extends BaseBrowserToolExecutor {
     try {
       // Handle refresh option first
       if (refresh) {
-        // auto-chrome-mcp fork(F3): 명시 tabId → 이 레인의 작업 탭 → (모드 OFF 일 때만) 활성 탭
+        // posendy-chrome fork(F3): 명시 tabId → 이 레인의 작업 탭 → (모드 OFF 일 때만) 활성 탭
         const targetTab = await this.resolveExistingTargetTab(tabId, windowId, mcpSessionId, args);
         if (targetTab === null) return createErrorResponse(noWorkTabErrorText(this.name));
         if (!targetTab.id) return createErrorResponse('No target tab found to refresh');
@@ -578,7 +578,7 @@ class NavigateTool extends BaseBrowserToolExecutor {
         return createErrorResponse('URL parameter is required when refresh is not true');
       }
 
-      // auto-chrome-mcp fork(버그 수정): file: 대상은 확장의 파일 URL 접근 권한이 꺼져
+      // posendy-chrome fork(버그 수정): file: 대상은 확장의 파일 URL 접근 권한이 꺼져
       // 있으면 이동이 조용히 실패(빈 페이지로 남음)하므로, tabs.query 나 tabs.create/update
       // 를 시도하기 전에 미리 걸러 구조화 오류로 안내한다.
       // 2026-09-05 Codex 4차 검토(항목 2·3): 판별과 권한 확인을 url-target 의 공통 가드로
@@ -592,7 +592,7 @@ class NavigateTool extends BaseBrowserToolExecutor {
 
       // Handle history navigation: url="back" or url="forward"
       if (url === 'back' || url === 'forward') {
-        // auto-chrome-mcp fork(F3): refresh 와 같은 해석 순서를 쓴다.
+        // posendy-chrome fork(F3): refresh 와 같은 해석 순서를 쓴다.
         const targetTab = await this.resolveExistingTargetTab(tabId, windowId, mcpSessionId, args);
         if (targetTab === null) return createErrorResponse(noWorkTabErrorText(this.name));
         if (!targetTab.id) {
@@ -774,7 +774,7 @@ class NavigateTool extends BaseBrowserToolExecutor {
         console.log('Opening URL in a new window.');
 
         // Create new window
-        // auto-chrome-mcp fork: 강제포커스 정책 OFF 면 항상 background. background 인자가 명시적으로
+        // posendy-chrome fork: 강제포커스 정책 OFF 면 항상 background. background 인자가 명시적으로
         // true 인 경우도 동일.
         // v1.9.0(설계 B.2): 창 생성은 전부 mcp-window-manager 를 거친다 — 배치(최소화/화면 밖),
         // 지연 이중 비포커스, 사용자 창 복귀가 한곳에서 적용된다.
@@ -816,7 +816,7 @@ class NavigateTool extends BaseBrowserToolExecutor {
           };
         }
       } else {
-        // auto-chrome-mcp fork: 탭 재사용 — 이 세션이 이미 가진 MCP 작업 탭이 있으면
+        // posendy-chrome fork: 탭 재사용 — 이 세션이 이미 가진 MCP 작업 탭이 있으면
         // 새 탭을 만들지 않고 그 탭을 이동시킨다. (Claude in Chrome 처럼 한 탭에서 계속 작업)
         // MCP 가 직접 만든 탭(owned)만 대상이라, 사용자가 chrome_set_work_tab 으로 지정한
         // 자기 탭은 절대 다른 URL 로 끌려가지 않는다. newTab:true 로 끌 수 있다.
@@ -871,7 +871,7 @@ class NavigateTool extends BaseBrowserToolExecutor {
           }
         }
 
-        // auto-chrome-mcp fork: 백그라운드 작업 모드면 창 모드에 따라 작업 탭을 만든다.
+        // posendy-chrome fork: 백그라운드 작업 모드면 창 모드에 따라 작업 탭을 만든다.
         // 아래 last-focused-window / fallback-window 경로를 모두 대체한다.
         // null 이면(백그라운드 OFF·열린 창 없음·창 생성 실패) 기존 동작 그대로 진행.
         const workWindow = await this.resolveWorkWindow(background, windowId);
@@ -976,7 +976,7 @@ class NavigateTool extends BaseBrowserToolExecutor {
             { reason: 'navigate:last-focused-fallback', contextArgs: args },
           );
           if (background !== true) {
-            // auto-chrome-mcp fork: 강제포커스 정책 통과 시에만 OS 윈도우 포커스.
+            // posendy-chrome fork: 강제포커스 정책 통과 시에만 OS 윈도우 포커스.
             await focusWindowIfAllowed(targetWindow.id);
           }
 
@@ -1009,7 +1009,7 @@ class NavigateTool extends BaseBrowserToolExecutor {
           // Fall back to opening in a new window
           console.warn('No last focused window found, falling back to creating a new window.');
 
-          // auto-chrome-mcp fork: 강제포커스 정책 OFF 면 background 윈도우로 생성.
+          // posendy-chrome fork: 강제포커스 정책 OFF 면 background 윈도우로 생성.
           // v1.9.0(설계 C): 이 최후 폴백이 background 인자를 아예 안 보던 것을 고쳤다.
           const allowFocus = background === true ? false : await isForceFocusEnabled();
           const fallbackWindow = await createManagedWindow({
@@ -1215,7 +1215,7 @@ class CloseTabsTool extends BaseBrowserToolExecutor {
         };
       }
 
-      // auto-chrome-mcp fork: 인자 없이 호출되면 원래는 사용자의 활성 탭을 닫았다.
+      // posendy-chrome fork: 인자 없이 호출되면 원래는 사용자의 활성 탭을 닫았다.
       // 백그라운드 작업 모드 ON 이면 사용자 탭 대신 MCP 작업 탭만 닫는다 (없으면 에러).
       // 닫힌 탭이 작업 탭이면 work-tab-manager 의 onRemoved 리스너가 알아서 정리한다.
       if (await isBackgroundModeEnabledFor(args)) {
@@ -1331,7 +1331,7 @@ class SwitchTabTool extends BaseBrowserToolExecutor {
     console.log(`Attempting to switch to tab ID: ${tabId} in window ID: ${windowId}`);
 
     try {
-      // auto-chrome-mcp fork: switch_tab 호출이어도 OS 포커스는 정책 게이트 통과 시에만.
+      // posendy-chrome fork: switch_tab 호출이어도 OS 포커스는 정책 게이트 통과 시에만.
       if (windowId !== undefined) {
         await focusWindowIfAllowed(windowId);
       }

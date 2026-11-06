@@ -32,7 +32,7 @@ export interface LaunchResult {
   reused: boolean;
 }
 
-const CDP_PORT_FILE = path.join(homedir(), '.auto-chrome-mcp', 'cdp-port');
+const CDP_PORT_FILE = path.join(homedir(), '.posendy-chrome', 'cdp-port');
 
 /**
  * Chrome 을 --remote-debugging-port + user-data-dir 옵션으로 띄움.
@@ -45,7 +45,7 @@ const CDP_PORT_FILE = path.join(homedir(), '.auto-chrome-mcp', 'cdp-port');
  *    - 점유 O 이지만 우리 (Chrome CDP) 인 경우 → reused: true (skip launch)
  *    - 점유 O 가 다른 프로세스 → 9223 → 9224 escalation
  * 4. spawn Chrome with flags
- * 5. ~/.auto-chrome-mcp/cdp-port 에 port 쓰기 (bridge 가 읽음)
+ * 5. ~/.posendy-chrome/cdp-port 에 port 쓰기 (bridge 가 읽음)
  */
 export const launchChrome = async (opts: LaunchOptions = {}): Promise<LaunchResult> => {
   const verbose = opts.verbose ?? false;

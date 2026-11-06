@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — mcp-tab-group unit tests.
+ * posendy-chrome fork — mcp-tab-group unit tests.
  *
  * MCP 작업 탭을 크롬 탭 그룹 "MCP"(green) 로 묶는 유틸의 계약을 검증한다:
  *   - 그룹 생성: 같은 창에 "MCP" 그룹이 없으면 만들고 제목·색·collapsed:false 지정
@@ -207,7 +207,7 @@ async function loadModule(): Promise<McpTabGroup> {
   return await import('@/utils/mcp-tab-group');
 }
 
-describe('mcp-tab-group (auto-chrome-mcp fork — MCP 작업 탭 그룹)', () => {
+describe('mcp-tab-group (posendy-chrome fork — MCP 작업 탭 그룹)', () => {
   let h: ChromeHarness;
   let warnSpy: ReturnType<typeof vi.spyOn>;
 

@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — 회귀 케이스 #5: "Chrome 144+ 에서 unload deprecation 경고 무발생".
+ * posendy-chrome fork — 회귀 케이스 #5: "Chrome 144+ 에서 unload deprecation 경고 무발생".
  *
  * Chrome 은 `unload` 이벤트를 단계적으로 폐기하고 있고(Permissions-Policy 로 차단 가능),
  * 콘텐츠 스크립트가 `unload` 리스너를 달면 대상 페이지에 경고가 찍힌다. 우리 코드는

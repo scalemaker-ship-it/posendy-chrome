@@ -28,7 +28,7 @@ export enum NativeMessageType {
  * `SERVER_STARTED` payload — 네이티브 호스트가 HTTP 브리지를 띄운 뒤 확장에 보낸다.
  *
  * `authToken` 은 브리지의 로컬 HTTP 인증 토큰이다. 확장은 파일 시스템을 읽을 수 없어
- * `~/.auto-chrome-mcp/auth-token` 을 볼 수 없으므로, 이 메시지가 확장이 토큰을 얻는
+ * `~/.posendy-chrome/auth-token` 을 볼 수 없으므로, 이 메시지가 확장이 토큰을 얻는
  * 유일한 경로다. 확장은 이 값을 `chrome.storage.session`(디스크에 남지 않는다)에만
  * 보관하고 `/admin/*`, `/mcp` 호출에 `Authorization: Bearer <token>` 으로 붙인다.
  *

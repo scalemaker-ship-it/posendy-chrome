@@ -1,5 +1,5 @@
 import { createApp } from 'vue';
-import { NativeMessageType } from 'auto-chrome-mcp-shared';
+import { NativeMessageType } from 'posendy-chrome-shared';
 import App from './App.vue';
 
 // Tailwind first, then custom tokens

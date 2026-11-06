@@ -1,7 +1,7 @@
 /**
  * Admin routes — Force Reconnect 지원.
  *
- * auto-chrome-mcp fork 가 신설한 admin endpoints. Force Reconnect Stage A 의
+ * posendy-chrome fork 가 신설한 admin endpoints. Force Reconnect Stage A 의
  * 자살 패턴을 안전하게 지원하기 위한 backend.
  *
  * - GET  /health        — readiness probe. 토큰 없이도 살아 있는지는 답하지만, 상세는
@@ -37,7 +37,7 @@ export function registerAdminRoutes(fastify: FastifyInstance, options: AdminRout
   fastify.get('/health', async (request: FastifyRequest, reply: FastifyReply) => {
     const body: Record<string, unknown> = {
       status: 'ok',
-      fork: 'auto-chrome-mcp',
+      fork: 'posendy-chrome',
       version: '1.0.0',
     };
 

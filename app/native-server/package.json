@@ -1,12 +1,12 @@
 {
-  "name": "auto-chrome-mcp-bridge",
+  "name": "posendy-chrome-bridge",
   "version": "1.13.1",
-  "description": "Auto Chrome MCP — Chrome Native-Messaging host (Node). Non-interference background work mode, per-session work tabs, Force Reconnect, Playwright CDP fallback.",
+  "description": "POSENDY Chrome — Chrome Native-Messaging host (Node). Non-interference background work mode, per-session work tabs, Force Reconnect, Playwright CDP fallback.",
   "main": "dist/index.js",
   "bin": {
-    "auto-chrome-mcp-bridge": "./dist/cli.js",
-    "auto-chrome-mcp-stdio": "./dist/mcp/mcp-server-stdio.js",
-    "auto-chrome-mcp-install": "./dist/scripts/auto-chrome-mcp-install.js"
+    "posendy-chrome-bridge": "./dist/cli.js",
+    "posendy-chrome-stdio": "./dist/mcp/mcp-server-stdio.js",
+    "posendy-chrome-install": "./dist/scripts/posendy-chrome-install.js"
   },
   "scripts": {
     "dev": "nodemon --watch src --ext ts,js,json --ignore dist/ --exec \"npm run build && npm run register:dev\"",
@@ -32,20 +32,20 @@
     "chrome",
     "browser"
   ],
-  "author": "hangye (upstream), cw02326 (auto-chrome-mcp fork)",
+  "author": "hangye (upstream), cw02326 (posendy-chrome fork)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cw02326/auto-chrome-mcp.git"
+    "url": "https://github.com/cw02326/posendy-chrome.git"
   },
-  "homepage": "https://github.com/cw02326/auto-chrome-mcp",
+  "homepage": "https://github.com/cw02326/posendy-chrome",
   "dependencies": {
     "@fastify/cors": "^11.0.1",
     "@modelcontextprotocol/sdk": "^1.11.0",
     "@types/node-fetch": "2",
     "chalk": "^5.4.1",
     "chrome-devtools-frontend": "^1.0.1299282",
-    "auto-chrome-mcp-shared": "workspace:*",
+    "posendy-chrome-shared": "workspace:*",
     "commander": "^13.1.0",
     "fastify": "^5.3.2",
     "is-admin": "^4.0.0",

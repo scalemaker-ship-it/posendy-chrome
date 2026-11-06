@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — 브리지 HTTP 인증 토큰 헬퍼의 계약.
+ * posendy-chrome fork — 브리지 HTTP 인증 토큰 헬퍼의 계약.
  *
  * 브리지는 loopback HTTP 서버라 같은 PC 안의 다른 프로그램도 그 포트를 두드릴 수 있다.
  * 브리지가 기동 시 만든 토큰을 네이티브 메시징(SERVER_STARTED)으로만 확장에 알려 주고,

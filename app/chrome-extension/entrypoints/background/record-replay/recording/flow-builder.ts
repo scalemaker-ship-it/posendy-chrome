@@ -1,7 +1,7 @@
 import type { Edge, Flow, NodeBase, Step } from '../types';
 import { STEP_TYPES } from '@/common/step-types';
 import { recordingSession } from './session-manager';
-import { mapStepToNodeConfig, EDGE_LABELS } from 'auto-chrome-mcp-shared';
+import { mapStepToNodeConfig, EDGE_LABELS } from 'posendy-chrome-shared';
 
 const WORKFLOW_VERSION = 1;
 

@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork: 고정 대기(sleep) 대신 "조건이 충족되면 즉시 반환, 원래의 고정 시간은
+ * posendy-chrome fork: 고정 대기(sleep) 대신 "조건이 충족되면 즉시 반환, 원래의 고정 시간은
  * 상한으로만 남기는" 공용 대기 유틸.
  *
  * 배경: 도구 여러 곳에 `await sleep(2000)` / `sleep(700)` / `sleep(150)` 같은 고정 대기가 있었다.

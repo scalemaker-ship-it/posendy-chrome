@@ -7,7 +7,7 @@ import { buildPortChecks } from './doctor';
 import type { ProbeBridgePortsResult } from './port-probe';
 
 /**
- * auto-chrome-mcp fork — doctor 의 포트 점검 두 가지 회귀.
+ * posendy-chrome fork — doctor 의 포트 점검 두 가지 회귀.
  *
  * 1) 탐색으로 찾은 포트에 Bearer 토큰을 붙여 /health 를 조회했다. 12300번대의 아무
  *    서비스나 200 을 돌려주면 브리지 토큰이 그쪽으로 나갔다. 토큰이 붙는 조회 대상은
@@ -59,7 +59,7 @@ const ids = (checks: Array<{ id: string }>): string[] => checks.map((c) => c.id)
 
 describe('buildPortChecks - 포트 탐색은 언제나 한 번 돈다', () => {
   test('stdio-config.json 이 없어도 port.activeBridges 를 만든다', async () => {
-    const probe = makeProbe({ ports: [12320], responsivePorts: [12320], bridgePorts: [12320] });
+    const probe = makeProbe({ ports: [12330], responsivePorts: [12330], bridgePorts: [12330] });
 
     const result = await buildPortChecks({
       stdioConfigPath: path.join(root, 'missing', 'stdio-config.json'),
@@ -74,7 +74,7 @@ describe('buildPortChecks - 포트 탐색은 언제나 한 번 돈다', () => {
   test('stdio-config.json 이 깨져도 port.activeBridges 를 만든다', async () => {
     const file = path.join(root, 'stdio-config.json');
     fs.writeFileSync(file, '{ not json', 'utf8');
-    const probe = makeProbe({ ports: [12320], responsivePorts: [12320], bridgePorts: [12320] });
+    const probe = makeProbe({ ports: [12330], responsivePorts: [12330], bridgePorts: [12330] });
 
     const result = await buildPortChecks({
       stdioConfigPath: file,
@@ -89,8 +89,8 @@ describe('buildPortChecks - 포트 탐색은 언제나 한 번 돈다', () => {
 
   test('정상 설정에서도 정확히 한 번만 돈다', async () => {
     const file = path.join(root, 'stdio-config.json');
-    fs.writeFileSync(file, JSON.stringify({ url: 'http://127.0.0.1:12320/mcp' }), 'utf8');
-    const probe = makeProbe({ ports: [12320], responsivePorts: [12320], bridgePorts: [12320] });
+    fs.writeFileSync(file, JSON.stringify({ url: 'http://127.0.0.1:12330/mcp' }), 'utf8');
+    const probe = makeProbe({ ports: [12330], responsivePorts: [12330], bridgePorts: [12330] });
 
     const result = await buildPortChecks({
       stdioConfigPath: file,
@@ -99,7 +99,7 @@ describe('buildPortChecks - 포트 탐색은 언제나 한 번 돈다', () => {
     });
 
     expect(probe.calls()).toBe(1);
-    expect(result.configuredPort).toBe(12320);
+    expect(result.configuredPort).toBe(12330);
     expect(ids(result.checks)).toContain('port.activeBridges');
   });
 });
@@ -107,11 +107,11 @@ describe('buildPortChecks - 포트 탐색은 언제나 한 번 돈다', () => {
 describe('buildPortChecks - 탐색된 포트에는 토큰을 보내지 않는다', () => {
   test('탐색으로 찾은 브리지 포트는 토큰 조회 대상에 들어가지 않는다', async () => {
     const file = path.join(root, 'stdio-config.json');
-    fs.writeFileSync(file, JSON.stringify({ url: 'http://127.0.0.1:12320/mcp' }), 'utf8');
+    fs.writeFileSync(file, JSON.stringify({ url: 'http://127.0.0.1:12330/mcp' }), 'utf8');
     const probe = makeProbe({
-      ports: [12320, 12399],
-      responsivePorts: [12320, 12399],
-      bridgePorts: [12320, 12399],
+      ports: [12330, 12399],
+      responsivePorts: [12330, 12399],
+      bridgePorts: [12330, 12399],
     });
 
     const result = await buildPortChecks({
@@ -120,17 +120,17 @@ describe('buildPortChecks - 탐색된 포트에는 토큰을 보내지 않는다
       connectivity: noConnectivity,
     });
 
-    expect(result.tokenPorts).toEqual([12320]);
+    expect(result.tokenPorts).toEqual([12330]);
     expect(result.tokenPorts).not.toContain(12399);
   });
 
   test('식별되지 않은 응답 포트도 토큰 조회 대상이 아니며 따로 보고된다', async () => {
     const file = path.join(root, 'stdio-config.json');
-    fs.writeFileSync(file, JSON.stringify({ url: 'http://127.0.0.1:12320/mcp' }), 'utf8');
+    fs.writeFileSync(file, JSON.stringify({ url: 'http://127.0.0.1:12330/mcp' }), 'utf8');
     const probe = makeProbe({
-      ports: [12320, 12345],
-      responsivePorts: [12320, 12345],
-      bridgePorts: [12320],
+      ports: [12330, 12345],
+      responsivePorts: [12330, 12345],
+      bridgePorts: [12330],
       otherPorts: [12345],
     });
 
@@ -158,7 +158,7 @@ describe('buildPortChecks - 탐색된 포트에는 토큰을 보내지 않는다
       connectivity: noConnectivity,
     });
 
-    expect(result.tokenPorts).toEqual([12345, 12320]);
+    expect(result.tokenPorts).toEqual([12345, 12330]);
   });
 });
 
@@ -177,9 +177,9 @@ describe('buildPortChecks - 살아 있는 브리지 개수 집계', () => {
 
   test('설정이 없으면 탐색으로 찾은 브리지를 전부 센다 (2개면 warn)', async () => {
     const probe = makeProbe({
-      ports: [12320, 12321],
-      responsivePorts: [12320, 12321],
-      bridgePorts: [12320, 12321],
+      ports: [12330, 12330],
+      responsivePorts: [12330, 12330],
+      bridgePorts: [12330, 12330],
     });
 
     const result = await buildPortChecks({
@@ -191,16 +191,16 @@ describe('buildPortChecks - 살아 있는 브리지 개수 집계', () => {
     const active = activeCheck(result.checks);
     expect(active.status).toBe('warn');
     expect(active.details.liveBridgeCount).toBe(2);
-    expect(active.details.liveBridgePorts).toEqual([12320, 12321]);
+    expect(active.details.liveBridgePorts).toEqual([12330, 12330]);
   });
 
   test('설정이 깨져도 탐색으로 찾은 브리지를 전부 센다 (2개면 warn)', async () => {
     const file = path.join(root, 'stdio-config.json');
     fs.writeFileSync(file, '{ not json', 'utf8');
     const probe = makeProbe({
-      ports: [12320, 12399],
-      responsivePorts: [12320, 12399],
-      bridgePorts: [12320, 12399],
+      ports: [12330, 12399],
+      responsivePorts: [12330, 12399],
+      bridgePorts: [12330, 12399],
     });
 
     const result = await buildPortChecks({
@@ -216,18 +216,18 @@ describe('buildPortChecks - 살아 있는 브리지 개수 집계', () => {
 
   test('설정을 읽어 냈고 브리지가 하나면 ok', async () => {
     const file = path.join(root, 'stdio-config.json');
-    fs.writeFileSync(file, JSON.stringify({ url: 'http://127.0.0.1:12320/mcp' }), 'utf8');
+    fs.writeFileSync(file, JSON.stringify({ url: 'http://127.0.0.1:12330/mcp' }), 'utf8');
     const probe = makeProbe({
-      ports: [12320],
-      responsivePorts: [12320],
-      bridgePorts: [12320],
+      ports: [12330],
+      responsivePorts: [12330],
+      bridgePorts: [12330],
     });
 
     const result = await buildPortChecks({
       stdioConfigPath: file,
       probe: probe.fn,
       connectivity: okConnectivity,
-      identify: async () => ({ fork: 'auto-chrome-mcp', version: '1.11.1' }),
+      identify: async () => ({ fork: 'posendy-chrome', version: '1.11.1' }),
     });
 
     const active = activeCheck(result.checks);
@@ -237,7 +237,7 @@ describe('buildPortChecks - 살아 있는 브리지 개수 집계', () => {
 
   test('설정 포트가 /ping 만 되고 브리지로 식별되지 않으면 세지 않는다', async () => {
     const file = path.join(root, 'stdio-config.json');
-    fs.writeFileSync(file, JSON.stringify({ url: 'http://127.0.0.1:12320/mcp' }), 'utf8');
+    fs.writeFileSync(file, JSON.stringify({ url: 'http://127.0.0.1:12330/mcp' }), 'utf8');
     const probe = makeProbe();
 
     const result = await buildPortChecks({
@@ -254,25 +254,25 @@ describe('buildPortChecks - 살아 있는 브리지 개수 집계', () => {
 
   test('설정 포트가 살아 있는데 탐색이 못 보면 무인증 /health 식별로 1개로 센다', async () => {
     const file = path.join(root, 'stdio-config.json');
-    fs.writeFileSync(file, JSON.stringify({ url: 'http://127.0.0.1:12320/mcp' }), 'utf8');
+    fs.writeFileSync(file, JSON.stringify({ url: 'http://127.0.0.1:12330/mcp' }), 'utf8');
     const probe = makeProbe();
 
     const result = await buildPortChecks({
       stdioConfigPath: file,
       probe: probe.fn,
       connectivity: okConnectivity,
-      identify: async () => ({ fork: 'auto-chrome-mcp', version: '1.11.1' }),
+      identify: async () => ({ fork: 'posendy-chrome', version: '1.11.1' }),
     });
 
     const active = activeCheck(result.checks);
     expect(active.status).toBe('ok');
     expect(active.details.liveBridgeCount).toBe(1);
-    expect(active.details.liveBridgePorts).toEqual([12320]);
+    expect(active.details.liveBridgePorts).toEqual([12330]);
   });
 
   test('설정 포트 + 다른 포트가 둘 다 살아 있으면 warn', async () => {
     const file = path.join(root, 'stdio-config.json');
-    fs.writeFileSync(file, JSON.stringify({ url: 'http://127.0.0.1:12320/mcp' }), 'utf8');
+    fs.writeFileSync(file, JSON.stringify({ url: 'http://127.0.0.1:12330/mcp' }), 'utf8');
     const probe = makeProbe({
       ports: [12399],
       responsivePorts: [12399],
@@ -283,7 +283,7 @@ describe('buildPortChecks - 살아 있는 브리지 개수 집계', () => {
       stdioConfigPath: file,
       probe: probe.fn,
       connectivity: okConnectivity,
-      identify: async () => ({ fork: 'auto-chrome-mcp', version: '1.11.1' }),
+      identify: async () => ({ fork: 'posendy-chrome', version: '1.11.1' }),
     });
 
     const active = activeCheck(result.checks);

@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — chrome_screenshot storeBase64 응답 회귀 테스트.
+ * posendy-chrome fork — chrome_screenshot storeBase64 응답 회귀 테스트.
  *
  * 계약: storeBase64:true 응답 JSON 에는 더 이상 254자짜리 note 문구가 없다.
  * imageScale/cssWidth/cssHeight 등 실제로 좌표 환산에 쓰이는 필드는 그대로 남는다.

@@ -1,18 +1,18 @@
 import { createErrorResponse, ToolResult } from '@/common/tool-handler';
 import { BaseBrowserToolExecutor } from '../base-browser';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { ExecutionWorld } from '@/common/constants';
 import { focusWindow as focusWindowIfAllowed } from '@/utils/activation-guard';
-// auto-chrome-mcp fork: url 분기가 사용자 창의 탭에 스크립트를 주입하지 않도록 세션 소유 탭으로만 조회한다.
+// posendy-chrome fork: url 분기가 사용자 창의 탭에 스크립트를 주입하지 않도록 세션 소유 탭으로만 조회한다.
 import { createTabForUrl, findTabByUrlInSessionScope } from './url-target';
 import { redactUrlForLog } from '@/utils/log-redact';
-// auto-chrome-mcp fork: 새 탭 생성 후 고정 대기 대신 실제 로드 신호를 관측하기 위해 import
+// posendy-chrome fork: 새 탭 생성 후 고정 대기 대신 실제 로드 신호를 관측하기 위해 import
 // (navigate 가 쓰는 것과 같은 유틸 — wait-for.ts 는 이 작업 범위 밖이라 수정하지 않는다).
 import { waitForPageLoad } from './wait-for';
 
-/** auto-chrome-mcp fork: 새 탭 생성 후 로드 관측 상한 (예전 고정 대기보다 넉넉히 잡는다) */
+/** posendy-chrome fork: 새 탭 생성 후 로드 관측 상한 (예전 고정 대기보다 넉넉히 잡는다) */
 const INJECT_SCRIPT_LOAD_TIMEOUT_MS = 15000;
-/** auto-chrome-mcp fork: 관측 대기가 실패했을 때의 폴백 — 예전 고정 대기와 동일한 값 */
+/** posendy-chrome fork: 관측 대기가 실패했을 때의 폴백 — 예전 고정 대기와 동일한 값 */
 const INJECT_SCRIPT_LOAD_FALLBACK_MS = 3000;
 
 interface InjectScriptParam {
@@ -47,7 +47,7 @@ class InjectScriptTool extends BaseBrowserToolExecutor {
       if (typeof tabId === 'number') {
         tab = await chrome.tabs.get(tabId);
       } else if (url) {
-        // auto-chrome-mcp fork: 백그라운드 작업 모드에서는 이 세션이 소유한 탭에서만 찾는다.
+        // posendy-chrome fork: 백그라운드 작업 모드에서는 이 세션이 소유한 탭에서만 찾는다.
         // 예전에는 chrome.tabs.query({}) 로 모든 창을 뒤져 사용자 탭에 스크립트가 주입됐다.
         const existing = await findTabByUrlInSessionScope(url, args);
         if (existing) {
@@ -65,7 +65,7 @@ class InjectScriptTool extends BaseBrowserToolExecutor {
 
           // Wait for page to load
           console.log('Waiting for page to load...');
-          // auto-chrome-mcp fork(2026-09): 고정 3000ms 대기 대신 실제 로드 신호(observed
+          // posendy-chrome fork(2026-09): 고정 3000ms 대기 대신 실제 로드 신호(observed
           // DOMContentLoaded)를 기다린다 — 로드가 더 빨리 끝나면 그만큼 빨리 돌아온다.
           // navigate 가 쓰는 것과 같은 유틸(common.ts 의 waitForPageLoad 호출 참고).
           // 새로 만든 탭이라 navigationStarted 추적은 필요 없다. 실패 시(예: 예상치 못한 에러)
@@ -103,7 +103,7 @@ class InjectScriptTool extends BaseBrowserToolExecutor {
       }
 
       // Optionally bring window to foreground based on background flag
-      // auto-chrome-mcp fork: chrome.scripting.executeScript works on background tabs, so tab activation was unnecessary; window focus still goes through the policy gate.
+      // posendy-chrome fork: chrome.scripting.executeScript works on background tabs, so tab activation was unnecessary; window focus still goes through the policy gate.
       if (background !== true) {
         await focusWindowIfAllowed(tab.windowId);
       }

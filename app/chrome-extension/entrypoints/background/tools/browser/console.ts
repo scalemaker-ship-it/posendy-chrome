@@ -1,15 +1,15 @@
 import { createErrorResponse, ToolResult } from '@/common/tool-handler';
 import { BaseBrowserToolExecutor } from '../base-browser';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { cdpSessionManager } from '@/utils/cdp-session-manager';
 import { focusWindow as focusWindowIfAllowed } from '@/utils/activation-guard';
-// auto-chrome-mcp fork: url 분기가 사용자 창의 탭에 디버거를 붙이지 않도록 세션 소유 탭으로만 조회한다.
+// posendy-chrome fork: url 분기가 사용자 창의 탭에 디버거를 붙이지 않도록 세션 소유 탭으로만 조회한다.
 import { createTabForUrl, findTabByUrlInSessionScope } from './url-target';
 import {
   consoleBuffer,
   BufferedConsoleMessage,
   BufferedConsoleException,
-  // auto-chrome-mcp fork (upstream #215): 얕은 preview로 인한 중첩 객체 손실을 보정하는 공용 직렬화 유틸
+  // posendy-chrome fork (upstream #215): 얕은 preview로 인한 중첩 객체 손실을 보정하는 공용 직렬화 유틸
   buildSerializedConsoleArgs,
   createRunBudget,
 } from './console-buffer';
@@ -36,7 +36,7 @@ interface ConsoleToolParams {
   pattern?: string;
   onlyErrors?: boolean;
   limit?: number;
-  // auto-chrome-mcp fork: 페이지네이션 — 필터링 이후 결과 배열을 자르는 offset, 개수만 반환하는 countOnly
+  // posendy-chrome fork: 페이지네이션 — 필터링 이후 결과 배열을 자르는 offset, 개수만 반환하는 countOnly
   offset?: number;
   countOnly?: boolean;
 }
@@ -47,7 +47,7 @@ interface ConsoleMessage {
   text: string;
   args?: any[];
   argsSerialized?: unknown[];
-  // auto-chrome-mcp fork: 이 메시지에서 깊은 직렬화로 복원한 인자 수
+  // posendy-chrome fork: 이 메시지에서 깊은 직렬화로 복원한 인자 수
   argsDeepSerializedCount?: number;
   source?: string;
   url?: string;
@@ -80,7 +80,7 @@ interface ConsoleResult {
   messageLimitReached: boolean;
   droppedMessageCount: number;
   droppedExceptionCount: number;
-  // auto-chrome-mcp fork: 예산 상한 때문에 깊은 직렬화를 건너뛴 인자 수(0이면 손실 없음)
+  // posendy-chrome fork: 예산 상한 때문에 깊은 직렬화를 건너뛴 인자 수(0이면 손실 없음)
   deepSerializationSkipped?: number;
 }
 
@@ -143,7 +143,7 @@ function applyResultFilters(
   };
 }
 
-// auto-chrome-mcp fork: countOnly/limit/offset 페이지네이션 — messages 배열에만 적용(필터링 이후), exceptions는 그대로 유지
+// posendy-chrome fork: countOnly/limit/offset 페이지네이션 — messages 배열에만 적용(필터링 이후), exceptions는 그대로 유지
 interface PaginationResult {
   messages?: ConsoleMessage[];
   totalCount: number;
@@ -254,12 +254,12 @@ class ConsoleTool extends BaseBrowserToolExecutor {
 
       // 실제로 적용할 메시지 개수 제한 계산
       const normalizedMaxMessages = normalizeLimit(maxMessages, DEFAULT_MAX_MESSAGES);
-      // auto-chrome-mcp fork: limit은 상한(normalizedMaxMessages)을 더 작게만 줄일 수 있다 — 늘리는 용도로는 쓰지 않는다
+      // posendy-chrome fork: limit은 상한(normalizedMaxMessages)을 더 작게만 줄일 수 있다 — 늘리는 용도로는 쓰지 않는다
       const effectiveLimit =
         typeof limit === 'number'
           ? Math.min(normalizeLimit(limit, normalizedMaxMessages), normalizedMaxMessages)
           : normalizedMaxMessages;
-      // auto-chrome-mcp fork: 필터링 이후 결과 배열을 자르는 offset (기본 0)
+      // posendy-chrome fork: 필터링 이후 결과 배열을 자르는 offset (기본 0)
       const normalizedOffset = normalizeLimit(offset, 0);
       const isCountOnly = countOnly === true;
 
@@ -308,7 +308,7 @@ class ConsoleTool extends BaseBrowserToolExecutor {
           clearedSummary += ` Cleared ${clearedAfter.clearedMessages} messages and ${clearedAfter.clearedExceptions} exceptions after reading.`;
         }
 
-        // auto-chrome-mcp fork: countOnly/limit/offset — buffer 모드에서도 읽어온 messages 배열에 동일하게 페이지네이션 적용
+        // posendy-chrome fork: countOnly/limit/offset — buffer 모드에서도 읽어온 messages 배열에 동일하게 페이지네이션 적용
         const bufferPagination = paginateMessages(read.messages as ConsoleMessage[], {
           limit: effectiveLimit,
           offset: normalizedOffset,
@@ -360,7 +360,7 @@ class ConsoleTool extends BaseBrowserToolExecutor {
         includeExceptions,
       });
 
-      // auto-chrome-mcp fork: countOnly/limit/offset — 필터링 이후 messages 배열에 페이지네이션 적용
+      // posendy-chrome fork: countOnly/limit/offset — 필터링 이후 messages 배열에 페이지네이션 적용
       const { messages: filteredMessages, ...filteredRest } = filtered;
       const snapshotPagination = paginateMessages(filteredMessages, {
         limit: effectiveLimit,
@@ -396,13 +396,13 @@ class ConsoleTool extends BaseBrowserToolExecutor {
     windowId?: number,
     args?: any,
   ): Promise<chrome.tabs.Tab> {
-    // auto-chrome-mcp fork: 백그라운드 작업 모드에서는 이 세션이 소유한 탭에서만 찾는다.
+    // posendy-chrome fork: 백그라운드 작업 모드에서는 이 세션이 소유한 탭에서만 찾는다.
     // 예전에는 chrome.tabs.query({ url }) 로 모든 창을 뒤져 사용자 탭에 디버거가 붙었다.
     const existing = await findTabByUrlInSessionScope(url, args);
 
     if (existing) {
       if (!background) {
-        // auto-chrome-mcp fork: 콘솔 수집은 CDP Runtime/Log 도메인으로 동작하므로 탭 활성화는 불필요 — 정책 게이트를 통과한 경우에만 윈도우 포커스.
+        // posendy-chrome fork: 콘솔 수집은 CDP Runtime/Log 도메인으로 동작하므로 탭 활성화는 불필요 — 정책 게이트를 통과한 경우에만 윈도우 포커스.
         await focusWindowIfAllowed(existing.windowId);
       }
       return existing;
@@ -475,7 +475,7 @@ class ConsoleTool extends BaseBrowserToolExecutor {
     const messages: ConsoleMessage[] = [];
     const exceptions: ConsoleException[] = [];
     let limitReached = false;
-    // auto-chrome-mcp fork: 예산 상한으로 깊은 직렬화를 건너뛴 인자 수(관측용)
+    // posendy-chrome fork: 예산 상한으로 깊은 직렬화를 건너뛴 인자 수(관측용)
     let deepSerializationSkipped = 0;
 
     try {
@@ -526,13 +526,13 @@ class ConsoleTool extends BaseBrowserToolExecutor {
         await cdpSessionManager.sendCommand(tabId, 'Log.enable');
 
         // Wait for all messages to be flushed
-        // auto-chrome-mcp fork: 여기는 고정 대기를 유지한다. "마지막 메시지 이후 조용해지면 반환"으로
+        // posendy-chrome fork: 여기는 고정 대기를 유지한다. "마지막 메시지 이후 조용해지면 반환"으로
         // 바꿔 봤더니 300ms 조용해진 뒤 800ms 만에 터지는 예외를 통째로 놓쳤다. 스냅샷은 그 늦은
         // 한 줄을 보려고 쓰는 도구라 빠른 반환보다 유실 방지가 우선이다.
         await new Promise((resolve) => setTimeout(resolve, CONSOLE_SNAPSHOT_FLUSH_MS));
 
         // Process collected messages
-        // auto-chrome-mcp fork (upstream #215): 예전에는 objectId가 있는 모든 인자를 매번
+        // posendy-chrome fork (upstream #215): 예전에는 objectId가 있는 모든 인자를 매번
         // Runtime.callFunctionOn 으로 직렬화해 CDP 왕복이 폭주했고, 문자 수 상한도 없었다.
         // 이제는 preview가 실제로 손실된 인자만 깊이 직렬화하며(그 외는 preview 복원 fast path),
         // 이 캡처 1회당 총 호출 수와 벽시계 데드라인으로 상한을 건다.
@@ -559,7 +559,7 @@ class ConsoleTool extends BaseBrowserToolExecutor {
 
           if (entry.args && Array.isArray(entry.args)) {
             message.args = entry.args;
-            // auto-chrome-mcp fork: shallow 결과를 먼저 채우고, 손실된 인자만 깊은 직렬화로 덮어쓴다.
+            // posendy-chrome fork: shallow 결과를 먼저 채우고, 손실된 인자만 깊은 직렬화로 덮어쓴다.
             // 어떤 실패도 던지지 않으므로 툴 호출 자체는 절대 실패하지 않는다.
             const { args: serialized, deepCount } = await buildSerializedConsoleArgs(
               tabId,

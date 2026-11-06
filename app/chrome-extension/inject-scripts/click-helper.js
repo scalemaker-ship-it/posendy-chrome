@@ -7,7 +7,7 @@ if (window.__CLICK_HELPER_INITIALIZED__) {
 } else {
   window.__CLICK_HELPER_INITIALIZED__ = true;
 
-  // ===== auto-chrome-mcp fork (A1/A3): 요소 대기 + 가림(obstruction) 진단 =====
+  // ===== posendy-chrome fork (A1/A3): 요소 대기 + 가림(obstruction) 진단 =====
   // A1 — 요소가 아직 렌더되지 않았을 때 즉시 실패하지 않고 짧게 폴링한다.
   //      SPA/지연 렌더 페이지에서 "클릭 실패 → wait_for → 재클릭" 3회 왕복을 1회로 줄인다.
   // A3 — 클릭이 가려서 실패했을 때, 이미 계산해 두고 버리던 elementFromPoint 결과를
@@ -221,7 +221,7 @@ if (window.__CLICK_HELPER_INITIALIZED__) {
       let element = null;
       let elementInfo = null;
       let clickX, clickY;
-      // auto-chrome-mcp fork(A3): 가려짐 진단 결과 (성공 응답에도 경고로 실릴 수 있음)
+      // posendy-chrome fork(A3): 가려짐 진단 결과 (성공 응답에도 경고로 실릴 수 있음)
       let obstruction = null;
       const waitDeadline = Date.now() + (waitForElementMs > 0 ? waitForElementMs : 0);
 
@@ -271,7 +271,7 @@ if (window.__CLICK_HELPER_INITIALIZED__) {
           ref,
         };
 
-        // auto-chrome-mcp fork(A3): ref 클릭은 요소에 직접 이벤트를 쏘므로 가려져 있어도
+        // posendy-chrome fork(A3): ref 클릭은 요소에 직접 이벤트를 쏘므로 가려져 있어도
         // "성공"으로 보고된다. 실제로는 사이트가 무시하는 경우가 있어 가려짐을 경고로 남긴다.
         elementInfo.isVisible = isElementVisible(element);
         if (!elementInfo.isVisible) {
@@ -318,7 +318,7 @@ if (window.__CLICK_HELPER_INITIALIZED__) {
           };
         }
       } else {
-        // auto-chrome-mcp fork(A1): 아직 렌더되지 않았을 수 있으므로 짧게 기다린다.
+        // posendy-chrome fork(A1): 아직 렌더되지 않았을 수 있으므로 짧게 기다린다.
         element = await waitForSelectorElement(selector, waitForElementMs);
         if (!element) {
           return {
@@ -352,13 +352,13 @@ if (window.__CLICK_HELPER_INITIALIZED__) {
         // First sroll so that the element is in view, then check visibility.
         element.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'center' });
         await new Promise((resolve) => setTimeout(resolve, 100));
-        // auto-chrome-mcp fork(A1): 등장 애니메이션·오버레이가 걷히는 것을 남은 시간만큼 기다린다.
+        // posendy-chrome fork(A1): 등장 애니메이션·오버레이가 걷히는 것을 남은 시간만큼 기다린다.
         elementInfo.isVisible = await waitUntilElementVisible(
           element,
           Math.max(0, waitDeadline - Date.now()),
         );
         if (!elementInfo.isVisible) {
-          // auto-chrome-mcp fork(A3): 왜 못 눌렀는지 — 무엇이 가리는지 함께 보고한다.
+          // posendy-chrome fork(A3): 왜 못 눌렀는지 — 무엇이 가리는지 함께 보고한다.
           return {
             error: `Element with selector "${selector}" is not visible`,
             elementInfo,
@@ -413,7 +413,7 @@ if (window.__CLICK_HELPER_INITIALIZED__) {
         elementInfo,
         navigationOccurred,
       };
-      // auto-chrome-mcp fork(A3): 가려진 요소를 직접 이벤트로 눌렀을 때의 경고
+      // posendy-chrome fork(A3): 가려진 요소를 직접 이벤트로 눌렀을 때의 경고
       if (obstruction) {
         successPayload.obstruction = obstruction;
         successPayload.warning =
@@ -556,7 +556,7 @@ if (window.__CLICK_HELPER_INITIALIZED__) {
   }
 
   /**
-   * auto-chrome-mcp fork: iframe 탐색용 probe.
+   * posendy-chrome fork: iframe 탐색용 probe.
    * 부수효과 없이 "이 프레임에 해당 셀렉터/ref 요소가 있는가"만 확인한다.
    * background 의 frame-resolver 가 각 프레임에 이 메시지를 보내 대상 프레임을 고른다.
    * 주의: 응답에 `error` 키를 쓰면 sendMessageToTab 이 throw 하므로 probeError 를 쓴다.
@@ -641,7 +641,7 @@ if (window.__CLICK_HELPER_INITIALIZED__) {
       sendResponse({ status: 'pong' });
       return false;
     } else if (request.action === 'chrome_click_element_probe_selector') {
-      // auto-chrome-mcp fork: iframe 대상 프레임 탐색용 probe (조회 전용)
+      // posendy-chrome fork: iframe 대상 프레임 탐색용 probe (조회 전용)
       sendResponse(probeTarget(request.selector, request.ref, request.isXPath));
       return false;
     }

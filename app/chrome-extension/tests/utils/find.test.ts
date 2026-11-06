@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — chrome_find 응답 크기 회귀 테스트.
+ * posendy-chrome fork — chrome_find 응답 크기 회귀 테스트.
  *
  * 계약: match 항목에는 hint 필드가 없고, hint 는 응답 최상위에 1회만 실린다
  * (이전에는 118자짜리 hint 문구가 match 마다 반복돼 maxResults=5 면 5회 중복됐다).

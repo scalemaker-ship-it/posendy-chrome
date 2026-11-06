@@ -114,7 +114,7 @@ const initializeOnce = async (): Promise<{
         params: {
           protocolVersion: '2024-11-05',
           capabilities: {},
-          clientInfo: { name: 'auto-chrome-mcp-selftest', version: '1.0.0' },
+          clientInfo: { name: 'posendy-chrome-selftest', version: '1.0.0' },
         },
       }),
       signal: AbortSignal.timeout(5000),
@@ -193,7 +193,7 @@ const runSelfTest = async () => {
 
 const copyAsJson = () => {
   const payload = {
-    fork: 'auto-chrome-mcp',
+    fork: 'posendy-chrome',
     extension_version: env.value.extensionVersion,
     env: {
       ua: env.value.ua,

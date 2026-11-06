@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 /**
- * auto-chrome-mcp fork — 네이티브 호스트 래퍼가 argv 를 그대로 넘기는지 고정한다.
+ * posendy-chrome fork — 네이티브 호스트 래퍼가 argv 를 그대로 넘기는지 고정한다.
  *
  * Chrome 은 native messaging host 를 띄울 때 호출자 origin(`chrome-extension://<id>/`)과
  * `--parent-window=<handle>` 을 인자로 준다. 래퍼가 그 인자를 버리면 브리지의

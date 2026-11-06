@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# auto-chrome-mcp Chrome MCP — one-shot verification: build both artifacts + run all tests + doctor.
+# posendy-chrome Chrome MCP — one-shot verification: build both artifacts + run all tests + doctor.
 set -uo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"

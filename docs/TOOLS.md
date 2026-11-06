@@ -1,4 +1,4 @@
-# Auto Chrome MCP API Reference 📚
+# POSENDY Chrome API Reference 📚
 
 Complete reference for all 43 tools and their parameters.
 
@@ -231,7 +231,7 @@ profile runs its own bridge server on its own port — one port = one profile �
 shown in that profile's extension popup.
 
 Probes the candidate ports (the active one, anything in `CHROME_PORTS`, plus the defaults
-12306 / 12315 / 12320 / 12325) with `GET /ping`. **Handled locally by the stdio proxy**: it
+12306 / 12315 / 12330 / 12325) with `GET /ping`. **Handled locally by the stdio proxy**: it
 never reaches the browser and touches no tab.
 
 **Parameters**: None
@@ -241,9 +241,9 @@ never reaches the browser and touches no tab.
 ```json
 {
   "success": true,
-  "activePort": 12320,
+  "activePort": 12330,
   "browsers": [
-    { "port": 12320, "alive": true, "version": "1.5.0", "url": "http://127.0.0.1:12320" },
+    { "port": 12330, "alive": true, "version": "1.5.0", "url": "http://127.0.0.1:12330" },
     { "port": 12315, "alive": false }
   ]
 }

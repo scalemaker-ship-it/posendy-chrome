@@ -1,11 +1,11 @@
 import { createErrorResponse, ToolResult } from '@/common/tool-handler';
 import { BaseBrowserToolExecutor } from '../base-browser';
-import { TOOL_NAMES } from 'auto-chrome-mcp-shared';
+import { TOOL_NAMES } from 'posendy-chrome-shared';
 import { cdpSessionManager } from '@/utils/cdp-session-manager';
 import { focusWindow as focusWindowIfAllowed } from '@/utils/activation-guard';
 import { effectiveBackgroundModeOf } from '@/utils/background-mode';
 import { NETWORK_FILTERS } from '@/common/constants';
-// auto-chrome-mcp fork: url 분기가 사용자 창의 탭에 디버거를 붙이지 않도록 세션 소유 탭으로만 조회한다.
+// posendy-chrome fork: url 분기가 사용자 창의 탭에 디버거를 붙이지 않도록 세션 소유 탭으로만 조회한다.
 import { createTabForUrl, findTabByUrlInSessionScope } from './url-target';
 import { redactUrlForLog } from '@/utils/log-redact';
 
@@ -59,7 +59,7 @@ class NetworkDebuggerStartTool extends BaseBrowserToolExecutor {
   private lastActivityTime: Map<number, number> = new Map(); // tabId -> timestamp of last network activity
   private pendingResponseBodies: Map<string, Promise<any>> = new Map(); // requestId -> promise for getResponseBody
   private requestCounters: Map<number, number> = new Map(); // tabId -> count of captured requests (after filtering)
-  // auto-chrome-mcp fork: STOP 결과 페이지네이션 기본 limit 계산을 위해 NetworkDebuggerStopTool에서도 참조 — public으로 완화
+  // posendy-chrome fork: STOP 결과 페이지네이션 기본 limit 계산을 위해 NetworkDebuggerStopTool에서도 참조 — public으로 완화
   public static MAX_REQUESTS_PER_CAPTURE = 100; // Max requests to store to prevent memory issues
   public static instance: NetworkDebuggerStartTool | null = null;
 
@@ -789,13 +789,13 @@ class NetworkDebuggerStartTool extends BaseBrowserToolExecutor {
     let tabToOperateOn: chrome.tabs.Tab | undefined;
 
     try {
-      // auto-chrome-mcp fork(2026-09-04): 주입된 tabId 가 url 보다 우선한다 (webRequest 쪽과 동일).
+      // posendy-chrome fork(2026-09-04): 주입된 tabId 가 url 보다 우선한다 (webRequest 쪽과 동일).
       const preferredTab = await this.tryGetTab(requestedTabId);
 
       if (preferredTab) {
         tabToOperateOn = preferredTab;
       } else if (targetUrl) {
-        // auto-chrome-mcp fork: 백그라운드 작업 모드에서는 이 세션이 소유한 탭에서만 찾는다.
+        // posendy-chrome fork: 백그라운드 작업 모드에서는 이 세션이 소유한 탭에서만 찾는다.
         // 예전에는 chrome.tabs.query({ url }) 로 모든 창을 뒤져 사용자 탭에 디버거가 붙었다.
         const existing = await findTabByUrlInSessionScope(targetUrl, args);
         if (existing?.id) {
@@ -896,7 +896,7 @@ class NetworkDebuggerStopTool extends BaseBrowserToolExecutor {
 
   async execute(args?: {
     tabId?: number;
-    // auto-chrome-mcp fork: 페이지네이션 — STOP 결과의 requests 배열을 자르는 limit/offset, 개수만 반환하는 countOnly
+    // posendy-chrome fork: 페이지네이션 — STOP 결과의 requests 배열을 자르는 limit/offset, 개수만 반환하는 countOnly
     limit?: number;
     offset?: number;
     countOnly?: boolean;
@@ -1001,7 +1001,7 @@ class NetworkDebuggerStopTool extends BaseBrowserToolExecutor {
       );
     }
 
-    // auto-chrome-mcp fork: 정적 리소스 필터링(존재 시) 이후의 requests 배열에 limit/offset/countOnly 페이지네이션 적용
+    // posendy-chrome fork: 정적 리소스 필터링(존재 시) 이후의 requests 배열에 limit/offset/countOnly 페이지네이션 적용
     const allRequests: NetworkRequestInfo[] = resultData.requests || [];
     const totalCount = allRequests.length;
     const isCountOnly = pagination?.countOnly === true;

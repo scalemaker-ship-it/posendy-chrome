@@ -8,12 +8,12 @@ import { COMMAND_NAME, EXTENSION_ID, HOST_NAME } from './constant';
 import { getAllBrowserConfigs } from './browser-config';
 import { colorText, tryRegisterUserLevelHost, writeNodePathFile } from './utils';
 
-// auto-chrome-mcp fork: extension zip 자동 다운로드
-// - 앱 런타임 상태 (cdp-port 등) 는 ~/.auto-chrome-mcp/ 에 유지
+// posendy-chrome fork: extension zip 자동 다운로드
+// - 앱 런타임 상태 (cdp-port 등) 는 ~/.posendy-chrome/ 에 유지
 // - 사용자가 Finder 에서 직접 찾아야 하는 extension 폴더는 ~/Downloads/ 에 둠
 // - v1.0.20: 폴더명에 버전 박제 — 업데이트 시 구버전과 한눈에 구분 + 사용자가
 //   chrome://extensions 의 "Load unpacked" 경로를 갱신해야 한다는 시그널.
-const AUTO_CHROME_MCP_INSTALL_ROOT = path.join(os.homedir(), '.auto-chrome-mcp');
+const AUTO_CHROME_MCP_INSTALL_ROOT = path.join(os.homedir(), '.posendy-chrome');
 function readBridgeVersion(): string {
   try {
     const pkgPath = path.join(__dirname, '..', '..', 'package.json');
@@ -26,17 +26,17 @@ const BRIDGE_VERSION = readBridgeVersion();
 const AUTO_CHROME_MCP_EXT_DIR = path.join(
   os.homedir(),
   'Downloads',
-  `auto-chrome-mcp-extension-v${BRIDGE_VERSION}`,
+  `posendy-chrome-extension-v${BRIDGE_VERSION}`,
 );
 const AUTO_CHROME_MCP_EXT_URL =
-  'https://github.com/cw02326/auto-chrome-mcp/releases/latest/download/auto-chrome-mcp-extension.zip';
+  'https://github.com/cw02326/posendy-chrome/releases/latest/download/posendy-chrome-extension.zip';
 
 // 이전 이름 정리용.
-const LEGACY_HOST_NAME = 'com.chromemcpscalemaker.nativehost';
+const LEGACY_HOST_NAME = 'com.posendy.nativehost';
 // 이전 이름 정리용.
-const LEGACY_SKILL_DIR_NAME = 'chrome-mcp-scalemaker-doctor';
+const LEGACY_SKILL_DIR_NAME = 'posendy-chrome-doctor';
 // 이전 이름 정리용. 확장 zip 캐시·cdp-port·agent DB 가 들어 있던 폴더.
-const LEGACY_INSTALL_ROOT = path.join(os.homedir(), '.mcp-chrome-scalemaker');
+const LEGACY_INSTALL_ROOT = path.join(os.homedir(), '.posendy-chrome');
 
 function runCmd(cmd: string, args: string[]): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -162,9 +162,9 @@ async function downloadAndExtractExtension(): Promise<string | null> {
 
     // v1.0.6: Finder 에서 폴더 들어왔을 때 한눈에 버전 보이게 VERSION 파일 작성.
     try {
-      const versionLine = `auto-chrome-mcp v${BRIDGE_VERSION}\n`;
+      const versionLine = `posendy-chrome v${BRIDGE_VERSION}\n`;
       const buildLine = `Installed: ${new Date().toISOString()}\n`;
-      const releaseLine = `Release: https://github.com/cw02326/auto-chrome-mcp/releases/tag/v${BRIDGE_VERSION}\n`;
+      const releaseLine = `Release: https://github.com/cw02326/posendy-chrome/releases/tag/v${BRIDGE_VERSION}\n`;
       const extIdLine = `Extension ID: ${EXTENSION_ID}\n`;
       fs.writeFileSync(
         path.join(AUTO_CHROME_MCP_EXT_DIR, 'VERSION'),
@@ -199,7 +199,7 @@ function printDownloadFailureGuide(errorMessage: string): void {
 }
 
 function printNextSteps(extDir: string | null): void {
-  console.log('\n' + colorText('===== auto-chrome-mcp — 설치 완료 =====', 'green'));
+  console.log('\n' + colorText('===== posendy-chrome — 설치 완료 =====', 'green'));
   if (extDir) {
     console.log('\n' + colorText('[1] Chrome 확장 로드:', 'blue'));
     console.log(`    chrome://extensions → Developer mode ON → "Load unpacked"`);
@@ -207,18 +207,18 @@ function printNextSteps(extDir: string | null): void {
     console.log(`    → 자동 ID = ${EXTENSION_ID} (manifest.key 박제 효과)`);
   } else {
     console.log('\n' + colorText('[1] Extension 자동 다운로드 실패 — 수동 다운로드:', 'yellow'));
-    console.log(`    https://github.com/cw02326/auto-chrome-mcp/releases/latest`);
+    console.log(`    https://github.com/cw02326/posendy-chrome/releases/latest`);
   }
 
   console.log(
     '\n' + colorText('[2] Claude Code 에 줄 prompt (터미널의 `claude` 에 붙여넣기):', 'blue'),
   );
   console.log(`    ┌────────────────────────────────────────────────────────────────────┐`);
-  console.log(`    우리 chrome MCP (auto-chrome-mcp) 를 사용자 전역에 등록해줘.`);
+  console.log(`    우리 chrome MCP (posendy-chrome) 를 사용자 전역에 등록해줘.`);
   console.log(`    먼저 \`npm root -g\` 로 설치 경로를 얻은 뒤 아래를 실행:`);
-  console.log(`      claude mcp add chrome-mcp-stdio -s user -e CHROME_PORT=12320 \\`);
+  console.log(`      claude mcp add chrome-mcp-stdio -s user -e CHROME_PORT=12330 \\`);
   console.log(
-    `        -- node "<npm root -g>/auto-chrome-mcp-bridge/dist/mcp/mcp-server-stdio.js"`,
+    `        -- node "<npm root -g>/posendy-chrome-bridge/dist/mcp/mcp-server-stdio.js"`,
   );
   console.log(`    반드시 전역(-s user)으로. 프로젝트마다 .mcp.json 에 따로 넣으면 경로가`);
   console.log(`    서로 어긋나 깨지기 쉽다. 끝나면 /mcp 로 활성 확인 안내.`);
@@ -499,12 +499,12 @@ function printManualInstructions(): void {
  * Main entry — postinstall orchestrator.
  */
 /**
- * auto-chrome-mcp fork v1.0.30+: Claude Code troubleshooting 스킬 자동 설치.
+ * posendy-chrome fork v1.0.30+: Claude Code troubleshooting 스킬 자동 설치.
  *
  * 정책:
  * - ~/.claude/ 가 없으면 (= Claude Code 미설치 사용자) skip
  * - AUTO_CHROME_MCP_NO_SKILL=1 env 면 opt-out
- * - 이미 같은 name (auto-chrome-mcp-doctor) 의 SKILL.md 있으면 auto-chrome-mcp-version
+ * - 이미 같은 name (posendy-chrome-doctor) 의 SKILL.md 있으면 posendy-chrome-version
  *   비교 — 같으면 skip, 다르면 조용히 overwrite
  * - 다른 name (사용자 custom 스킬) 이 같은 경로면 절대 덮지 않음
  */
@@ -526,7 +526,7 @@ function installClaudeCodeSkill(): void {
     return;
   }
 
-  const skillDir = path.join(claudeRoot, 'skills', 'auto-chrome-mcp-doctor');
+  const skillDir = path.join(claudeRoot, 'skills', 'posendy-chrome-doctor');
   const skillDest = path.join(skillDir, 'SKILL.md');
 
   // 기존 파일 있으면 안전성 점검
@@ -534,7 +534,7 @@ function installClaudeCodeSkill(): void {
     try {
       const existing = fs.readFileSync(skillDest, 'utf8');
       const nameMatch = existing.match(/^name:\s*(\S+)/m);
-      if (nameMatch && nameMatch[1] !== 'auto-chrome-mcp-doctor') {
+      if (nameMatch && nameMatch[1] !== 'posendy-chrome-doctor') {
         console.log(
           colorText(
             `[skill] 기존 SKILL 의 name='${nameMatch[1]}' (custom) — 절대 덮지 않음: ${skillDest}`,
@@ -543,9 +543,9 @@ function installClaudeCodeSkill(): void {
         );
         return;
       }
-      const existingVersion = existing.match(/^# auto-chrome-mcp-version:\s*(\S+)/m)?.[1];
+      const existingVersion = existing.match(/^# posendy-chrome-version:\s*(\S+)/m)?.[1];
       const newSource = fs.readFileSync(skillSource, 'utf8');
-      const newVersion = newSource.match(/^# auto-chrome-mcp-version:\s*(\S+)/m)?.[1];
+      const newVersion = newSource.match(/^# posendy-chrome-version:\s*(\S+)/m)?.[1];
       if (existingVersion && newVersion && existingVersion === newVersion) {
         console.log(colorText(`[skill] 이미 최신 (v${existingVersion}) — skip`, 'blue'));
         return;
@@ -585,7 +585,7 @@ function cleanupLegacyInstall(): void {
   // 1. 이전 이름의 Claude Code 스킬 디렉터리 (새 스킬이 자리 잡은 뒤에만)
   try {
     const legacySkillDir = path.join(skillsRoot, LEGACY_SKILL_DIR_NAME);
-    const newSkillFile = path.join(skillsRoot, 'auto-chrome-mcp-doctor', 'SKILL.md');
+    const newSkillFile = path.join(skillsRoot, 'posendy-chrome-doctor', 'SKILL.md');
     if (fs.existsSync(legacySkillDir) && fs.existsSync(newSkillFile)) {
       fs.rmSync(legacySkillDir, { recursive: true, force: true });
       console.log(colorText(`✓ [migrate] 이전 스킬 삭제: ${legacySkillDir}`, 'green'));
@@ -665,9 +665,9 @@ async function main(): Promise<void> {
     // v1.0.36: agent chat 제거 → 잔존 sqlite DB 파일 청소 (있을 경우만)
     removeLegacyAgentDb();
     await tryRegisterNativeHost();
-    // auto-chrome-mcp fork: extension zip 자동 다운로드 + 압축 해제
+    // posendy-chrome fork: extension zip 자동 다운로드 + 압축 해제
     const extDir = await downloadAndExtractExtension();
-    // auto-chrome-mcp fork v1.0.30+: Claude Code troubleshooting 스킬 자동 설치
+    // posendy-chrome fork v1.0.30+: Claude Code troubleshooting 스킬 자동 설치
     installClaudeCodeSkill();
     // v1.10.0: 이전 브랜딩의 스킬·호스트 등록 정리 (best-effort)
     cleanupLegacyInstall();

@@ -1,8 +1,8 @@
 import { describe, expect, test } from '@jest/globals';
-import { FORK_EXTENSION_ID, buildAllowedOrigins, parseArgs } from './auto-chrome-mcp-install';
+import { FORK_EXTENSION_ID, buildAllowedOrigins, parseArgs } from './posendy-chrome-install';
 
 /**
- * auto-chrome-mcp fork — 설치 CLI 의 allowed_origins 회귀 테스트 (Codex 2차 지적 5).
+ * posendy-chrome fork — 설치 CLI 의 allowed_origins 회귀 테스트 (Codex 2차 지적 5).
  *
  * 예전에는 사용자가 준 ID 와 함께 upstream 웹스토어 확장 ID
  * (hbdgbgagpkpjffpklnamcljpakneikee) 를 언제나 allowed_origins 에 넣었다.
@@ -14,7 +14,7 @@ import { FORK_EXTENSION_ID, buildAllowedOrigins, parseArgs } from './auto-chrome
  */
 const UPSTREAM_WEB_STORE_ID = 'hbdgbgagpkpjffpklnamcljpakneikee';
 
-describe('auto-chrome-mcp-install allowed_origins', () => {
+describe('posendy-chrome-install allowed_origins', () => {
   test('기본은 fork 고정 ID 하나뿐이다', () => {
     expect(buildAllowedOrigins()).toEqual([`chrome-extension://${FORK_EXTENSION_ID}/`]);
   });
@@ -44,7 +44,7 @@ describe('auto-chrome-mcp-install allowed_origins', () => {
   });
 });
 
-describe('auto-chrome-mcp-install parseArgs', () => {
+describe('posendy-chrome-install parseArgs', () => {
   test('= 표기와 공백 표기를 모두 받는다 (도움말이 공백 표기를 안내한다)', () => {
     expect(parseArgs(['--extension-id=abc', '--browser=edge']).extensionId).toBe('abc');
     expect(parseArgs(['--extension-id', 'abc', '--browser', 'edge'])).toMatchObject({

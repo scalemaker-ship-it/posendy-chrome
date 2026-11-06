@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * auto-chrome-mcp-install — auto-chrome-mcp fork 전용 설치 CLI.
+ * posendy-chrome-install — posendy-chrome fork 전용 설치 CLI.
  *
  * upstream 의 `register` 명령은 unpacked extension ID 를 인자로 받지 않아,
  * fork extension 을 unpacked load 한 사용자가 silent native-messaging 거부에 빠짐.
@@ -18,9 +18,9 @@
  *   `--extension-id` 로 명시했을 때만 들어간다.
  *
  * 사용:
- *   auto-chrome-mcp-bridge auto-chrome-mcp-install [--extension-id <ID>] [--browser chrome|brave|edge|all]
+ *   posendy-chrome-bridge posendy-chrome-install [--extension-id <ID>] [--browser chrome|brave|edge|all]
  *   또는
- *   auto-chrome-mcp-install --extension-id <ID>
+ *   posendy-chrome-install --extension-id <ID>
  */
 import {
   writeFileSync,
@@ -34,7 +34,7 @@ import { homedir, platform } from 'node:os';
 import path from 'node:path';
 
 // v1.0.2 부터 fork 전용 host name — upstream 과 분리.
-const HOST_NAME = 'com.autochromemcp.nativehost';
+const HOST_NAME = 'com.posendy.nativehost';
 
 /**
  * 우리 포크 확장의 고정 ID. manifest key 로 고정돼 있어 unpacked 로 로드해도 같은 값이다.
@@ -81,13 +81,13 @@ export const buildAllowedOrigins = (extraExtensionId?: string): string[] => {
 };
 
 const printHelp = () => {
-  console.log(`auto-chrome-mcp-install — auto-chrome-mcp fork install helper
+  console.log(`posendy-chrome-install — posendy-chrome fork install helper
 
 사용법:
-  auto-chrome-mcp-install --extension-id <ID>
-  auto-chrome-mcp-install --extension-id <ID> --browser chrome
-  auto-chrome-mcp-install --extension-id <ID> --browser all
-  auto-chrome-mcp-install --auto-detect-id
+  posendy-chrome-install --extension-id <ID>
+  posendy-chrome-install --extension-id <ID> --browser chrome
+  posendy-chrome-install --extension-id <ID> --browser all
+  posendy-chrome-install --auto-detect-id
 
 옵션:
   --extension-id <ID>   추가로 등록할 extension ID (32자 영문). 생략하면 fork 고정 ID 만.
@@ -180,7 +180,7 @@ const autoDetectExtensionId = (): string | null => {
         // 우리 fork extension 의 path 특징 = chrome-extension 하위의 chrome-mv3 dir
         if (
           typeof extPath === 'string' &&
-          (extPath.includes('auto-chrome-mcp') || extPath.endsWith('chrome-mv3'))
+          (extPath.includes('posendy-chrome') || extPath.endsWith('chrome-mv3'))
         ) {
           console.log(`  [auto-detect] profile=${profile} → ${id}`);
           return id;
@@ -222,7 +222,7 @@ const main = () => {
   const runHostPath = path.resolve(__dirname, '..', 'run_host.sh');
   if (!existsSync(runHostPath)) {
     console.error(`❌ run_host.sh 를 찾을 수 없습니다: ${runHostPath}`);
-    console.error('   fork 를 빌드했는지 확인: pnpm --filter auto-chrome-mcp-bridge build');
+    console.error('   fork 를 빌드했는지 확인: pnpm --filter posendy-chrome-bridge build');
     process.exit(1);
   }
 
@@ -232,7 +232,7 @@ const main = () => {
   // 4. manifest content
   const manifest = {
     name: HOST_NAME,
-    description: 'Node.js Host for Browser Bridge Extension (auto-chrome-mcp fork)',
+    description: 'Node.js Host for Browser Bridge Extension (posendy-chrome fork)',
     path: runHostPath,
     type: 'stdio',
     allowed_origins: allowedOrigins,
@@ -266,7 +266,7 @@ const main = () => {
 
   // 7. 결과 출력
   console.log('');
-  console.log('🚀 auto-chrome-mcp-install 결과');
+  console.log('🚀 posendy-chrome-install 결과');
   console.log('');
   for (const r of results) {
     const icon = r.ok ? '✅' : '❌';
@@ -290,7 +290,7 @@ const main = () => {
     console.log('   1. Chrome 완전 종료 후 재시작');
     console.log('   2. extension popup → ⚡ 강제 재연결');
     console.log('   확장 ID 가 fork 고정 ID 와 다르면 다음으로 다시 실행:');
-    console.log('   auto-chrome-mcp-install --extension-id <ID>');
+    console.log('   posendy-chrome-install --extension-id <ID>');
   }
 };
 

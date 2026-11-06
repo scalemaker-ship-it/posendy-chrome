@@ -1,5 +1,5 @@
 /**
- * auto-chrome-mcp fork — chrome_screenshot 이중 저장 회귀 테스트.
+ * posendy-chrome fork — chrome_screenshot 이중 저장 회귀 테스트.
  *
  * 배경: `savePng` 기본값이 `true` 라, `saveToDownloads:true` 를 filename 과 함께 부르면
  * (savePng 를 명시적으로 꺼주지 않는 한) saveToDownloads 경로와 레거시 savePng 경로가

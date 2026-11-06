@@ -53,7 +53,7 @@ export class Server {
   private nativeHost: NativeMessagingHost | null = null;
   private transportsMap: Map<string, StreamableHTTPServerTransport | SSEServerTransport> =
     new Map();
-  /** Process start timestamp (auto-chrome-mcp: admin /health uptime 보고용). */
+  /** Process start timestamp (posendy-chrome: admin /health uptime 보고용). */
   private readonly startedAt: number = Date.now();
   /**
    * 이 브리지의 bearer 토큰 (start() 에서 생성/로드). 파일에 못 써도 메모리 값으로
@@ -118,7 +118,7 @@ export class Server {
     // Health check (legacy /ping)
     this.setupHealthRoutes();
 
-    // Admin routes (auto-chrome-mcp: /health + /admin/drain — Force Reconnect 지원)
+    // Admin routes (posendy-chrome: /health + /admin/drain — Force Reconnect 지원)
     registerAdminRoutes(this.fastify, {
       onDrainRequested: () => this.gracefulDrain(),
       getTransportCount: () => this.transportsMap.size,
@@ -133,7 +133,7 @@ export class Server {
   }
 
   // ============================================================
-  // Graceful Drain (auto-chrome-mcp — Force Reconnect Stage A 자살 패턴)
+  // Graceful Drain (posendy-chrome — Force Reconnect Stage A 자살 패턴)
   // ============================================================
 
   /**
@@ -419,7 +419,7 @@ export class Server {
     if (!tokenResult.persisted) {
       console.error(
         '[auth] token file could not be written; the stdio proxy will not be able to read it. ' +
-          'Run "auto-chrome-mcp-bridge doctor" for details.',
+          'Run "posendy-chrome-bridge doctor" for details.',
       );
     } else if (tokenResult.insecure) {
       // 잠금 실패로 서버를 멈추지는 않는다 (사용자 PC 는 대개 단일 계정 — 가용성 우선).
@@ -427,7 +427,7 @@ export class Server {
       console.error(
         '[auth] the token file or its directory could not be locked down to the current user. ' +
           'The bridge keeps running, but another local account could read the token. ' +
-          'Run "auto-chrome-mcp-bridge doctor" for the fix command.',
+          'Run "posendy-chrome-bridge doctor" for the fix command.',
       );
     }
     // Chrome 은 native host 를 띄울 때 호출자 origin(chrome-extension://<id>/)을 인자로 준다.

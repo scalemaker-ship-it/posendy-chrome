@@ -42,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **초보자용 그림 사용설명서** `docs/manual/`(HTML + 캡처 15장 + PDF 17쪽). 화면 위 번호와 옆 설명이 짝을 이룬다.
 - **확장 아이콘 우클릭 메뉴(한국어)**: 사이드패널 열기, 매일 작업, 이 탭에서 녹화 시작/중지, 요소 마킹, 웹 에디터 켜기/끄기,
-  빠른 패널, 유저스크립트 관리, 강제 재연결. 페이지 우클릭은 "Auto Chrome MCP" 부모 하나 아래 3개. 메뉴는
+  빠른 패널, 유저스크립트 관리, 강제 재연결. 페이지 우클릭은 "POSENDY Chrome" 부모 하나 아래 3개. 메뉴는
   `background/context-menus(-spec).ts` 한 모듈이 소유하고 기동 시 전부 지운 뒤 다시 만든다(옛 V3 잔여 메뉴 정리).
   설계 `docs/plans/2026-09-06-context-menu-design.md`.
 - 사이드패널 흐름 카드에 라벨+값 목록(상태·사이트·마지막 실행·다음 예약·설명)과 글자 있는 버튼(실행·예약·편집).
@@ -539,11 +539,11 @@ Claude Code 를 재시작해야 보인다. 사이드패널 기능은 확장 리�
 - **확장이 저장하는 파일이 전부 `Downloads/mcp-screenshots/YYYY-MM-DD/` 로 모인다.** 스크린샷,
   GIF 녹화, PDF, 성능 트레이스가 다운로드 폴더 루트에 흩어지던 것을 날짜 폴더 하나로 모았다.
   파일 이름은 `<종류>_<이름>_<시각>.<확장자>` 이고 이름에 경로를 넣어도 폴더 밖으로 나가지 않는다.
-- **브리지가 시작할 때 오래된 산출물을 보관 폴더로 옮긴다.** `~/.auto-chrome-mcp/config.json` 의
+- **브리지가 시작할 때 오래된 산출물을 보관 폴더로 옮긴다.** `~/.posendy-chrome/config.json` 의
   `artifactArchiveDir`(절대 경로), `artifactRetentionDays`(기본 7, 최소 1), `artifactCleanup`
   (`archive`, `delete`, `off`)을 읽어 날짜 폴더만 대상으로 옮기거나 지운다. 오늘 폴더와 진행 중인
   다운로드는 건드리지 않고, 정리 폴더가 junction 이면 건너뛰며, 여러 브리지가 동시에 뜨면 잠금으로
-  한 번만 돈다. `auto-chrome-mcp-bridge artifacts --dry-run` 으로 미리 볼 수 있다.
+  한 번만 돈다. `posendy-chrome-bridge artifacts --dry-run` 으로 미리 볼 수 있다.
 - **알려진 한계.** 산출물 이동은 복사 뒤 원본을 다시 재서 같을 때만 지우지만, 그 재확인과 삭제
   사이의 아주 짧은 순간에 원본이 바뀌면 바뀐 파일이 지워질 수 있다. 이 폴더는 확장만이 고유한
   이름으로 쓰므로 실제로는 일어나기 어렵고, 잠금 회수의 같은 성격 경합은 파일 손실로 이어지지 않는다.
@@ -579,7 +579,7 @@ Claude Code 를 재시작해야 보인다. 사이드패널 기능은 확장 리�
   `liveBridgeCount` 를 함께 싣는다.
 - **아무 서비스나 브리지로 집계되던 문제.** 무인증 응답의 `fork`·`version` 이 비어 있지만 않으면
   브리지로 인정해서, 12300번대에서 JSON 을 돌려주는 다른 프로그램이 "브리지가 하나 더 있다" 로
-  보고됐다. 이제 `fork` 가 `auto-chrome-mcp` 와 정확히 같고 `version` 이 semver 형식일 때만
+  보고됐다. 이제 `fork` 가 `posendy-chrome` 와 정확히 같고 `version` 이 semver 형식일 때만
   브리지로 센다. 그 밖의 응답은 예전처럼 `unidentifiedPorts` 로만 적는다.
 - **전역 fetch 가 없는 런타임에서 포트 탐색이 통째로 멈추던 문제.** package.json 의 지원 범위는
   `node >=14.0.0` 인데 탐색은 전역 fetch 에만 기대고 있어서, fetch 가 없으면 후보 포트를 하나도
@@ -890,7 +890,7 @@ Claude Code 를 재시작해야 보인다. 사이드패널 기능은 확장 리�
   막지 못하므로, 사용자가 아무 웹페이지를 열어 두기만 해도 그 페이지가
   `POST /admin/kill-self` 한 번으로 브리지를 죽이거나 `POST /mcp` 로 새 MCP 세션을 열 수
   있었다. 이제 브리지가 listen 하기 전에 무작위 토큰을 만들어
-  `~/.auto-chrome-mcp/auth-token` 에 소유자만 읽을 수 있게 저장하고, 보호 경로는 예외 없이
+  `~/.posendy-chrome/auth-token` 에 소유자만 읽을 수 있게 저장하고, 보호 경로는 예외 없이
   그 토큰을 요구한다. 부작용 없는 조회인 `/ping` 과 `/health` 만 공개로 남는다. 다만
   `/health` 는 토큰이 없으면 살아 있다는 사실만 답한다. pid, node 버전, 메모리, 열려 있는
   세션 수 같은 상세는 토큰이 있을 때만 준다. 확장 팝업의 진단과 강제 재연결은 토큰을
@@ -916,7 +916,7 @@ Claude Code 를 재시작해야 보인다. 사이드패널 기능은 확장 리�
   그 사실을 stderr 에 남긴다. stdio 프록시는 연결할 때마다 토큰 파일을 다시 읽으므로
   다음 연결부터 새 토큰을 쓴다.
   잠금에 실패해도 브리지는 계속 뜨고, 그 사실을 stderr 와
-  `auto-chrome-mcp-bridge doctor` 가 알려 준다.
+  `posendy-chrome-bridge doctor` 가 알려 준다.
   토큰은 두 경로로 전달된다. stdio 프록시는 토큰 파일을 직접 읽고, 파일을 읽을 수 없는
   확장은 네이티브 메시지 `SERVER_STARTED` 로 같은 토큰을 받아 세션 저장소에만 보관한다.
   둘 다 `Authorization: Bearer` 로 보내고 서버는 상수 시간 비교로 검증한다. 예전에는
@@ -928,9 +928,9 @@ Claude Code 를 재시작해야 보인다. 사이드패널 기능은 확장 리�
   그래서 새 브리지에는 새 확장이 필요하다. 옛 확장을 그대로 쓰면 팝업의 강제 재연결이
   401 을 받는다. 브리지는 이 상황을 조용히 넘기지 않는다. 확장 origin 이 붙은 요청이 토큰
   없이 들어와 거절되면 stderr 에 "확장 버전이 낮다" 고 남기고,
-  `auto-chrome-mcp-bridge doctor` 의 `Extension token support` 항목이 같은 사실을 보고한다.
+  `posendy-chrome-bridge doctor` 의 `Extension token support` 항목이 같은 사실을 보고한다.
 - **설치 스크립트가 더 이상 upstream 웹스토어 확장 ID 를 등록하지 않는다.**
-  `auto-chrome-mcp-install` 은 네이티브 메시징 manifest 의 `allowed_origins` 에 사용자가
+  `posendy-chrome-install` 은 네이티브 메시징 manifest 의 `allowed_origins` 에 사용자가
   준 ID 와 함께 upstream 확장 ID 를 언제나 넣었다. 여기 적힌 확장은 이 네이티브 호스트를
   띄울 수 있고, 붙는 순간 브리지가 `SERVER_STARTED` 로 bearer 토큰을 건넨다. 즉 upstream
   확장이 설치돼 있기만 해도 로컬 브리지를 그대로 조종할 수 있었다. 이제 기본은 포크 고정
@@ -961,25 +961,25 @@ Claude Code 를 재시작해야 보인다. 사이드패널 기능은 확장 리�
 
 ### Changed
 
-- **네이티브 메시징 호스트 이름을 `com.autochromemcp.nativehost` 로 바꿨다.** 확장과
+- **네이티브 메시징 호스트 이름을 `com.posendy.nativehost` 로 바꿨다.** 확장과
   브리지 양쪽이 같은 이름을 써야 연결된다. 한쪽만 올리면 붙지 않는다.
 - **런처 CLI 이름이 `auto-chrome-launcher` 다.** bin 래퍼 파일 이름도
   `auto-chrome-launcher.sh` / `.bat` / `.command` 로 바뀌었다. 런처 패키지 이름은
-  `auto-chrome-mcp-launcher` 다.
-- **Claude Code 트러블슈팅 스킬 이름이 `auto-chrome-mcp-doctor` 다.** 설치 경로는
-  `~/.claude/skills/auto-chrome-mcp-doctor/SKILL.md` 이고, 버전 비교에 쓰는 SKILL.md 의
-  마커도 `# auto-chrome-mcp-version:` 으로 바뀌었다.
+  `posendy-chrome-launcher` 다.
+- **Claude Code 트러블슈팅 스킬 이름이 `posendy-chrome-doctor` 다.** 설치 경로는
+  `~/.claude/skills/posendy-chrome-doctor/SKILL.md` 이고, 버전 비교에 쓰는 SKILL.md 의
+  마커도 `# posendy-chrome-version:` 으로 바뀌었다.
 - **스킬 자동 설치 opt-out 환경변수가 `AUTO_CHROME_MCP_NO_SKILL=1` 이다.** 확장 zip
   다운로드를 건너뛰는 변수도 `AUTO_CHROME_MCP_SKIP_EXTENSION_DOWNLOAD=1` 로 바뀌었다.
-- **CDP 포트 파일 경로가 `~/.auto-chrome-mcp/cdp-port` 다.** 런처가 쓰고 브리지가 읽는
+- **CDP 포트 파일 경로가 `~/.posendy-chrome/cdp-port` 다.** 런처가 쓰고 브리지가 읽는
   파일이라 둘 다 같은 버전이어야 한다. 확장 zip 을 푸는 폴더도
-  `~/Downloads/auto-chrome-mcp-extension-v<version>/` 이다.
+  `~/Downloads/posendy-chrome-extension-v<version>/` 이다.
 
 ### Removed
 
 - **하위호환 bin 별칭을 없앴다.** 이전 이름의 bridge / stdio / install 별칭이 더 이상
   설치되지 않는다. 이전 별칭을 스크립트나 `.mcp.json` 에 적어 뒀다면
-  `auto-chrome-mcp-bridge`, `auto-chrome-mcp-stdio`, `auto-chrome-mcp-install` 로 고쳐야 한다.
+  `posendy-chrome-bridge`, `posendy-chrome-stdio`, `posendy-chrome-install` 로 고쳐야 한다.
 
 ### Migration
 
@@ -989,11 +989,11 @@ Claude Code 를 재시작해야 보인다. 사이드패널 기능은 확장 리�
 
 ### 업그레이드 절차
 
-1. 브리지를 올린다: `npm install -g auto-chrome-mcp-bridge`
+1. 브리지를 올린다: `npm install -g posendy-chrome-bridge`
 2. 확장도 같은 1.10.0 으로 올린다. postinstall 이 받아 놓은
-   `~/Downloads/auto-chrome-mcp-extension-v1.10.0/` 을 chrome://extensions 에서
+   `~/Downloads/posendy-chrome-extension-v1.10.0/` 을 chrome://extensions 에서
    **Load unpacked** 로 다시 지정하고 새로고침한다.
-3. 문제가 있으면 `auto-chrome-mcp-bridge doctor --fix` 를 돌린다.
+3. 문제가 있으면 `posendy-chrome-bridge doctor --fix` 를 돌린다.
 
 ## [v1.9.0] — 무간섭 모드 (2026-09-02)
 
@@ -1142,10 +1142,10 @@ v1.8.0 "남은 부채"에 적혀 있던 `app/chrome-extension` lint 에러 4건�
   파일명·컴포넌트 임포트·태그명을 함께 개명했다. 유일한 사용처인
   `entrypoints/popup/App.vue` 의 import 문과 `<Diagnostic .../>` 태그를 함께 갱신했다.
 - **CI 게이트.** `.github/workflows/self-test.yml` 에 `Lint (extension)` 스텝
-  (`pnpm --filter auto-chrome-mcp-extension lint`) 을 빌드 스텝들 뒤, vitest 스텝 앞에
+  (`pnpm --filter posendy-chrome-extension lint`) 을 빌드 스텝들 뒤, vitest 스텝 앞에
   추가해 extension 패키지 lint 에러를 CI 실패로 게이트한다. `packages/shared` ·
   `app/native-server` 의 lint 는 이번 범위 밖이라 아직 게이트하지 않았다.
-- **검증.** 수정 전 `pnpm --filter auto-chrome-mcp-extension lint` → 4 errors, 56
+- **검증.** 수정 전 `pnpm --filter posendy-chrome-extension lint` → 4 errors, 56
   warnings(둘 다 기존 그대로 유지, exit 1). 수정 후 → 0 errors, 56 warnings(exit 0).
   vitest 는 수정 전/후 모두 55 files / 815 tests 전부 통과(문서의 기존 베이스라인과 일치) —
   회귀 없음.
@@ -1196,7 +1196,7 @@ v1.7.0 배포 직후 코드를 다시 훑어 나온 결함들이다. 하나같�
 
 - **`self-test` CI 가 한 번도 돈 적이 없었다.** 트리거가 이전 브랜치와 `master` 인데
   이 fork 의 기본 브랜치는 `main` 이다 — `gh run list` 에 self-test 기록이 전무하다.
-  브랜치를 고치고, 어떤 패키지와도 안 맞던 필터를 실제 패키지 이름(`auto-chrome-mcp-bridge`)
+  브랜치를 고치고, 어떤 패키지와도 안 맞던 필터를 실제 패키지 이름(`posendy-chrome-bridge`)
   으로 바로잡고, **CI 에 아예 없던 vitest 회귀 809건을 추가**했다.
   그동안 게이트를 통과한 건 jest 35건뿐이었다.
 - **`build-release.yml` 은 전체가 주석이었다** (유효한 스텝 0줄). GitHub 이 이걸 유효하지
@@ -1241,7 +1241,7 @@ v1.7.0 배포 직후 코드를 다시 훑어 나온 결함들이다. 하나같�
   덮여 있다.
 
 > ⚠️ `chrome_get_web_content` 에 `maxChars` 가 새로 생기고 여러 도구 설명이 바뀌었다.
-> 이 스키마를 쓰려면 **전역 bridge 갱신(`npm i -g auto-chrome-mcp-bridge`) + 확장 리로드 +
+> 이 스키마를 쓰려면 **전역 bridge 갱신(`npm i -g posendy-chrome-bridge`) + 확장 리로드 +
 > Claude Code 세션 재시작**이 필요하다. 셋 다 하기 전에도 나머지 수정(batch 이미지 · 죽은 탭
 > 가드 · 워치독 · HTML 기본 상한)은 **확장 리로드만으로** 그대로 동작한다 — 그 넷은 확장 쪽
 > 코드이기 때문이다.
@@ -1429,7 +1429,7 @@ v1.7.0 배포 직후 코드를 다시 훑어 나온 결함들이다. 하나같�
 ### Fixed
 
 - **v1.4.0 / v1.4.1 은 npm 에서 설치할 수 없다.** 모노레포 내부 의존성
-  `auto-chrome-mcp-shared: "workspace:*"` 가 치환되지 않은 채 발행돼
+  `posendy-chrome-shared: "workspace:*"` 가 치환되지 않은 채 발행돼
   `npm install -g` 이 `EUNSUPPORTEDPROTOCOL: Unsupported URL Type "workspace:"` 로 실패한다.
   `npm publish` 로 올렸기 때문 — **workspace 프로토콜을 실제 버전으로 바꿔주는 것은 pnpm 뿐이다.**
   v1.4.2 는 `pnpm publish` 로 올렸고, 발행 전 `pnpm pack` 으로 tarball 안의
@@ -1478,20 +1478,20 @@ MCP 클라이언트를 둘 이상(Claude Code + Codex) 동시에 붙이면서 �
   이제 백그라운드 작업 모드면 창 모드와 무관하게 항상 적용된다.
 - **doctor 가 남의 npm 패키지 설치를 안내하던 문제**: 복구 명령의 패키지명이
   이전 패키지 이름이었다. 그 이름은 npm 에서 타 계정 소유다.
-  실제 패키지명 `auto-chrome-mcp-bridge` 로 정정했다.
+  실제 패키지명 `posendy-chrome-bridge` 로 정정했다.
 - **postinstall 안내의 잘못된 경로**: 이전 패키지 이름의 경로로
-  안내했으나 실제 설치 폴더는 `auto-chrome-mcp-bridge` 다. 아울러 프로젝트별 `.mcp.json`
+  안내했으나 실제 설치 폴더는 `posendy-chrome-bridge` 다. 아울러 프로젝트별 `.mcp.json`
   대신 `claude mcp add -s user` 전역 등록을 안내하도록 바꿨다 (프로젝트마다 넣으면
   경로가 어긋나 깨지기 쉽다).
 - doctor 의 bridge 프로세스 탐지가 구 폴더명만 찾던 것을 두 이름 모두 인정하도록 수정.
 
 ### Chore
 
-- 주석·문서의 이전 브랜딩 표기를 `auto-chrome-mcp` 로 정리 (95개 파일). 네이티브 호스트
+- 주석·문서의 이전 브랜딩 표기를 `posendy-chrome` 로 정리 (95개 파일). 네이티브 호스트
   id, npm 패키지명·bin 별칭, 워크스페이스 package.json name, doctor 스킬명, 런타임 데이터
   폴더는 기존 설치 호환을 위해 그대로 뒀다.
 
-## [v1.3.0] — Auto Chrome MCP (2026-08-17)
+## [v1.3.0] — POSENDY Chrome (2026-08-17)
 
 ### Added — Claude-in-Chrome 격차 해소 (사용자 선택 1–3)
 
@@ -1499,7 +1499,7 @@ MCP 클라이언트를 둘 이상(Claude Code + Codex) 동시에 붙이면서 �
 - **Multi-browser switching** (stdio-local tools, never forwarded to the extension): `chrome_list_browsers` probes candidate bridge ports (active + `CHROME_PORTS` env + defaults) via GET /ping; `chrome_use_browser` switches the session's active browser profile mid-session with clean session termination on the old bridge.
 - **`chrome_shortcut`**: named saved macros (chrome_batch step format) — save/run/list/delete, stored in extension storage, executed through the normal tool gate (session work tabs, guards, locks all apply).
 
-## [v1.2.0] — Auto Chrome MCP (2026-08-17)
+## [v1.2.0] — POSENDY Chrome (2026-08-17)
 
 ### Added — 팝업 인지 · 신뢰성 (F1–F7)
 
@@ -1522,7 +1522,7 @@ MCP 클라이언트를 둘 이상(Claude Code + Codex) 동시에 붙이면서 �
 - **Pagination**: console/network-capture/history gain `limit`/`offset`/`countOnly`.
 - Failure screenshots are downscaled ~40% further.
 
-## [v1.1.0] — auto-chrome-mcp fork (2026-08-17)
+## [v1.1.0] — posendy-chrome fork (2026-08-17)
 
 ### Added — 백그라운드 작업 모드 (non-interference)
 

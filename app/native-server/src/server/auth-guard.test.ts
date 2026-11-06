@@ -2,7 +2,7 @@ import { describe, expect, test } from '@jest/globals';
 import { decideAuthorization, normalizeRoutePath, isPublicPath, TOKEN_HEADER } from './auth-guard';
 
 /**
- * auto-chrome-mcp fork — 인증 게이트 판정 단위 테스트.
+ * posendy-chrome fork — 인증 게이트 판정 단위 테스트.
  *
  * 독립 검증에서 지적된 두 구멍을 고정한다:
  *   ① 확장 origin 을 신원으로 인정해 토큰 없이 통과시키던 예외 (확장이 아닌 프로세스도
@@ -10,7 +10,7 @@ import { decideAuthorization, normalizeRoutePath, isPublicPath, TOKEN_HEADER } f
  *   ② Host 헤더를 보지 않아 DNS rebinding(attacker.example → 127.0.0.1)이 통했던 문제.
  */
 const TOKEN = 'a'.repeat(64);
-const PORT = 12320;
+const PORT = 12330;
 
 const decide = (over: Partial<Parameters<typeof decideAuthorization>[0]> = {}) =>
   decideAuthorization({
