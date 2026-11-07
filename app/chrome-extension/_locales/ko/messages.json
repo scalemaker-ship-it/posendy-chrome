@@ -1,10 +1,10 @@
 {
   "extensionName": {
-    "message": "POSENDY 브라우저 연결",
+    "message": "POSENDY Chrome",
     "description": "확장 프로그램 이름"
   },
   "extensionDescription": {
-    "message": "포샌디 브라우저 연결 확장이에요. 네이버 블로그 발행을 내 크롬에서 처리하고, AI 앱이 내 크롬을 MCP로 쓸 수 있게 해요.",
+    "message": "포샌디 크롬 확장이에요. 네이버 블로그 발행을 내 크롬에서 처리하고, AI 앱이 내 크롬을 MCP로 쓸 수 있게 해요.",
     "description": "확장 프로그램 설명"
   },
   "nativeServerConfigLabel": {
