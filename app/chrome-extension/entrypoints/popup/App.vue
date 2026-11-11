@@ -3,7 +3,8 @@
     <!-- 홈 -->
     <div v-show="currentView === 'home'" class="pv-home">
       <header class="pv-header">
-        <div class="pv-header-text">
+        <img class="pv-mascot" src="/icon/128.png" alt="" aria-hidden="true" />
+        <div class="pv-header-text pv-grow">
           <h1 class="ac-title pv-clip">{{ getMessage('popup_title') }}</h1>
           <p class="ac-caption">{{ getMessage('nativeServerConfigLabel') }}</p>
         </div>
@@ -1662,12 +1663,42 @@ onUnmounted(() => {
 
 <style scoped>
 /*
- * 팝업 레이아웃만 여기에 둔다. 색·글꼴·모서리·버튼·입력·스위치는 전부
- * `ui/theme.css` 의 `.ac-*` 프리미티브가 그린다. 이 파일에 색을 직접 쓰지 않는다.
+ * 팝업 레이아웃만 여기에 둔다. 버튼·입력·스위치 모양은 `ui/theme.css` 의 `.ac-*`
+ * 프리미티브가 그린다. 팝업은 포샌디 홈페이지 색(posendy-web globals.css)을 쓰려고
+ * 아래 .popup-root 에서 토큰 값만 덮어쓴다. 개별 요소에 색을 직접 쓰지 않는다.
  */
 
 .popup-root {
+  /* POSENDY palette: sunny #ffd400, sunny-deep #ffa000, accent #fff3c4, ink #111111 */
+  --ac-bg: #fffbea;
+  --ac-header-bg: transparent;
+  --ac-surface: #ffffff;
+  --ac-surface-muted: #fff3c4;
+  --ac-surface-hover: #ffeaa0;
+  --ac-surface-inset: #fff8dc;
+  --ac-text: #111111;
+  --ac-text-secondary: #5c5a54;
+  --ac-text-caption: #5c5a54;
+  --ac-divider: #f0e9cf;
+  --ac-border: #f0e9cf;
+  --ac-border-strong: #e4dcb8;
+  --ac-accent: #ffd400;
+  --ac-accent-hover: #ffc400;
+  --ac-accent-soft: #fff3c4;
+  --ac-accent-text: #8a5d00;
+  --ac-accent-contrast: #111111;
+  --ac-focus-ring: #ffa000;
+  --ac-success: #10b981;
+  --ac-selection-bg: #fff3c4;
+  --ac-radius-card: 22px;
+  --ac-radius: 14px;
+  --ac-radius-button: 999px;
+  --ac-shadow-card: 0 2px 0 #f0e9cf, 0 6px 18px rgba(255, 160, 0, 0.08);
+
   display: flex;
+  background-color: var(--ac-bg);
+  background-image: radial-gradient(rgba(255, 196, 0, 0.18) 1px, transparent 1px);
+  background-size: 14px 14px;
   flex-direction: column;
   width: 100%;
   height: 100%;
@@ -1679,6 +1710,48 @@ onUnmounted(() => {
   flex-direction: column;
   min-height: 0;
   height: 100%;
+}
+
+/* 헤더 왼쪽의 노른자 캐릭터: 천천히 통통 튄다 */
+.pv-mascot {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 4px rgba(255, 160, 0, 0.25));
+  animation: pv-bob 2.8s ease-in-out infinite;
+}
+
+@keyframes pv-bob {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  45% {
+    transform: translateY(-3px) scale(0.98, 1.02);
+  }
+  55% {
+    transform: translateY(-3px) scale(0.98, 1.02);
+  }
+  90% {
+    transform: translateY(0) scale(1.04, 0.96);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pv-mascot {
+    animation: none;
+  }
+}
+
+.pv-card {
+  border: 1px solid var(--ac-border);
+  box-shadow: var(--ac-shadow-card);
+}
+
+.pv-header .ac-title {
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 /* 헤더 한 줄: 제목·캡션 왼쪽, 매일 작업 버튼 오른쪽 */

@@ -62,3 +62,10 @@ chrome-launcher-*.tar.gz
 # local MCP server config (path is user-specific)
 .mcp.json
 .gstack/
+
+# 포샌디 관련 별도 프로젝트 묶음(각자 git 따로)
+_posendy/
+
+# 웹스토어 제출 zip(scripts/pack-store.sh 로 재생성), 옛 아이콘 백업
+store/*.zip
+app/icon_old_backup/

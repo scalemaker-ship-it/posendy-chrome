@@ -6,7 +6,12 @@ export const COMMAND_NAME = 'posendy-chrome-bridge';
  * posendy-chrome fork extension ID (deterministic — derived from manifest.key in wxt.config.ts).
  * 모든 사용자가 같은 ID 받음 → register 한 번이면 끝.
  */
-export const EXTENSION_ID = 'aogfhfajjknomcnmlkbjmihjbknlhbbi';
+export const EXTENSION_ID = 'dafdlgggdlfgiojdcjlaclelodbfajpp';
+/**
+ * Chrome Web Store build of the same extension (store assigns its own ID; manifest key is not
+ * uploaded). Item submitted 2026-11-11. Both IDs may start the native host.
+ */
+export const STORE_EXTENSION_ID = 'hjahjpbpflhcpdgafpnmapgjnkgclnci';
 /**
  * v1.0.2 부터 fork 전용 host name. upstream (`com.chromemcp.nativehost`) 과
  * 완전 분리되어 manifest 파일이 겹치지 않음.

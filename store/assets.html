@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @font-face {
+        font-family: 'Pretendard';
+        src: url('../app/chrome-extension/public/fonts/PretendardVariable.woff2')
+          format('woff2-variations');
+        font-weight: 45 920;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: 'Pretendard', system-ui, sans-serif;
+        color: #111;
+        background: #ddd;
+      }
+      .shot {
+        width: 1280px;
+        height: 800px;
+        position: relative;
+        overflow: hidden;
+        display: none;
+        background-color: #fffbea;
+        background-image: radial-gradient(rgba(255, 196, 0, 0.22) 1.5px, transparent 1.5px);
+        background-size: 22px 22px;
+      }
+      .tile {
+        width: 440px;
+        height: 280px;
+        position: relative;
+        overflow: hidden;
+        display: none;
+        background: #ffd400;
+      }
+      [data-show] {
+        display: block;
+      }
+      .left {
+        position: absolute;
+        left: 88px;
+        top: 120px;
+        width: 560px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-weight: 800;
+        font-size: 26px;
+        letter-spacing: -0.02em;
+      }
+      .brand img {
+        width: 64px;
+        height: 64px;
+        filter: drop-shadow(0 4px 6px rgba(255, 160, 0, 0.3));
+      }
+      .chip {
+        display: inline-block;
+        margin-top: 44px;
+        background: #111;
+        color: #ffd400;
+        font-weight: 800;
+        font-size: 20px;
+        padding: 8px 18px;
+        border-radius: 999px;
+      }
+      h1 {
+        margin-top: 18px;
+        font-size: 56px;
+        line-height: 1.18;
+        font-weight: 850;
+        letter-spacing: -0.035em;
+      }
+      h1 mark {
+        background: linear-gradient(transparent 58%, #ffd400 58%);
+        color: inherit;
+        padding: 0 4px;
+      }
+      ul {
+        margin-top: 34px;
+        list-style: none;
+        display: grid;
+        gap: 16px;
+      }
+      li {
+        font-size: 23px;
+        line-height: 1.45;
+        color: #2b2a27;
+        padding-left: 38px;
+        position: relative;
+        font-weight: 550;
+      }
+      li::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 7px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #ffd400;
+        box-shadow: inset 0 0 0 5px #fff3c4;
+      }
+      .phone {
+        position: absolute;
+        right: 110px;
+        top: 64px;
+        width: 420px;
+        border-radius: 30px;
+        background: #fff;
+        padding: 10px;
+        box-shadow:
+          0 3px 0 #f0e9cf,
+          0 30px 60px rgba(160, 110, 0, 0.22);
+      }
+      .phone img {
+        display: block;
+        width: 400px;
+        border-radius: 22px;
+      }
+      .flow {
+        position: absolute;
+        right: 80px;
+        top: 150px;
+        width: 520px;
+        display: grid;
+        gap: 22px;
+      }
+      .node {
+        background: #fff;
+        border: 1px solid #f0e9cf;
+        border-radius: 26px;
+        padding: 26px 30px;
+        box-shadow:
+          0 3px 0 #f0e9cf,
+          0 14px 30px rgba(160, 110, 0, 0.12);
+      }
+      .node b {
+        display: block;
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      .node span {
+        display: block;
+        margin-top: 6px;
+        font-size: 20px;
+        color: #5c5a54;
+        font-weight: 550;
+      }
+      .node.hl {
+        background: #ffd400;
+        border-color: #ffc400;
+      }
+      .node.hl span {
+        color: #3a2f00;
+      }
+      .arrow {
+        text-align: center;
+        font-size: 30px;
+        color: #c99a00;
+        line-height: 1;
+        margin: -8px 0;
+      }
+      .tile .in {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding: 0 34px;
+      }
+      .tile img {
+        width: 128px;
+        height: 128px;
+        filter: drop-shadow(0 6px 8px rgba(160, 90, 0, 0.35));
+      }
+      .tile h2 {
+        font-size: 40px;
+        font-weight: 850;
+        letter-spacing: -0.03em;
+        line-height: 1.05;
+      }
+      .tile p {
+        margin-top: 10px;
+        font-size: 19px;
+        font-weight: 650;
+        color: #3a2f00;
+        line-height: 1.35;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="shot" id="s1">
+      <div class="left">
+        <div class="brand"><img src="icon-128.png" alt="" />POSENDY Chrome</div>
+        <div class="chip">네이버 블로그 발행</div>
+        <h1>포샌디에서 보낸 글을<br /><mark>내 크롬</mark>이 네이버에 올려요</h1>
+        <ul>
+          <li>포샌디 API 키로 연결하면 30초마다 대기 글을 받아 발행</li>
+          <li>제목, 카테고리, 태그, 공개 범위, 임시저장 지정</li>
+          <li>네이버 비밀번호를 묻지 않고, 이미 로그인된 크롬을 사용</li>
+        </ul>
+      </div>
+      <div class="phone"><img src="screenshots/popup.png" alt="" /></div>
+    </section>
+
+    <section class="shot" id="s2">
+      <div class="left" style="width: 540px">
+        <div class="brand"><img src="icon-128.png" alt="" />POSENDY Chrome</div>
+        <div class="chip">브라우저 MCP</div>
+        <h1>Claude Code가<br /><mark>내 크롬</mark>을 도구로 써요</h1>
+        <ul>
+          <li>페이지 열기, 클릭, 입력, 스크린샷 등 도구 43개</li>
+          <li>별도 작업 탭에서 실행해 보던 탭은 그대로</li>
+          <li>이 컴퓨터 안의 연결(네이티브 메시징)로만 통신</li>
+        </ul>
+      </div>
+      <div class="flow">
+        <div class="node"><b>Claude Code</b><span>"posendy.com 열고 스크린샷 찍어줘"</span></div>
+        <div class="arrow">↓</div>
+        <div class="node hl"
+          ><b>POSENDY Chrome</b><span>내 컴퓨터의 브리지와 연결된 확장</span></div
+        >
+        <div class="arrow">↓</div>
+        <div class="node"><b>내 크롬 작업 탭</b><span>로그인 상태 그대로 페이지 작업</span></div>
+      </div>
+    </section>
+
+    <section class="tile" id="t1">
+      <div class="in">
+        <img src="icon-128.png" alt="" />
+        <div
+          ><h2>POSENDY<br />Chrome</h2><p>네이버 블로그 발행과<br />브라우저 MCP</p></div
+        >
+      </div>
+    </section>
+  </body>
+</html>

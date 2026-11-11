@@ -43,7 +43,7 @@ const mockBridges = (byPort: Record<number, { staleClientRejections: number }>) 
       json: async () => ({
         extension_auth: {
           stale_client_rejections: detail.staleClientRejections,
-          last_origin: 'chrome-extension://aogfhfajjknomcnmlkbjmihjbknlhbbi',
+          last_origin: 'chrome-extension://dafdlgggdlfgiojdcjlaclelodbfajpp',
         },
       }),
     };

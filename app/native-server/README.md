@@ -30,7 +30,7 @@ Then run `/mcp` in Claude Code to confirm `chrome-mcp-stdio` is connected.
 2. Enable **Developer mode**
 3. Click **Load unpacked** and select `~/Downloads/posendy-chrome-extension-v<version>/`
 
-The extension ID is fixed at `aogfhfajjknomcnmlkbjmihjbknlhbbi` via a pinned `manifest.key`, so every install gets the same ID.
+The extension ID is fixed at `dafdlgggdlfgiojdcjlaclelodbfajpp` via a pinned `manifest.key`, so every install gets the same ID.
 
 ## Diagnostics
 

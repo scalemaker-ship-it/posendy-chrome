@@ -34,7 +34,7 @@ const COMMANDS = {
   // GitHub repo
   repoUrl: 'https://github.com/cw02326/posendy-chrome',
   // 우리 fork extension ID (deterministic)
-  extensionId: 'aogfhfajjknomcnmlkbjmihjbknlhbbi',
+  extensionId: 'dafdlgggdlfgiojdcjlaclelodbfajpp',
   // chrome://extensions URL — 가시화용
   chromeExtensions: 'chrome://extensions',
   // 수동 설치자가 Load unpacked 할 경로 (npm 설치자도 동일)

@@ -36,7 +36,7 @@ curl -fsSL https://raw.githubusercontent.com/cw02326/posendy-chrome/main/install
 > 크롬 정책상 `chrome://extensions` 는 스크립트로 조작할 수 없습니다. **AI 도, 이 확장 자신도
 > 대신 눌러 줄 수 없습니다.** 반드시 사람이 클릭해야 하는 유일한 단계입니다.
 
-확장 ID = `aogfhfajjknomcnmlkbjmihjbknlhbbi` (모든 사용자 동일 — `manifest.key` 박제로 unpacked
+확장 ID = `dafdlgggdlfgiojdcjlaclelodbfajpp` (모든 사용자 동일 — `manifest.key` 박제로 unpacked
 load 시에도 `allowed_origins` 자동 일치).
 
 **2. 클로드 코드 재시작**
@@ -201,7 +201,7 @@ posendy-chrome 는 AI 자동화가 끊기지 않도록 Chrome 사이트 권한 p
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | **⚡ 강제 재연결** 5단계 슈퍼버튼                    | drain → port free → spawn → handshake → MCP ping 자동. 사용자 `pkill` 수동 작업 0                      |
 | **🔬 진단 리포트** + Self-Test                       | env / bridge process / Self-Test 5 케이스 / Copy as JSON                                               |
-| **deterministic extension ID** (`manifest.key` 박제) | 모든 사용자 ID = `aogfhfajjknomcnmlkbjmihjbknlhbbi` → unpacked load 시에도 `allowed_origins` 자동 일치 |
+| **deterministic extension ID** (`manifest.key` 박제) | 모든 사용자 ID = `dafdlgggdlfgiojdcjlaclelodbfajpp` → unpacked load 시에도 `allowed_origins` 자동 일치 |
 | **stdio 강제 정책**                                  | HTTP 12306 안 씀. native messaging 기반 stdio 만                                                       |
 | **Claude design tokens** (warm cream + coral)        | popup UI = Anthropic Claude 디자인 시스템                                                              |
 | **한국어 patch**                                     | popup 의 UI 텍스트 한국어 (단축 도구·관리 메뉴 등 잡 기능은 제거)                                      |

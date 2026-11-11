@@ -40,7 +40,9 @@ const HOST_NAME = 'com.posendy.nativehost';
  * 우리 포크 확장의 고정 ID. manifest key 로 고정돼 있어 unpacked 로 로드해도 같은 값이다.
  * 기본으로 등록되는 유일한 origin.
  */
-export const FORK_EXTENSION_ID = 'aogfhfajjknomcnmlkbjmihjbknlhbbi';
+export const FORK_EXTENSION_ID = 'dafdlgggdlfgiojdcjlaclelodbfajpp';
+/** Chrome Web Store build of the same extension (store-assigned ID). */
+export const STORE_EXTENSION_ID = 'hjahjpbpflhcpdgafpnmapgjnkgclnci';
 
 export interface CliArgs {
   extensionId?: string;
@@ -74,9 +76,9 @@ export const parseArgs = (argv: string[]): CliArgs => {
  * 받으므로, "혹시 몰라서" 다른 ID 를 넣지 않는다. 추가는 호출자가 명시한 것만.
  */
 export const buildAllowedOrigins = (extraExtensionId?: string): string[] => {
-  const ids = [FORK_EXTENSION_ID];
+  const ids = [FORK_EXTENSION_ID, STORE_EXTENSION_ID];
   const extra = (extraExtensionId || '').trim();
-  if (extra && extra !== FORK_EXTENSION_ID) ids.push(extra);
+  if (extra && !ids.includes(extra)) ids.push(extra);
   return ids.map((id) => `chrome-extension://${id}/`);
 };
 

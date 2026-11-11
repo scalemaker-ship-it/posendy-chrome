@@ -3,7 +3,7 @@ import path from 'path';
 import os from 'os';
 import { execSync } from 'child_process';
 import { promisify } from 'util';
-import { COMMAND_NAME, DESCRIPTION, EXTENSION_ID, HOST_NAME } from './constant';
+import { COMMAND_NAME, DESCRIPTION, EXTENSION_ID, HOST_NAME, STORE_EXTENSION_ID } from './constant';
 import { BrowserType, getBrowserConfig, detectInstalledBrowsers } from './browser-config';
 
 export const access = promisify(fs.access);
@@ -247,6 +247,8 @@ export async function createManifestContent(): Promise<any> {
     allowed_origins: [
       // v1.0.2 부터 upstream 호환 제거 — upstream extension 은 com.chromemcp.nativehost 그대로 사용.
       `chrome-extension://${EXTENSION_ID}/`,
+      // Chrome Web Store build (click-to-install)
+      `chrome-extension://${STORE_EXTENSION_ID}/`,
     ],
   };
 }

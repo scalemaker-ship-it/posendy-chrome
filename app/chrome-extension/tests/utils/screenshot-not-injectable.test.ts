@@ -62,7 +62,7 @@ vi.mock('@/utils/image-utils', () => ({
 }));
 
 const EXTENSION_TAB_URL =
-  'chrome-extension://aogfhfajjknomcnmlkbjmihjbknlhbbi/sidepanel.html?tab=daily';
+  'chrome-extension://dafdlgggdlfgiojdcjlaclelodbfajpp/sidepanel.html?tab=daily';
 const INJECT_DENIED = `Cannot access contents of url "${EXTENSION_TAB_URL}". Extension manifest must request permission to access this host.`;
 
 type CaptureImpl = (params: Record<string, unknown>, attempt: number) => Promise<unknown>;

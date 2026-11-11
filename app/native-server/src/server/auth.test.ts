@@ -112,7 +112,7 @@ describe('브리지 HTTP 인증 (posendy-chrome fork)', () => {
     resetStaleExtensionReport();
     expect(getStaleExtensionReport().rejections).toBe(0);
 
-    const extensionOrigin = 'chrome-extension://aogfhfajjknomcnmlkbjmihjbknlhbbi';
+    const extensionOrigin = 'chrome-extension://dafdlgggdlfgiojdcjlaclelodbfajpp';
     const res = await agent().post('/mcp').set('Origin', extensionOrigin);
     expect(res.status).toBe(401);
 

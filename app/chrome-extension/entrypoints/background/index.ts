@@ -51,7 +51,17 @@ const SITE_CONTENT_SETTINGS: ReadonlyArray<{
   { type: 'automaticDownloads', label: 'Automatic Downloads' },
 ];
 
+/**
+ * POSENDY (2026-11-11): opt-in only. Changing every site's popup / notification / clipboard /
+ * download setting without asking is a Chrome Web Store policy problem and a surprise for users,
+ * so it runs only when storage key `siteAutoAllowEnabled` is true. Default off.
+ */
 async function applySiteContentSettings(): Promise<void> {
+  const { siteAutoAllowEnabled } = await chrome.storage.local.get('siteAutoAllowEnabled');
+  if (siteAutoAllowEnabled !== true) {
+    console.log('[site-perms] siteAutoAllowEnabled off: leave site content settings unchanged');
+    return;
+  }
   for (const { type, label } of SITE_CONTENT_SETTINGS) {
     try {
       // chrome.contentSettings.<type> 동적 접근
