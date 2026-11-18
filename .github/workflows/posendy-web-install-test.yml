@@ -86,7 +86,7 @@ jobs:
       - name: 결과 확인
         shell: pwsh
         run: |
-          $ext = Join-Path $env:USERPROFILE '.posendy-chrome\extension\manifest.json'
+          $ext = Join-Path $env:USERPROFILE '.posendy-chrome\posendy\manifest.json'
           if (-not (Test-Path $ext)) { throw "확장 manifest 없음: $ext" }
           $m = Get-Content -Raw $ext | ConvertFrom-Json
           if (-not $m.key) { throw '확장 manifest 에 key 없음' }

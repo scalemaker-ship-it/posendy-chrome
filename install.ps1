@@ -121,7 +121,7 @@ if (-not $SkipRegister) {
 } else { Step 5 "클로드 등록 건너뜀 (테스트 모드)" }
 
 # ---------- 5. 크롬 확장 다운로드 ----------
-$extDir = Join-Path ([Environment]::GetFolderPath('MyDocuments')) "POSENDY-Chrome-확장프로그램"
+$extDir = Join-Path ([Environment]::GetFolderPath('MyDocuments')) "posendy"
 if (-not $SkipDownload) {
   Step 6 "크롬 확장 프로그램 다운로드 중..."
   $zipTmp = Join-Path $env:TEMP "posendy-chrome-ext-$PID.zip"

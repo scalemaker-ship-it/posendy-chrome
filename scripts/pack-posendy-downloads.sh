@@ -2,7 +2,7 @@
 # posendy.com 에서 내려받는 설치 파일 2개를 만든다.
 #   1) posendy-chrome-bridge.tgz  : 브리지 dist + npm 에 없는 posendy-chrome-shared(vendor/)
 #                                   의존성은 설치 스크립트가 사용자 컴퓨터에서 npm install 로 받는다.
-#   2) posendy-chrome-extension.zip : 확장 빌드(chrome-mv3/)
+#   2) posendy-chrome-extension.zip : 확장 빌드(zip 안 폴더 이름 posendy/)
 #
 # 사용법: scripts/pack-posendy-downloads.sh [출력 폴더]
 #   기본 출력 폴더 = _posendy/posendy-web/public/downloads
@@ -57,7 +57,9 @@ node -e '
 tar -C "$WORK" -czf "$OUT/posendy-chrome-bridge.tgz" posendy-chrome-bridge
 
 rm -f "$OUT/posendy-chrome-extension.zip"
-(cd "$(dirname "$EXT")" && zip -qr "$OUT/posendy-chrome-extension.zip" chrome-mv3 -x '*.map')
+# 압축을 풀면 나오는 폴더 이름 = posendy (사용자가 chrome://extensions 에서 고르는 폴더)
+rsync -a --exclude '*.map' "$EXT/" "$WORK/posendy/"
+(cd "$WORK" && zip -qr "$OUT/posendy-chrome-extension.zip" posendy)
 
 VERSION="$(node -p "require('$NATIVE/package.json').version")"
 EXT_ID="$(node -e '

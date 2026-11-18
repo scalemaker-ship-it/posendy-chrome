@@ -152,9 +152,9 @@ if [ "$SKIP_DOWNLOAD" -eq 0 ]; then
 
   if [ -z "$EXTENSION_DIR" ]; then
     if [ -d "$HOME/Documents" ]; then
-      EXTENSION_DIR="$HOME/Documents/POSENDY-Chrome-확장프로그램"
+      EXTENSION_DIR="$HOME/Documents/posendy"
     else
-      EXTENSION_DIR="$HOME/POSENDY-Chrome-확장프로그램"
+      EXTENSION_DIR="$HOME/posendy"
     fi
   fi
 

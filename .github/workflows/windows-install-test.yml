@@ -55,7 +55,7 @@ jobs:
           $mcp = Get-Content -Raw (Join-Path $HOME '.mcp.json') | ConvertFrom-Json
           if (-not $mcp.mcpServers.'posendy-chrome') { throw '.mcp.json 에 posendy-chrome 없음' }
           $mcp.mcpServers.'posendy-chrome' | ConvertTo-Json -Depth 5
-          $ext = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'POSENDY-Chrome-확장프로그램\manifest.json'
+          $ext = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'posendy\manifest.json'
           if (-not (Test-Path $ext)) { throw "확장 manifest 없음: $ext" }
           $m = Get-Content -Raw $ext | ConvertFrom-Json
           if (-not $m.key) { throw '확장 manifest 에 key 없음 (확장 ID 고정 안 됨)' }

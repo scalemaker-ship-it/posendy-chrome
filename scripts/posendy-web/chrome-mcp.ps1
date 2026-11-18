@@ -7,7 +7,7 @@
 #   1. Node.js 20 이상 확인
 #   2. 연결 프로그램(브리지)을 %USERPROFILE%\.posendy-chrome\bridge 에 설치
 #   3. 크롬 네이티브 메시징 등록 (HKCU 레지스트리, 관리자 권한 없음)
-#   4. 확장 파일을 %USERPROFILE%\.posendy-chrome\extension 에 풀기
+#   4. 확장 파일을 %USERPROFILE%\.posendy-chrome\posendy 에 풀기
 #   5. 클로드 코드에 MCP 서버 등록 (claude CLI 가 있을 때)
 #
 # 환경 변수
@@ -26,7 +26,7 @@ $McpName = if ($env:POSENDY_MCP_NAME) { $env:POSENDY_MCP_NAME } else { 'posendy-
 $ChromePort = if ($env:CHROME_PORT) { $env:CHROME_PORT } else { '12330' }
 $HomeDir = Join-Path $env:USERPROFILE '.posendy-chrome'
 $BridgeDir = Join-Path $HomeDir 'bridge'
-$ExtDir = Join-Path $HomeDir 'extension'
+$ExtDir = Join-Path $HomeDir 'posendy'
 $ExtId = 'dafdlgggdlfgiojdcjlaclelodbfajpp'
 $HostName = 'com.posendy.nativehost'
 
@@ -107,7 +107,8 @@ try {
   catch { Die '확장 파일을 받지 못했습니다.' }
   $extTmp = Join-Path $Tmp 'ext'
   Expand-Archive -Path $zip -DestinationPath $extTmp -Force
-  $src = Join-Path $extTmp 'chrome-mv3'
+  $src = Join-Path $extTmp 'posendy'
+  if (-not (Test-Path $src)) { $src = Join-Path $extTmp 'chrome-mv3' }  # 예전 zip
   if (-not (Test-Path (Join-Path $src 'manifest.json'))) { Die '확장 파일이 손상됐습니다.' }
   # 폴더 위치를 바꾸지 않는다: 같은 자리를 덮어쓰면 확장 화면의 새로고침 한 번으로 업데이트된다
   New-Item -ItemType Directory -Force -Path $ExtDir | Out-Null
