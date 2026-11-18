@@ -1,4 +1,4 @@
-﻿# POSENDY Chrome 자동 설치 스크립트 (Windows)
+# POSENDY Chrome 자동 설치 스크립트 (Windows)
 # 사용법: PowerShell 에 아래 한 줄을 붙여넣고 Enter
 #   irm https://raw.githubusercontent.com/scalemaker-ship-it/posendy-chrome/main/install.ps1 | iex
 #

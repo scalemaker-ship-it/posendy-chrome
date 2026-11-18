@@ -38,15 +38,15 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      # 윈도우 기본 PowerShell 5.1 로 실행한다 (사용자 대부분이 이걸로 붙여넣는다).
-      # irm | iex 와 같은 조건을 만들려고 스크립트 내용을 문자열로 읽어 실행한다.
-      - name: install.ps1 (Windows PowerShell 5.1)
+      # 윈도우 기본 PowerShell 5.1 에서 사용자와 같은 방식(irm 으로 문자열을 받아 실행)으로 돌린다.
+      # Get-Content 로 읽으면 BOM 같은 irm 전용 문제를 놓친다 (2026-11-18 실제로 놓쳤다).
+      - name: irm install.ps1 (Windows PowerShell 5.1)
         shell: powershell
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          $src = Get-Content -Raw -Encoding UTF8 .\install.ps1
-          $sb = [scriptblock]::Create($src)
+          $url = "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/install.ps1"
+          $sb = [scriptblock]::Create((irm $url))
           & $sb -Repo '${{ github.repository }}' -Version '${{ inputs.version }}' -NoOpen
 
       - name: 설치 결과 확인

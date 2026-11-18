@@ -1,4 +1,4 @@
-﻿# POSENDY Chrome MCP 설치 (Windows 10/11)
+# POSENDY Chrome MCP 설치 (Windows 10/11)
 #
 #   PowerShell 에 붙여 넣고 Enter:
 #   irm https://posendy.com/install/chrome-mcp.ps1 | iex
