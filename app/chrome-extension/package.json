@@ -3,7 +3,7 @@
   "description": "Chrome extension to use your own Chrome as a MCP server — posendy-chrome fork with Force Reconnect + Playwright fallback",
   "author": "hangye (upstream), cw02326 (posendy-chrome fork)",
   "private": true,
-  "version": "1.13.1",
+  "version": "1.13.2",
   "type": "module",
   "scripts": {
     "dev": "wxt",

@@ -1,6 +1,6 @@
 {
   "name": "posendy-chrome-bridge",
-  "version": "1.13.1",
+  "version": "1.13.2",
   "description": "POSENDY Chrome — Chrome Native-Messaging host (Node). Non-interference background work mode, per-session work tabs, Force Reconnect, Playwright CDP fallback.",
   "main": "dist/index.js",
   "bin": {

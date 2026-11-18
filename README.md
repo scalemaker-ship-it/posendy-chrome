@@ -50,7 +50,7 @@ load 시에도 `allowed_origins` 자동 일치).
 
 ```bash
 # 릴리스 페이지의 posendy-chrome-bridge-<버전>.tgz 주소를 그대로 넣는다
-npm install -g https://github.com/scalemaker-ship-it/posendy-chrome/releases/download/v1.13.1/posendy-chrome-bridge-1.13.1.tgz
+npm install -g https://github.com/scalemaker-ship-it/posendy-chrome/releases/download/v1.13.2/posendy-chrome-bridge-1.13.2.tgz
 ```
 
 postinstall 이 자동으로 처리하는 것:
