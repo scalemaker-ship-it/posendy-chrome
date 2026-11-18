@@ -1,0 +1,127 @@
+# posendy.com 윈도우 설치 검증 (irm https://posendy.com/install/chrome-mcp.ps1 | iex)
+#
+# base 를 비우면: 이 커밋으로 홈페이지 설치 파일을 만들어 러너 안 로컬 서버(UTF-8 헤더)로 띄우고 검증한다.
+#                 홈페이지에 올리기 전 리허설용.
+# base 를 주면:   그 주소(예: https://posendy.com)에 실제로 올라간 파일로 검증한다.
+name: posendy-web-install-test
+
+on:
+  workflow_dispatch:
+    inputs:
+      base:
+        description: '설치 파일 주소. 비우면 이 커밋으로 만든 파일을 로컬 서버로 검증'
+        type: string
+        required: false
+        default: ''
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/posendy-web/**'
+      - 'scripts/pack-posendy-downloads.sh'
+      - 'scripts/ci/install-smoke.mjs'
+      - '.github/workflows/posendy-web-install-test.yml'
+
+jobs:
+  pack:
+    if: ${{ !inputs.base }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:shared && pnpm build:native && pnpm build:extension
+      - run: bash scripts/pack-posendy-downloads.sh "$PWD/site/downloads"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: site
+
+  windows:
+    needs: pack
+    if: ${{ always() && (needs.pack.result == 'success' || needs.pack.result == 'skipped') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, windows-2022]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/download-artifact@v4
+        if: ${{ !inputs.base }}
+        with:
+          name: site
+          path: site
+
+      # posendy.com(Vercel) 과 같은 헤더로 내보내는 작은 서버
+      - name: 로컬 서버 기동
+        if: ${{ !inputs.base }}
+        shell: pwsh
+        run: |
+          $js = @'
+          const http = require('http'), fs = require('fs'), path = require('path');
+          const root = path.resolve('site');
+          http.createServer((req, res) => {
+            const f = path.join(root, decodeURIComponent(req.url.split('?')[0]));
+            if (!f.startsWith(root) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404); return res.end(); }
+            const type = f.endsWith('.ps1') ? 'text/plain; charset=utf-8' : 'application/octet-stream';
+            res.writeHead(200, { 'Content-Type': type });
+            fs.createReadStream(f).pipe(res);
+          }).listen(8765, '127.0.0.1');
+          '@
+          Set-Content -Path serve.js -Value $js -Encoding UTF8
+          Start-Process node -ArgumentList serve.js -WindowStyle Hidden
+          Start-Sleep 2
+          (Invoke-WebRequest http://127.0.0.1:8765/install/chrome-mcp.ps1 -UseBasicParsing).Headers['Content-Type']
+
+      # 사용자와 같은 방식: Windows PowerShell 5.1 에서 irm | iex
+      - name: irm | iex (Windows PowerShell 5.1)
+        shell: powershell
+        run: |
+          $base = '${{ inputs.base }}'
+          if (-not $base) { $base = 'http://127.0.0.1:8765' }
+          $env:POSENDY_BASE = $base
+          $env:POSENDY_NO_OPEN = '1'
+          irm "$base/install/chrome-mcp.ps1" | iex
+
+      - name: 결과 확인
+        shell: pwsh
+        run: |
+          $ext = Join-Path $env:USERPROFILE '.posendy-chrome\extension\manifest.json'
+          if (-not (Test-Path $ext)) { throw "확장 manifest 없음: $ext" }
+          $m = Get-Content -Raw $ext | ConvertFrom-Json
+          if (-not $m.key) { throw '확장 manifest 에 key 없음' }
+          "확장: $($m.name) v$($m.version)"
+
+      - name: 네이티브 호스트 + MCP 스모크 테스트
+        shell: pwsh
+        run: |
+          $env:POSENDY_STDIO = Join-Path $env:USERPROFILE '.posendy-chrome\bridge\dist\mcp\mcp-server-stdio.js'
+          node scripts/ci/install-smoke.mjs 12399
+
+      # 두 번째 실행 = 업데이트 경로 (기존 bridge 폴더를 .prev 로 옮기고 다시 등록)
+      - name: 재실행(업데이트) 확인
+        shell: powershell
+        run: |
+          $base = '${{ inputs.base }}'
+          if (-not $base) { $base = 'http://127.0.0.1:8765' }
+          $env:POSENDY_BASE = $base
+          $env:POSENDY_NO_OPEN = '1'
+          irm "$base/install/chrome-mcp.ps1" | iex
+          $env:POSENDY_STDIO = Join-Path $env:USERPROFILE '.posendy-chrome\bridge\dist\mcp\mcp-server-stdio.js'
+          node scripts/ci/install-smoke.mjs 12398
+          if ($LASTEXITCODE -ne 0) { throw '재실행 후 스모크 실패' }
+
+      - name: 호스트 로그
+        if: failure()
+        shell: pwsh
+        run: Get-ChildItem "$env:LOCALAPPDATA\mcp-chrome-bridge\logs" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 3 | ForEach-Object { "== $($_.Name)"; Get-Content $_.FullName -Tail 80 }

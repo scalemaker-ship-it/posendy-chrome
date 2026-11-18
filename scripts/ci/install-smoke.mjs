@@ -111,11 +111,15 @@ if (reply.type !== 'server_started') fail(`start 응답: ${JSON.stringify(reply)
 ok(`네이티브 호스트 server_started (port ${reply.payload?.port})`);
 
 // ---------- 3. stdio MCP tools/list ----------
-const npmRoot = execFileSync(isWin ? 'npm.cmd' : 'npm', ['root', '-g'], {
-  encoding: 'utf8',
-  shell: isWin,
-}).trim();
-const stdioJs = path.join(npmRoot, 'posendy-chrome-bridge', 'dist', 'mcp', 'mcp-server-stdio.js');
+// POSENDY_STDIO 를 주면 그 경로(posendy.com 설치본: ~/.posendy-chrome/bridge)를, 아니면 npm 전역 설치본을 쓴다
+let stdioJs = process.env.POSENDY_STDIO;
+if (!stdioJs) {
+  const npmRoot = execFileSync(isWin ? 'npm.cmd' : 'npm', ['root', '-g'], {
+    encoding: 'utf8',
+    shell: isWin,
+  }).trim();
+  stdioJs = path.join(npmRoot, 'posendy-chrome-bridge', 'dist', 'mcp', 'mcp-server-stdio.js');
+}
 if (!fs.existsSync(stdioJs)) fail(`stdio 서버 없음: ${stdioJs}`);
 
 const mcp = spawn(process.execPath, [stdioJs], {

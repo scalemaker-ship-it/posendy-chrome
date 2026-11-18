@@ -66,5 +66,9 @@ EXT_ID="$(node -e '
   console.log([...h].map((c) => String.fromCharCode(97 + parseInt(c, 16))).join(""));
 ' "$EXT/manifest.json")"
 
+# 윈도우 설치 스크립트도 홈페이지 public/install/ 로 함께 내보낸다 (원본: scripts/posendy-web/)
+mkdir -p "$OUT/../install"
+cp "$ROOT/scripts/posendy-web/chrome-mcp.ps1" "$OUT/../install/chrome-mcp.ps1"
+
 echo "완료 (v$VERSION, 확장 ID $EXT_ID)"
 ls -la "$OUT/posendy-chrome-bridge.tgz" "$OUT/posendy-chrome-extension.zip"
