@@ -66,7 +66,9 @@ try {
   if (-not (Test-Path (Join-Path $newBridge 'dist\cli.js'))) { Die '브리지 파일이 손상됐습니다.' }
   Push-Location $newBridge
   $prev = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
-  npm install --omit=dev --no-audit --no-fund --no-update-notifier --loglevel=error | Out-Host
+  # --install-links: vendor 의 shared 를 링크가 아닌 복사본으로 넣는다. 윈도우 npm 은 file: 의존성을
+  # 절대경로 정션으로 만들어, 아래에서 폴더를 옮기고 임시 폴더를 지우면 링크가 끊긴다.
+  npm install --omit=dev --install-links --no-audit --no-fund --no-update-notifier --loglevel=error | Out-Host
   $npmCode = $LASTEXITCODE
   $ErrorActionPreference = $prev
   Pop-Location
@@ -80,6 +82,8 @@ try {
     catch { Die '기존 브리지 폴더를 옮기지 못했습니다. 크롬을 완전히 닫고 다시 실행하세요.' }
   }
   Move-Item $newBridge $BridgeDir
+  $sharedPkg = Join-Path $BridgeDir 'node_modules\posendy-chrome-shared\package.json'
+  if (-not (Test-Path $sharedPkg)) { Die "브리지 의존성이 빠졌습니다: $sharedPkg" }
   $ver = node -p "require(process.argv[1]).version" (Join-Path $BridgeDir 'package.json')
   Ok "설치 위치: $BridgeDir (v$ver)"
 
