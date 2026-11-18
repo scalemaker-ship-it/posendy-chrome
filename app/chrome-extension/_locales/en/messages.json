@@ -2543,7 +2543,7 @@
     }
   },
   "popup_prompt_body": {
-    "message": "Register our chrome MCP (posendy-chrome) in the .mcp.json of the current working dir (this project folder). Do not touch global config such as ~/.claude.json.\n\nRules:\n- name: \"chrome-mcp-stdio\"\n- transport: stdio (no HTTP)\n- command: \"node\"\n- args: [\"<output of npm root -g>/posendy-chrome-bridge/dist/mcp/mcp-server-stdio.js\"]\n- env: { \"CHROME_PORT\": \"$PORT$\" }\n\nFirst run `npm root -g` in bash to get the real path, then add or update only mcpServers.chrome-mcp-stdio in the working dir .mcp.json (create it if missing). Keep every other server entry.\n\nWhen it is registered, also explain these steps:\n1. Quit Claude Code with Ctrl+C twice and start it again (reloads mcp servers)\n2. Type `/mcp` and check that chrome-mcp-stdio is connected\n3. Press Esc to leave",
+    "message": "Register our chrome MCP (posendy-chrome) in the .mcp.json of the current working dir (this project folder). Do not touch global config such as ~/.claude.json.\n\nRules:\n- name: \"posendy-chrome\"\n- transport: stdio (no HTTP)\n- command: \"node\"\n- args: [\"<output of npm root -g>/posendy-chrome-bridge/dist/mcp/mcp-server-stdio.js\"]\n- env: { \"CHROME_PORT\": \"$PORT$\" }\n\nFirst run `npm root -g` in bash to get the real path, then add or update only mcpServers.posendy-chrome in the working dir .mcp.json (create it if missing). Keep every other server entry.\n\nWhen it is registered, also explain these steps:\n1. Quit Claude Code with Ctrl+C twice and start it again (reloads mcp servers)\n2. Type `/mcp` and check that posendy-chrome is connected\n3. Press Esc to leave",
     "description": "Claude Code 등록 prompt 본문",
     "placeholders": {
       "port": {

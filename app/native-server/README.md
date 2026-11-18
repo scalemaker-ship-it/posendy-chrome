@@ -1,6 +1,6 @@
 # posendy-chrome-bridge
 
-Node.js Native Messaging host that connects [Claude Code](https://claude.com/claude-code) (or any MCP client) to your live Chrome browser via the [posendy-chrome](https://github.com/cw02326/posendy-chrome) extension.
+Node.js Native Messaging host that connects [Claude Code](https://claude.com/claude-code) (or any MCP client) to your live Chrome browser via the [posendy-chrome](https://github.com/scalemaker-ship-it/posendy-chrome) extension.
 
 This is the **posendy-chrome fork** of `mcp-chrome-bridge`, adding Force Reconnect, a Playwright CDP fallback launcher, dynamic-port negotiation, and self-healing diagnostics.
 
@@ -50,8 +50,8 @@ posendy-chrome-bridge report --copy # copy a diagnostic report to clipboard
 
 ## Links
 
-- Source & issues: <https://github.com/cw02326/posendy-chrome>
-- Releases: <https://github.com/cw02326/posendy-chrome/releases>
+- Source & issues: <https://github.com/scalemaker-ship-it/posendy-chrome>
+- Releases: <https://github.com/scalemaker-ship-it/posendy-chrome/releases>
 - Upstream: <https://github.com/hangwin/mcp-chrome>
 
 ## License

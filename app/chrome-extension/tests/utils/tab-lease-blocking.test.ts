@@ -231,7 +231,9 @@ async function harness() {
   };
 }
 
-describe('도구 파이프라인이 리스 토큰을 넘긴다 (항목 1)', () => {
+// 첫 테스트가 도구 파이프라인 모듈 전체를 처음 import 한다(로컬 실측 6.5초).
+// 기본 5초 제한에 걸려 교착처럼 보였으므로 이 묶음만 넉넉히 준다.
+describe('도구 파이프라인이 리스 토큰을 넘긴다 (항목 1)', { timeout: 30_000 }, () => {
   beforeEach(() => {
     vi.resetModules();
     installChrome();

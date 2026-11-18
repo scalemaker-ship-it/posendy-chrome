@@ -171,7 +171,7 @@ describe('mcp-server-stdio — 세션 중 브라우저 전환 (posendy-chrome fo
     expect(payload.activePort).toBe(12330);
     expect(payload.browsers.filter((b: any) => b.alive).map((b: any) => b.port)).toEqual([12315]);
     // 기본 후보 port 들은 모두 probe 대상
-    expect(payload.browsers.map((b: any) => b.port).sort()).toEqual([12306, 12315, 12330, 12325]);
+    expect(payload.browsers.map((b: any) => b.port).sort()).toEqual([12306, 12315, 12325, 12330]);
     expect(payload.browsers.find((b: any) => b.port === 12315).url).toBe(
       'http://127.0.0.1:12315/mcp',
     );

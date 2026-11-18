@@ -1,32 +1,33 @@
 # POSENDY Chrome
 
-> [hangwin/mcp-chrome](https://github.com/hangwin/mcp-chrome) 의 reliability fork — 5+ 개월 머지 안 된 핵심 PR 7개 흡수 + Force Reconnect + Diagnostic UI.
-> **stdio transport 강제** (HTTP 12306 안 씀). 웹스토어 등록 안 함 — npm + GitHub Release 사이드로드.
+> [hangwin/mcp-chrome](https://github.com/hangwin/mcp-chrome) 의 reliability fork: 5+ 개월 머지 안 된 핵심 PR 7개 흡수 + Force Reconnect + Diagnostic UI.
+> **stdio transport 강제** (HTTP 12306 안 씀). 배포: GitHub Release 사이드로드 (npm 레지스트리 발행 안 함).
+> **Windows 10/11 지원**: 설치 스크립트 `install.ps1`, 네이티브 호스트 HKCU 레지스트리 등록, `run_host.bat`. 릴리스마다 GitHub Actions 윈도우 러너에서 설치부터 MCP 도구 목록까지 자동 검증한다(`windows-install-test`).
 
-## 설치 — 한 줄
+## 설치: 한 줄
 
 **Windows** (PowerShell):
 
 ```powershell
-irm https://raw.githubusercontent.com/cw02326/posendy-chrome/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/scalemaker-ship-it/posendy-chrome/main/install.ps1 | iex
 ```
 
 **macOS / Linux**:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cw02326/posendy-chrome/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/scalemaker-ship-it/posendy-chrome/main/install.sh | bash
 ```
 
 스크립트가 대신 해주는 것:
 
-- ✅ 브리지 전역 설치 (`npm install -g posendy-chrome-bridge`)
+- ✅ 최신 GitHub 릴리스의 브리지 tgz 전역 설치 (`npm install -g <릴리스 URL>`)
 - ✅ Native Messaging manifest 등록 + `doctor --fix` 자동 점검
-- ✅ 클로드 코드에 `chrome-mcp-stdio` 등록 (전역 — 어느 폴더에서 실행해도 사용 가능)
+- ✅ 클로드 코드에 `posendy-chrome` 등록 (전역: 어느 폴더에서 실행해도 사용 가능)
 - ✅ 최신 릴리스에서 확장 zip 내려받아 압축 해제 (+ 윈도우는 폴더와 `chrome://extensions` 자동 열기)
 
-> Node.js 20+ 필요 — `node -v` 로 확인.
+> Node.js 20+ 필요: `node -v` 로 확인.
 
-### 남은 2단계 — 여기서부터는 사람이 해야 합니다
+### 남은 2단계: 여기서부터는 사람이 해야 합니다
 
 **1. 크롬 확장 로드 (자동화 불가)**
 
@@ -36,19 +37,20 @@ curl -fsSL https://raw.githubusercontent.com/cw02326/posendy-chrome/main/install
 > 크롬 정책상 `chrome://extensions` 는 스크립트로 조작할 수 없습니다. **AI 도, 이 확장 자신도
 > 대신 눌러 줄 수 없습니다.** 반드시 사람이 클릭해야 하는 유일한 단계입니다.
 
-확장 ID = `dafdlgggdlfgiojdcjlaclelodbfajpp` (모든 사용자 동일 — `manifest.key` 박제로 unpacked
+확장 ID = `dafdlgggdlfgiojdcjlaclelodbfajpp` (모든 사용자 동일: `manifest.key` 박제로 unpacked
 load 시에도 `allowed_origins` 자동 일치).
 
 **2. 클로드 코드 재시작**
 
-껐다 켠 뒤 `/mcp` 입력 → `chrome-mcp-stdio` 가 보이면 성공입니다.
+껐다 켠 뒤 `/mcp` 입력 → `posendy-chrome` 가 보이면 성공입니다.
 
 > 도구 목록은 MCP 서버가 시작할 때 한 번만 광고됩니다. 재시작 전에는 새 도구가 안 보입니다.
 
-## 설치 — 직접 하고 싶다면
+## 설치: 직접 하고 싶다면
 
 ```bash
-npm install -g posendy-chrome-bridge
+# 릴리스 페이지의 posendy-chrome-bridge-<버전>.tgz 주소를 그대로 넣는다
+npm install -g https://github.com/scalemaker-ship-it/posendy-chrome/releases/download/v1.13.1/posendy-chrome-bridge-1.13.1.tgz
 ```
 
 postinstall 이 자동으로 처리하는 것:
@@ -56,26 +58,26 @@ postinstall 이 자동으로 처리하는 것:
 - ✅ Native Messaging manifest 등록 (`com.posendy.nativehost`)
 - ✅ 확장 zip 다운로드 → `~/Downloads/posendy-chrome-extension-v<version>/`
 - ✅ **클로드 코드가 설치돼 있으면** (`~/.claude/` 존재) 트러블슈팅 스킬도 설치 →
-  `~/.claude/skills/posendy-chrome-doctor/SKILL.md`. 이후 "MCP 안 돼" 한 마디로 자동 진단·복구.
-  (이 스킬은 **문제 해결용**입니다 — 설치 수단이 아닙니다.)
+  `~/.claude/skills/posendy-chrome-doctor/SKILL.md`. 이후 "MCP 안 돼" 한 마디로 자동 진단, 복구.
+  (이 스킬은 **문제 해결용**입니다: 설치 수단이 아닙니다.)
 
 그 다음 클로드 코드에 등록:
 
 ```bash
 # macOS / Linux
-claude mcp add --scope user --transport stdio chrome-mcp-stdio \
+claude mcp add --scope user --transport stdio posendy-chrome \
   -e CHROME_PORT=12330 -- node "$(npm root -g)/posendy-chrome-bridge/dist/mcp/mcp-server-stdio.js"
 ```
 
 ```powershell
 # Windows PowerShell
-claude mcp add --scope user --transport stdio chrome-mcp-stdio `
+claude mcp add --scope user --transport stdio posendy-chrome `
   -e CHROME_PORT=12330 -- node "$((npm root -g).Trim())\posendy-chrome-bridge\dist\mcp\mcp-server-stdio.js"
 ```
 
 마지막으로 위의 **남은 2단계**(확장 로드 + 클로드 코드 재시작)를 진행하면 됩니다.
 
-> **자동 스킬 설치를 원하지 않으면:** `AUTO_CHROME_MCP_NO_SKILL=1 npm install -g posendy-chrome-bridge`
+> **자동 스킬 설치를 원하지 않으면:** `AUTO_CHROME_MCP_NO_SKILL=1 npm install -g <브리지 tgz URL>`
 > 사용자 custom 스킬 (frontmatter `name` 이 다른 경우) 은 절대 덮어쓰지 않습니다.
 > 같은 스킬이 이미 있으면 `posendy-chrome-version` 비교 후 새 버전일 때만 갱신합니다.
 
@@ -84,10 +86,10 @@ claude mcp add --scope user --transport stdio chrome-mcp-stdio `
 사람이 "이 링크 보고 설치해줘" 라고 했다면, 순서는 이렇습니다:
 
 1. 위 **한 줄 설치** 스크립트를 실행한다 (OS 에 맞는 쪽).
-2. 확장 로드는 **대신 해줄 수 없다.** 위 1단계를 사람에게 그대로 안내하고 기다린다 —
-   `chrome://extensions` 는 스크립트·자동화가 접근할 수 없다.
+2. 확장 로드는 **대신 해줄 수 없다.** 위 1단계를 사람에게 그대로 안내하고 기다린다 :
+   `chrome://extensions` 는 스크립트, 자동화가 접근할 수 없다.
 3. 사람이 확장을 로드했다고 하면, 클로드 코드 재시작을 안내한다. 재시작 전에는 도구가 안 보인다.
-4. 확인: `posendy-chrome-bridge doctor` 가 모든 항목 OK 인지 본다 (12개 이상 — 설치된 브라우저 수와 OS 에 따라 늘어난다).
+4. 확인: `posendy-chrome-bridge doctor` 가 모든 항목 OK 인지 본다 (12개 이상: 설치된 브라우저 수와 OS 에 따라 늘어난다).
    `Connectivity` 만 실패하면 크롬이 꺼져 있거나 확장이 아직 로드되지 않은 것이다.
 
 ## 무간섭 모드 (v1.9.0 기본값)
@@ -102,7 +104,7 @@ claude mcp add --scope user --transport stdio chrome-mcp-stdio `
 - MCP 작업 탭은 창마다 하나씩 있는 초록색 탭 그룹 **"MCP"** 로 묶여, 사용자가 직접 연 탭과
   탭 스트립에서 바로 구분된다(팝업의 "작업 탭 그룹 표시" 토글로 끌 수 있다). 편입은 탭을
   활성화하거나 창 포커스를 바꾸지 않는다.
-- 스크린샷·읽기·클릭·입력은 전부 보이지 않는 탭에서 정상 동작한다(CDP 경로).
+- 스크린샷, 읽기, 클릭, 입력은 전부 보이지 않는 탭에서 정상 동작한다(CDP 경로).
 
 **그래도 방해받는다면** 확장 팝업에서 두 가지를 확인한다.
 
@@ -119,7 +121,7 @@ claude mcp add --scope user --transport stdio chrome-mcp-stdio `
 
 ## 산출물 저장 위치와 자동 정리
 
-스크린샷·GIF·PDF·성능 트레이스는 전부 한 곳에만 쌓인다.
+스크린샷, GIF, PDF, 성능 트레이스는 전부 한 곳에만 쌓인다.
 
 ```
 Downloads/mcp-screenshots/YYYY-MM-DD/<종류>_<이름>_<HHmmss>.<확장자>
@@ -139,7 +141,7 @@ Downloads/mcp-screenshots/YYYY-MM-DD/<종류>_<이름>_<HHmmss>.<확장자>
 }
 ```
 
-- `artifactCleanup`: `archive`(기본, 보관 폴더로 이동) · `delete`(삭제) · `off`(정리 안 함)
+- `artifactCleanup`: `archive`(기본, 보관 폴더로 이동) , `delete`(삭제) , `off`(정리 안 함)
 - `artifactRetentionDays`: 며칠이 지나면 정리할지. 기본 7. 정확히 7일 된 폴더도 대상이다.
 - `artifactArchiveDir`: 옮겨 둘 곳. 기본은 `~/posendy-chrome-archive`.
   실제 이동 위치는 `<보관 폴더>/YYYY-MM/YYYY-MM-DD/` 이고, 같은 이름이 있으면 접미사가 붙는다.
@@ -154,7 +156,7 @@ posendy-chrome-bridge artifacts --now      # 실제로 정리한다
 
 마지막 실행 결과는 `~/.posendy-chrome/artifacts-last-run.json` 에 남는다.
 
-## ⚠️ 사이트 권한 자동 허용 — 알아두세요
+## ⚠️ 사이트 권한 자동 허용: 알아두세요
 
 posendy-chrome 는 AI 자동화가 끊기지 않도록 Chrome 사이트 권한 prompt 를 **자동으로 처리**합니다 (v1.0.32+). 두 갈래로 동작:
 
@@ -182,7 +184,7 @@ posendy-chrome 는 AI 자동화가 끊기지 않도록 Chrome 사이트 권한 p
 - **OFF 로 내리면**: AI 가 해당 기능 호출 시 작은 confirm 창이 떠서 허용 여부를 묻습니다 (60초 timeout).
 - 끄려면: 확장 아이콘 클릭 → popup 하단 "권한 설정" 섹션에서 토글 OFF.
 
-> **보안 모델** — 비민감 4종 (popups/notifications/clipboard/autoDownload) 은 install 시 모든 사이트 일괄 허용이라 일반 사용자에게 위험할 수 있음. 민감 3종 (camera/microphone/geolocation) 은 AI 가 방문한 사이트에만 누적 추가되므로 사용자가 신뢰하지 않는 사이트엔 영향 없음 (그 사이트에 가지 않으면 추가 안 됨). 별도 Chrome 프로필 사용을 권장합니다.
+> **보안 모델**: 비민감 4종 (popups/notifications/clipboard/autoDownload) 은 install 시 모든 사이트 일괄 허용이라 일반 사용자에게 위험할 수 있음. 민감 3종 (camera/microphone/geolocation) 은 AI 가 방문한 사이트에만 누적 추가되므로 사용자가 신뢰하지 않는 사이트엔 영향 없음 (그 사이트에 가지 않으면 추가 안 됨). 별도 Chrome 프로필 사용을 권장합니다.
 >
 > **opt-out:** 자동 권한 세팅을 원하지 않으면 설치 후 `chrome://settings/content` 에서 비민감 4종을 직접 default 로 되돌리세요. 민감 3종의 origin 별 누적 허용은 `chrome://settings/content/{camera,microphone,location}` 에서 사이트별로 삭제 가능.
 
@@ -204,16 +206,16 @@ posendy-chrome 는 AI 자동화가 끊기지 않도록 Chrome 사이트 권한 p
 | **deterministic extension ID** (`manifest.key` 박제) | 모든 사용자 ID = `dafdlgggdlfgiojdcjlaclelodbfajpp` → unpacked load 시에도 `allowed_origins` 자동 일치 |
 | **stdio 강제 정책**                                  | HTTP 12306 안 씀. native messaging 기반 stdio 만                                                       |
 | **Claude design tokens** (warm cream + coral)        | popup UI = Anthropic Claude 디자인 시스템                                                              |
-| **한국어 patch**                                     | popup 의 UI 텍스트 한국어 (단축 도구·관리 메뉴 등 잡 기능은 제거)                                      |
+| **한국어 patch**                                     | popup 의 UI 텍스트 한국어 (단축 도구, 관리 메뉴 등 잡 기능은 제거)                                     |
 
-(옵션) **Chrome Launcher + Playwright CDP 폴백** — `auto-chrome-launcher` CLI 가 Chrome 을 `--remote-debugging-port=9222` 로 띄움. native messaging 끊겨도 CDP attach 로 도구 미러. 일반 사용엔 불필요.
+(옵션) **Chrome Launcher + Playwright CDP 폴백**: `auto-chrome-launcher` CLI 가 Chrome 을 `--remote-debugging-port=9222` 로 띄움. native messaging 끊겨도 CDP attach 로 도구 미러. 일반 사용엔 불필요.
 
 ## 진단 / 트러블슈팅
 
 설치가 꼬였다면:
 
 ```bash
-posendy-chrome-bridge doctor          # 상태 점검 (12개 이상, 브라우저 수·OS 에 따라 늘어남)
+posendy-chrome-bridge doctor          # 상태 점검 (12개 이상, 브라우저 수, OS 에 따라 늘어남)
 posendy-chrome-bridge doctor --fix    # 자동 복구
 posendy-chrome-bridge report --copy   # 진단 리포트 (이슈 등록용)
 ```
@@ -237,4 +239,4 @@ posendy-chrome-bridge report --copy   # 진단 리포트 (이슈 등록용)
 
 ## License
 
-원본 MIT — [`LICENSE`](./LICENSE).
+원본 MIT: [`LICENSE`](./LICENSE).

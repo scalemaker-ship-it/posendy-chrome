@@ -244,7 +244,7 @@ describe('probeBridgePorts', () => {
     }) as typeof fetch;
 
     const result = await probeBridgePorts({ platform: 'win32', runner, fetchFn });
-    expect(result.ports).toEqual([12330, 12325]);
+    expect(result.ports).toEqual([12325, 12330]);
     expect(result.responsivePorts).toEqual([12330]);
     expect(result.pidByPort).toEqual({ 12330: 100, 12325: 200 });
   });

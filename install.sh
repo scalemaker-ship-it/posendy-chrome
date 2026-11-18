@@ -2,20 +2,22 @@
 # POSENDY Chrome 설치 스크립트 (macOS / Linux)
 #
 # 사용법: 터미널에 아래 한 줄을 붙여넣고 Enter
-#   curl -fsSL https://raw.githubusercontent.com/cw02326/posendy-chrome/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/scalemaker-ship-it/posendy-chrome/main/install.sh | bash
 #
 # 하는 일 (install.ps1 과 동일한 순서):
 #   1. Node.js 20+ 확인
-#   2. npm 에서 브리지 전역 설치 → doctor --fix 로 네이티브 메시징 등록까지 자동 점검
-#   3. 클로드 코드에 chrome-mcp-stdio 등록 (claude CLI, 없으면 ~/.mcp.json 병합)
+#   2. 깃허브 릴리스의 브리지 tgz 전역 설치 → doctor --fix 로 네이티브 메시징 등록까지 자동 점검
+#   3. 클로드 코드에 posendy-chrome 등록 (claude CLI, 없으면 ~/.mcp.json 병합)
 #   4. 최신 릴리스에서 확장 zip 내려받아 압축 해제
 #
 # 테스트용 플래그: --skip-npm / --skip-register / --skip-download
 
 set -euo pipefail
 
-REPO="cw02326/posendy-chrome"
+REPO="scalemaker-ship-it/posendy-chrome"
 CHROME_PORT="${CHROME_PORT:-12330}"
+MCP_NAME="${POSENDY_MCP_NAME:-posendy-chrome}"
+VERSION="${POSENDY_VERSION:-}"
 EXTENSION_DIR="${AUTO_CHROME_MCP_EXTENSION_DIR:-}"
 
 SKIP_NPM=0
@@ -57,10 +59,25 @@ if [ "$NODE_MAJOR" -lt 20 ]; then
 fi
 ok "Node.js $(node -v) / npm $(npm -v)"
 
-# ---------- 2. 브리지 설치 ----------
+# ---------- 2. 릴리스 정보 + 브리지 설치 ----------
+if [ -n "$VERSION" ]; then API="https://api.github.com/repos/$REPO/releases/tags/v${VERSION#v}"; else API="https://api.github.com/repos/$REPO/releases/latest"; fi
+REL_JSON="$(curl -fsSL -H 'User-Agent: posendy-chrome-installer' "$API")"
+asset_url() {
+  printf '%s' "$REL_JSON" | node -e '
+    let d = "";
+    process.stdin.on("data", (c) => (d += c)).on("end", () => {
+      const re = new RegExp(process.argv[1]);
+      const a = (JSON.parse(d).assets || []).find((x) => re.test(x.name));
+      if (!a) process.exit(1);
+      console.log(a.browser_download_url);
+    });' "$1"
+}
+BRIDGE_URL="$(asset_url '^posendy-chrome-bridge-.*\.tgz$')" || { err "릴리스에 브리지 tgz 가 없습니다"; exit 1; }
+EXT_URL="$(asset_url '^posendy-chrome-extension\.zip$')" || EXT_URL="$(asset_url 'chrome\.zip$')" || { err "릴리스에 확장 zip 이 없습니다"; exit 1; }
+
 if [ "$SKIP_NPM" -eq 0 ]; then
-  step 2 "연결 프로그램(브리지) 설치 중... (1~2분)"
-  if ! npm install -g posendy-chrome-bridge >/dev/null 2>&1; then
+  step 2 "연결 프로그램(브리지) 설치 중... (1~3분)"
+  if ! AUTO_CHROME_MCP_SKIP_EXTENSION_DOWNLOAD=1 npm install -g "$BRIDGE_URL" --no-fund --no-audit; then
     err "전역 설치에 실패했습니다."
     echo "     권한 문제라면 npm 전역 경로를 사용자 폴더로 옮기는 것이 안전합니다:"
     echo "       npm config set prefix ~/.npm-global"
@@ -70,7 +87,7 @@ if [ "$SKIP_NPM" -eq 0 ]; then
   fi
   ok "브리지 설치 완료"
 
-  step 3 "연결 상태 자동 점검·수리 중..."
+  step 3 "연결 상태 자동 점검, 수리 중..."
   # doctor 는 네이티브 메시징 매니페스트 등록까지 고쳐 준다. 경고가 있어도 계속 진행한다.
   posendy-chrome-bridge doctor --fix || warn "점검 중 경고가 있었지만 계속 진행합니다."
 else
@@ -89,36 +106,36 @@ if [ "$SKIP_REGISTER" -eq 0 ]; then
 
   REGISTERED=0
   if command -v claude >/dev/null 2>&1; then
-    claude mcp remove --scope user chrome-mcp-stdio >/dev/null 2>&1 || true
-    if claude mcp add --scope user --transport stdio chrome-mcp-stdio \
+    claude mcp remove --scope user "$MCP_NAME" >/dev/null 2>&1 || true
+    if claude mcp add --scope user --transport stdio "$MCP_NAME" \
         -e "CHROME_PORT=$CHROME_PORT" -- node "$STDIO_PATH" >/dev/null 2>&1; then
       ok "클로드 코드 전역 등록 완료 (어느 폴더에서 실행해도 사용 가능)"
       REGISTERED=1
     else
-      warn "claude mcp 등록 실패 — 설정 파일 방식으로 대신 등록합니다."
+      warn "claude mcp 등록 실패: 설정 파일 방식으로 대신 등록합니다."
     fi
   fi
 
   if [ "$REGISTERED" -eq 0 ]; then
-    # fallback: 홈 폴더 .mcp.json 병합 (node 로 처리 — jq 의존성을 만들지 않는다)
+    # fallback: 홈 폴더 .mcp.json 병합 (node 로 처리: jq 의존성을 만들지 않는다)
     MCP_FILE="$HOME/.mcp.json"
     node -e '
       const fs = require("fs");
-      const [file, stdioPath, port] = process.argv.slice(1);
+      const [file, stdioPath, port, name] = process.argv.slice(1);
       let cfg = {};
       if (fs.existsSync(file)) {
         try { cfg = JSON.parse(fs.readFileSync(file, "utf8")); }
         catch { console.error("기존 .mcp.json 을 읽을 수 없어 새로 만듭니다."); }
       }
       cfg.mcpServers = cfg.mcpServers || {};
-      cfg.mcpServers["chrome-mcp-stdio"] = {
+      cfg.mcpServers[name] = {
         type: "stdio",
         command: "node",
         args: [stdioPath],
         env: { CHROME_PORT: port },
       };
       fs.writeFileSync(file, JSON.stringify(cfg, null, 2) + "\n");
-    ' "$MCP_FILE" "$STDIO_PATH" "$CHROME_PORT"
+    ' "$MCP_FILE" "$STDIO_PATH" "$CHROME_PORT" "$MCP_NAME"
     ok "설정 파일 등록 완료: $MCP_FILE"
   fi
 else
@@ -131,22 +148,13 @@ if [ "$SKIP_DOWNLOAD" -eq 0 ]; then
   command -v curl >/dev/null 2>&1 || { err "curl 이 필요합니다"; exit 1; }
   command -v unzip >/dev/null 2>&1 || { err "unzip 이 필요합니다"; exit 1; }
 
-  # 릴리스 에셋 중 *chrome.zip 을 고른다 (버전이 이름에 들어가므로 패턴으로 찾는다).
-  ASSET_URL="$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest" \
-    | node -e '
-      let d = "";
-      process.stdin.on("data", (c) => (d += c)).on("end", () => {
-        const rel = JSON.parse(d);
-        const a = (rel.assets || []).find((x) => x.name.endsWith("chrome.zip"));
-        if (!a) { console.error("확장 zip 을 찾을 수 없습니다."); process.exit(1); }
-        console.log(a.browser_download_url);
-      });')"
+  ASSET_URL="$EXT_URL"
 
   if [ -z "$EXTENSION_DIR" ]; then
     if [ -d "$HOME/Documents" ]; then
-      EXTENSION_DIR="$HOME/Documents/AutoChromeMCP-확장프로그램"
+      EXTENSION_DIR="$HOME/Documents/POSENDY-Chrome-확장프로그램"
     else
-      EXTENSION_DIR="$HOME/AutoChromeMCP-확장프로그램"
+      EXTENSION_DIR="$HOME/POSENDY-Chrome-확장프로그램"
     fi
   fi
 
@@ -183,7 +191,7 @@ $(echo -e "${C_BOLD}=====================================${C_RESET}")
 
  2. 클로드 코드를 껐다가 다시 켜기
 
- 확인: 클로드 코드에 /mcp 를 입력했을 때 chrome-mcp-stdio 가 보이면 성공!
+ 확인: 클로드 코드에 /mcp 를 입력했을 때 $MCP_NAME 이 보이면 성공!
 
  문제가 생기면: 확장 팝업의 ⚡ 강제 재연결, 또는 터미널에서
    posendy-chrome-bridge doctor

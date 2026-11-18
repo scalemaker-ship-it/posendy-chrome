@@ -1,0 +1,75 @@
+# 윈도우 설치 검증. 실제 사용자와 같은 경로로 설치한다:
+#   install.ps1 (깃허브 릴리스에서 브리지 tgz, 확장 zip 받기) -> HKCU 레지스트리 등록
+#   -> run_host.bat 로 네이티브 호스트 기동 -> stdio MCP tools/list
+# 릴리스 워크플로가 릴리스를 만든 뒤 호출하고, 수동으로도 돌릴 수 있다.
+name: windows-install-test
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: '설치할 버전 (예: 1.13.1). 비우면 최신 릴리스'
+        type: string
+        required: false
+        default: ''
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '설치할 버전 (예: 1.13.1). 비우면 최신 릴리스'
+        type: string
+        required: false
+        default: ''
+
+jobs:
+  install:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, windows-2022]
+        node: ['20', '22']
+        exclude:
+          - os: windows-2022
+            node: '20'
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      # 윈도우 기본 PowerShell 5.1 로 실행한다 (사용자 대부분이 이걸로 붙여넣는다).
+      # irm | iex 와 같은 조건을 만들려고 스크립트 내용을 문자열로 읽어 실행한다.
+      - name: install.ps1 (Windows PowerShell 5.1)
+        shell: powershell
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          $src = Get-Content -Raw -Encoding UTF8 .\install.ps1
+          $sb = [scriptblock]::Create($src)
+          & $sb -Repo '${{ github.repository }}' -Version '${{ inputs.version }}' -NoOpen
+
+      - name: 설치 결과 확인
+        shell: pwsh
+        run: |
+          $mcp = Get-Content -Raw (Join-Path $HOME '.mcp.json') | ConvertFrom-Json
+          if (-not $mcp.mcpServers.'posendy-chrome') { throw '.mcp.json 에 posendy-chrome 없음' }
+          $mcp.mcpServers.'posendy-chrome' | ConvertTo-Json -Depth 5
+          $ext = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'POSENDY-Chrome-확장프로그램\manifest.json'
+          if (-not (Test-Path $ext)) { throw "확장 manifest 없음: $ext" }
+          $m = Get-Content -Raw $ext | ConvertFrom-Json
+          if (-not $m.key) { throw '확장 manifest 에 key 없음 (확장 ID 고정 안 됨)' }
+          "확장: $($m.name) v$($m.version)"
+
+      - name: 네이티브 호스트 + MCP 스모크 테스트
+        run: node scripts/ci/install-smoke.mjs 12399
+
+      - name: doctor 출력 (참고용)
+        if: always()
+        shell: pwsh
+        run: posendy-chrome-bridge doctor; exit 0
+
+      - name: 호스트 로그
+        if: failure()
+        shell: pwsh
+        run: Get-ChildItem "$env:LOCALAPPDATA\mcp-chrome-bridge\logs" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 3 | ForEach-Object { "== $($_.Name)"; Get-Content $_.FullName -Tail 80 }

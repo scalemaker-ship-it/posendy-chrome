@@ -11,7 +11,7 @@ description: |
     - "chrome mcp 연결 안 돼" / "MCP 안 돼" / "MCP 가 작동 안 함"
     - "지금 연결이 끊겼어" / "갑자기 끊어졌어" / "disconnected 떠"
     - "popup 에 빨간불" / "노란불" / "서비스 정지로 떠"
-    - "/mcp 가 안 잡혀" / "/mcp 에 chrome-mcp-stdio 가 없어"
+    - "/mcp 가 안 잡혀" / "/mcp 에 posendy-chrome 가 없어"
     - "도구가 timeout" / "스크린샷 안 찍혀" / "navigate 실패"
     - "tab 전환이 안 먹혀" / "click 이 안 돼"
     - "Chrome 이 자꾸 앞으로 튀어나옴" / "강제 포커스 꺼줘" / "다른 앱 작업
@@ -93,34 +93,34 @@ popup UI                                         ← port 입력, 강제포커�
 
 ### Trigger → 1st command
 
-| 사용자 발화 패턴                                                                            | 1st command (Claude 가 Bash 로)                                          | 후속 분기                                                                                             |
-| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| "연결 안 돼" / "disconnected" / "popup 빨간불" / "service stopped"                          | `posendy-chrome-bridge doctor`                                          | (B-doctor-output) 표                                                                                  |
-| "권한 에러" / "EACCES" / "permission denied" / "run_host.sh" 언급                           | `posendy-chrome-bridge doctor --fix`                                    | 여전히 실패 시 `posendy-chrome-bridge fix-permissions` 단독                                          |
-| "manifest 못 찾음" / "native messaging error" / "Specified native messaging host not found" | `posendy-chrome-bridge doctor --fix`                                    | 후속 doctor 재실행해서 ✅ 확인                                                                        |
-| "두 세션이 같은 chrome 만 호출" / "다른 profile 인데" / "12315 로 설정했는데 12330 가"      | (B-doctor 대신) `.mcp.json` read 부터 — section (C) 점검 절차 1-5 따라   | port 일치 후 사용자에게 Claude Code 재시작 + `/mcp` 검증 안내                                         |
-| "Chrome 이 자꾸 앞으로 튀어나옴" / "포커스 빼앗김" / "강제 포커스 꺼"                       | (명령 없음) popup 의 "강제 포커스" 토글 OFF 안내 — section (D)           | popup 못 열겠다면 chrome.storage.local 의 `forceFocusOnToolCall` 을 false 로 직접 set 안내            |
-| "/mcp 가 비어있음" / "/mcp 에 chrome-mcp-stdio 없어"                                        | (명령 없음) working dir 의 `.mcp.json` read                              | 없으면 welcome 페이지의 "Claude prompt 등록" 박스를 사용자에게 안내                                   |
-| "도구 timeout" / "스크린샷 안 찍혀" / "navigate 실패" / "tab 전환 안 됨"                    | `posendy-chrome-bridge doctor`                                          | Connectivity ✅ 인데도 안 되면 popup 의 "강제 재연결" 5단계 안내                                      |
-| "port 충돌" / "EADDRINUSE" / "PORT_CONFLICT"                                                | `lsof -i :<port>` 로 점유 process 식별                                   | bridge 좀비면 `kill -9 <pid>` 권유. 다른 process (e.g., 다른 chrome profile bridge) 면 그쪽 port 변경 |
+| 사용자 발화 패턴                                                                            | 1st command (Claude 가 Bash 로)                                        | 후속 분기                                                                                             |
+| ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| "연결 안 돼" / "disconnected" / "popup 빨간불" / "service stopped"                          | `posendy-chrome-bridge doctor`                                         | (B-doctor-output) 표                                                                                  |
+| "권한 에러" / "EACCES" / "permission denied" / "run_host.sh" 언급                           | `posendy-chrome-bridge doctor --fix`                                   | 여전히 실패 시 `posendy-chrome-bridge fix-permissions` 단독                                           |
+| "manifest 못 찾음" / "native messaging error" / "Specified native messaging host not found" | `posendy-chrome-bridge doctor --fix`                                   | 후속 doctor 재실행해서 ✅ 확인                                                                        |
+| "두 세션이 같은 chrome 만 호출" / "다른 profile 인데" / "12315 로 설정했는데 12330 가"      | (B-doctor 대신) `.mcp.json` read 부터 — section (C) 점검 절차 1-5 따라 | port 일치 후 사용자에게 Claude Code 재시작 + `/mcp` 검증 안내                                         |
+| "Chrome 이 자꾸 앞으로 튀어나옴" / "포커스 빼앗김" / "강제 포커스 꺼"                       | (명령 없음) popup 의 "강제 포커스" 토글 OFF 안내 — section (D)         | popup 못 열겠다면 chrome.storage.local 의 `forceFocusOnToolCall` 을 false 로 직접 set 안내            |
+| "/mcp 가 비어있음" / "/mcp 에 posendy-chrome 없어"                                          | (명령 없음) working dir 의 `.mcp.json` read                            | 없으면 welcome 페이지의 "Claude prompt 등록" 박스를 사용자에게 안내                                   |
+| "도구 timeout" / "스크린샷 안 찍혀" / "navigate 실패" / "tab 전환 안 됨"                    | `posendy-chrome-bridge doctor`                                         | Connectivity ✅ 인데도 안 되면 popup 의 "강제 재연결" 5단계 안내                                      |
+| "port 충돌" / "EADDRINUSE" / "PORT_CONFLICT"                                                | `lsof -i :<port>` 로 점유 process 식별                                 | bridge 좀비면 `kill -9 <pid>` 권유. 다른 process (e.g., 다른 chrome profile bridge) 면 그쪽 port 변경 |
 | "강제 재연결 눌렀는데도 안 돼" / "5단계 다 빨간불"                                          | `posendy-chrome-bridge doctor` + `posendy-chrome-bridge report --copy` | (E) escalate — 진단 + 리포트 모두 사용자에게                                                          |
-| "이슈 등록" / "버그 신고" / "GH issue 작성"                                                 | `posendy-chrome-bridge report --copy`                                   | 클립보드 마크다운 + 사용자에게 issue URL 안내                                                         |
+| "이슈 등록" / "버그 신고" / "GH issue 작성"                                                 | `posendy-chrome-bridge report --copy`                                  | 클립보드 마크다운 + 사용자에게 issue URL 안내                                                         |
 
 ### (B-doctor-output) `doctor` 결과 해석 → 후속 명령
 
 doctor 는 12개 이상 항목 점검(설치된 브라우저 수·OS 에 따라 늘어남). 결과 stdout 에서 ❌ 항목별 결정:
 
-| ❌ 항목                             | 의미                                                      | Claude 의 후속 action                                                                                                                                                                                                                                                                                                                                                                                         |
-| ----------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Installation**                    | 패키지가 PATH 에 없음                                     | `npm install -g posendy-chrome-bridge` 실행 권유 (사용자가 sudo 필요할 수 있어 Claude 가 직접 실행 X)                                                                                                                                                                                                                                                                                                        |
-| **Host files**                      | dist 안 파일 누락 (꼬임)                                  | 재설치 권유 — `npm uninstall -g ... && npm install -g ...`                                                                                                                                                                                                                                                                                                                                                    |
-| **Host permissions**                | `run_host.sh` 실행 권한 없음                              | `posendy-chrome-bridge doctor --fix` 또는 `... fix-permissions` 직접 실행                                                                                                                                                                                                                                                                                                                                    |
-| **Node executable**                 | Node 20+ 가 wrapper script 에서 안 잡힘                   | 사용자 OS 의 node version 확인 (`node -v`) → 20 미만이면 업데이트 안내. nvm/volta/asdf/fnm 사용자면 `export CHROME_MCP_NODE_PATH=$(which node)` 후 재시도                                                                                                                                                                                                                                                     |
+| ❌ 항목                             | 의미                                                | Claude 의 후속 action                                                                                                                                                                                                                                                                                                                                                                                        |
+| ----------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Installation**                    | 패키지가 PATH 에 없음                               | `npm install -g posendy-chrome-bridge` 실행 권유 (사용자가 sudo 필요할 수 있어 Claude 가 직접 실행 X)                                                                                                                                                                                                                                                                                                        |
+| **Host files**                      | dist 안 파일 누락 (꼬임)                            | 재설치 권유 — `npm uninstall -g ... && npm install -g ...`                                                                                                                                                                                                                                                                                                                                                   |
+| **Host permissions**                | `run_host.sh` 실행 권한 없음                        | `posendy-chrome-bridge doctor --fix` 또는 `... fix-permissions` 직접 실행                                                                                                                                                                                                                                                                                                                                    |
+| **Node executable**                 | Node 20+ 가 wrapper script 에서 안 잡힘             | 사용자 OS 의 node version 확인 (`node -v`) → 20 미만이면 업데이트 안내. nvm/volta/asdf/fnm 사용자면 `export CHROME_MCP_NODE_PATH=$(which node)` 후 재시도                                                                                                                                                                                                                                                    |
 | **Chrome / Chromium manifest**      | OS 별 디렉토리에 `com.posendy.nativehost.json` 없음 | `posendy-chrome-bridge doctor --fix` 로 user-level 자동 재등록                                                                                                                                                                                                                                                                                                                                               |
-| **Windows registry** (Windows 만)   | registry 키 누락                                          | `doctor --fix` 시도 → 실패 시 관리자 PowerShell 안내                                                                                                                                                                                                                                                                                                                                                          |
-| **Port config** / **Port constant** | `stdio-config.json` 의 URL port 가 깨짐                   | `posendy-chrome-bridge update-port <port>` 실행                                                                                                                                                                                                                                                                                                                                                              |
-| **Connectivity**                    | bridge 가 해당 port 에서 응답 X                           | v1.0.30+ doctor 는 active bridge process 의 actual port 도 같이 점검 → message 에 "active bridge found on port(s) X" 가 보이면 false WARN (popup 의 dynamic port 가 hardcoded 와 다를 뿐, 실제는 정상). 그 message 없이 진짜 ⚠️ 면 `ps aux \| grep posendy-chrome-bridge` → `lsof -aPi -p <pid> \| grep LISTEN` 로 살아있는지 확인. 죽었으면 popup "강제 재연결" 안내. 다른 process 점유면 위 port 충돌 분기 |
-| **Logs**                            | log 디렉토리 쓰기 실패 (드뭄)                             | `chmod +w ~/Library/Logs/mcp-chrome-bridge/` (macOS) 등 안내                                                                                                                                                                                                                                                                                                                                                  |
+| **Windows registry** (Windows 만)   | registry 키 누락                                    | `doctor --fix` 시도 → 실패 시 관리자 PowerShell 안내                                                                                                                                                                                                                                                                                                                                                         |
+| **Port config** / **Port constant** | `stdio-config.json` 의 URL port 가 깨짐             | `posendy-chrome-bridge update-port <port>` 실행                                                                                                                                                                                                                                                                                                                                                              |
+| **Connectivity**                    | bridge 가 해당 port 에서 응답 X                     | v1.0.30+ doctor 는 active bridge process 의 actual port 도 같이 점검 → message 에 "active bridge found on port(s) X" 가 보이면 false WARN (popup 의 dynamic port 가 hardcoded 와 다를 뿐, 실제는 정상). 그 message 없이 진짜 ⚠️ 면 `ps aux \| grep posendy-chrome-bridge` → `lsof -aPi -p <pid> \| grep LISTEN` 로 살아있는지 확인. 죽었으면 popup "강제 재연결" 안내. 다른 process 점유면 위 port 충돌 분기 |
+| **Logs**                            | log 디렉토리 쓰기 실패 (드뭄)                       | `chmod +w ~/Library/Logs/mcp-chrome-bridge/` (macOS) 등 안내                                                                                                                                                                                                                                                                                                                                                 |
 
 ### 사용자 발화 → Bash 호출 예시
 
@@ -147,12 +147,12 @@ doctor 는 12개 이상 항목 점검(설치된 브라우저 수·OS 에 따라 
 **점검 절차:**
 
 1. 사용자에게 양쪽 working dir 의 `.mcp.json` 보여달라고 요청
-2. 각 dir 의 `mcpServers.chrome-mcp-stdio.env.CHROME_PORT` 가 서로 다른 port 인지 확인
+2. 각 dir 의 `mcpServers.posendy-chrome.env.CHROME_PORT` 가 서로 다른 port 인지 확인
 3. 없거나 같으면 다음 형태로 수정 제안:
    ```json
    {
      "mcpServers": {
-       "chrome-mcp-stdio": {
+       "posendy-chrome": {
          "command": "node",
          "args": ["<npm root -g>/posendy-chrome-bridge/dist/mcp/mcp-server-stdio.js"],
          "env": { "CHROME_PORT": "12315" }
@@ -162,9 +162,9 @@ doctor 는 12개 이상 항목 점검(설치된 브라우저 수·OS 에 따라 
    ```
 4. 양쪽 Claude Code 세션을 `Ctrl+C 두 번` 종료 → 재시작
 5. 검증: 각 세션의 첫 도구 호출 시 stderr (Claude Code 의 `/mcp` →
-   chrome-mcp-stdio → View logs) 에 다음 line 찍히는지 확인:
+   posendy-chrome → View logs) 에 다음 line 찍히는지 확인:
    ```
-   [chrome-mcp-stdio] CHROME_PORT=12315 → http://127.0.0.1:12315/mcp
+   [posendy-chrome] CHROME_PORT=12315 → http://127.0.0.1:12315/mcp
    ```
 
 각 chrome profile 의 popup port 입력 (서비스 상태 카드의 "연결 포트") 도
@@ -242,7 +242,7 @@ v1.3.0 신규: `chrome_find`(자연어 요소 검색 — 한/영, iframe 포함)
 
 1. `posendy-chrome-bridge report --copy` 실행 (사용자 환경 정보 + doctor
    결과를 마크다운으로 클립보드에 복사. username/path/token 자동 redact)
-2. GitHub Issue 생성: https://github.com/cw02326/posendy-chrome/issues/new
+2. GitHub Issue 생성: https://github.com/scalemaker-ship-it/posendy-chrome/issues/new
 3. 사용자에게 "클립보드에 진단 리포트가 있으니 issue 본문에 붙여넣기" 안내
 
 **옵션:**

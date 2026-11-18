@@ -3,9 +3,8 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { execSync, spawn } from 'child_process';
-import { COMMAND_NAME, EXTENSION_ID, HOST_NAME } from './constant';
-import { getAllBrowserConfigs } from './browser-config';
+import { spawn } from 'child_process';
+import { COMMAND_NAME, EXTENSION_ID } from './constant';
 import { colorText, tryRegisterUserLevelHost, writeNodePathFile } from './utils';
 
 // posendy-chrome fork: extension zip 자동 다운로드
@@ -29,14 +28,7 @@ const AUTO_CHROME_MCP_EXT_DIR = path.join(
   `posendy-chrome-extension-v${BRIDGE_VERSION}`,
 );
 const AUTO_CHROME_MCP_EXT_URL =
-  'https://github.com/cw02326/posendy-chrome/releases/latest/download/posendy-chrome-extension.zip';
-
-// 이전 이름 정리용.
-const LEGACY_HOST_NAME = 'com.posendy.nativehost';
-// 이전 이름 정리용.
-const LEGACY_SKILL_DIR_NAME = 'posendy-chrome-doctor';
-// 이전 이름 정리용. 확장 zip 캐시·cdp-port·agent DB 가 들어 있던 폴더.
-const LEGACY_INSTALL_ROOT = path.join(os.homedir(), '.posendy-chrome');
+  'https://github.com/scalemaker-ship-it/posendy-chrome/releases/latest/download/posendy-chrome-extension.zip';
 
 function runCmd(cmd: string, args: string[]): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -164,7 +156,7 @@ async function downloadAndExtractExtension(): Promise<string | null> {
     try {
       const versionLine = `posendy-chrome v${BRIDGE_VERSION}\n`;
       const buildLine = `Installed: ${new Date().toISOString()}\n`;
-      const releaseLine = `Release: https://github.com/cw02326/posendy-chrome/releases/tag/v${BRIDGE_VERSION}\n`;
+      const releaseLine = `Release: https://github.com/scalemaker-ship-it/posendy-chrome/releases/tag/v${BRIDGE_VERSION}\n`;
       const extIdLine = `Extension ID: ${EXTENSION_ID}\n`;
       fs.writeFileSync(
         path.join(AUTO_CHROME_MCP_EXT_DIR, 'VERSION'),
@@ -207,7 +199,7 @@ function printNextSteps(extDir: string | null): void {
     console.log(`    → 자동 ID = ${EXTENSION_ID} (manifest.key 박제 효과)`);
   } else {
     console.log('\n' + colorText('[1] Extension 자동 다운로드 실패 — 수동 다운로드:', 'yellow'));
-    console.log(`    https://github.com/cw02326/posendy-chrome/releases/latest`);
+    console.log(`    https://github.com/scalemaker-ship-it/posendy-chrome/releases/latest`);
   }
 
   console.log(
@@ -216,14 +208,12 @@ function printNextSteps(extDir: string | null): void {
   console.log(`    ┌────────────────────────────────────────────────────────────────────┐`);
   console.log(`    우리 chrome MCP (posendy-chrome) 를 사용자 전역에 등록해줘.`);
   console.log(`    먼저 \`npm root -g\` 로 설치 경로를 얻은 뒤 아래를 실행:`);
-  console.log(`      claude mcp add chrome-mcp-stdio -s user -e CHROME_PORT=12330 \\`);
-  console.log(
-    `        -- node "<npm root -g>/posendy-chrome-bridge/dist/mcp/mcp-server-stdio.js"`,
-  );
+  console.log(`      claude mcp add posendy-chrome -s user -e CHROME_PORT=12330 \\`);
+  console.log(`        -- node "<npm root -g>/posendy-chrome-bridge/dist/mcp/mcp-server-stdio.js"`);
   console.log(`    반드시 전역(-s user)으로. 프로젝트마다 .mcp.json 에 따로 넣으면 경로가`);
   console.log(`    서로 어긋나 깨지기 쉽다. 끝나면 /mcp 로 활성 확인 안내.`);
   console.log(`    └────────────────────────────────────────────────────────────────────┘`);
-  console.log('\n' + colorText('[3] /mcp 명령으로 chrome-mcp-stdio 활성 확인', 'blue'));
+  console.log('\n' + colorText('[3] /mcp 명령으로 posendy-chrome 활성 확인', 'blue'));
 }
 
 // Check if this script is run directly
@@ -572,77 +562,6 @@ function installClaudeCodeSkill(): void {
   }
 }
 
-/**
- * v1.10.0: 이전 브랜딩으로 남은 설치 흔적 정리.
- * best-effort 로 동작한다. 실패해도 설치는 계속하고 경고만 출력한다.
- * 새 스킬을 설치한 뒤에 호출해야 한다. 새 SKILL.md 가 실제로 있을 때만 이전 스킬을
- * 지운다 (새 스킬 설치가 실패하거나 opt-out 된 경우 사용자가 아무 스킬도 갖지 못하는
- * 상황을 피한다).
- */
-function cleanupLegacyInstall(): void {
-  const skillsRoot = path.join(os.homedir(), '.claude', 'skills');
-
-  // 1. 이전 이름의 Claude Code 스킬 디렉터리 (새 스킬이 자리 잡은 뒤에만)
-  try {
-    const legacySkillDir = path.join(skillsRoot, LEGACY_SKILL_DIR_NAME);
-    const newSkillFile = path.join(skillsRoot, 'posendy-chrome-doctor', 'SKILL.md');
-    if (fs.existsSync(legacySkillDir) && fs.existsSync(newSkillFile)) {
-      fs.rmSync(legacySkillDir, { recursive: true, force: true });
-      console.log(colorText(`✓ [migrate] 이전 스킬 삭제: ${legacySkillDir}`, 'green'));
-    }
-  } catch (e: any) {
-    console.warn(colorText(`[migrate] 이전 스킬 삭제 실패 (무시): ${e.message}`, 'yellow'));
-  }
-
-  // 2. 이전 설치 루트 (extension.zip 캐시, cdp-port, 옛 agent DB). 사용자 데이터는 없다.
-  try {
-    if (fs.existsSync(LEGACY_INSTALL_ROOT)) {
-      fs.rmSync(LEGACY_INSTALL_ROOT, { recursive: true, force: true });
-      console.log(colorText(`✓ [migrate] 이전 설치 폴더 삭제: ${LEGACY_INSTALL_ROOT}`, 'green'));
-    }
-  } catch (e: any) {
-    console.warn(colorText(`[migrate] 이전 설치 폴더 삭제 실패 (무시): ${e.message}`, 'yellow'));
-  }
-
-  // 3. 이전 이름의 네이티브 호스트 manifest (+ Windows 는 HKCU 레지스트리 키까지)
-  let browserConfigs: ReturnType<typeof getAllBrowserConfigs> = [];
-  try {
-    browserConfigs = getAllBrowserConfigs();
-  } catch (e: any) {
-    console.warn(colorText(`[migrate] 브라우저 설정 조회 실패 (무시): ${e.message}`, 'yellow'));
-  }
-  for (const config of browserConfigs) {
-    try {
-      const legacyManifest = path.join(
-        path.dirname(config.userManifestPath),
-        `${LEGACY_HOST_NAME}.json`,
-      );
-      if (fs.existsSync(legacyManifest)) {
-        fs.rmSync(legacyManifest, { force: true });
-        console.log(colorText(`✓ [migrate] 이전 manifest 삭제: ${legacyManifest}`, 'green'));
-      }
-    } catch (e: any) {
-      console.warn(colorText(`[migrate] 이전 manifest 삭제 실패 (무시): ${e.message}`, 'yellow'));
-    }
-
-    if (os.platform() !== 'win32' || !config.registryKey) continue;
-    const legacyKey = config.registryKey.replace(HOST_NAME, LEGACY_HOST_NAME);
-    try {
-      execSync(`reg query "${legacyKey}"`, { stdio: 'pipe' });
-    } catch {
-      continue; // 키가 없음. 지울 것도 없다
-    }
-    try {
-      execSync(`reg delete "${legacyKey}" /f`, { stdio: 'pipe' });
-      console.log(colorText(`✓ [migrate] 이전 레지스트리 키 삭제: ${legacyKey}`, 'green'));
-    } catch (e: any) {
-      console.warn(
-        colorText(`[migrate] 이전 레지스트리 키 삭제 실패 (무시): ${e.message}`, 'yellow'),
-      );
-    }
-  }
-}
-
 async function main(): Promise<void> {
   console.log(colorText(`Installing ${COMMAND_NAME}...`, 'green'));
 
@@ -669,8 +588,10 @@ async function main(): Promise<void> {
     const extDir = await downloadAndExtractExtension();
     // posendy-chrome fork v1.0.30+: Claude Code troubleshooting 스킬 자동 설치
     installClaudeCodeSkill();
-    // v1.10.0: 이전 브랜딩의 스킬·호스트 등록 정리 (best-effort)
-    cleanupLegacyInstall();
+    // 이전 브랜딩(auto-chrome-mcp, mcp-chrome-scalemaker) 정리는 하지 않는다. 그 제품들은
+    // 포샌디와 나란히 설치돼 쓰이는 별도 제품이다. 리브랜딩 일괄치환으로 정리 대상 이름이
+    // 현재 이름과 같아져, 방금 등록한 호스트 manifest·레지스트리 키·~/.posendy-chrome 를
+    // 스스로 지우던 버그가 있었다(2026-11-18 제거).
     printNextSteps(extDir);
   } else {
     console.log(colorText('Local installation detected', 'yellow'));

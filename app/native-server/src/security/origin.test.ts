@@ -104,7 +104,7 @@ describe('security/origin', () => {
     expect(isAllowedHostHeader('localhost:12330', 12330)).toBe(true);
     expect(isAllowedHostHeader('[::1]:12330', 12330)).toBe(true);
     // 포트가 다르면 거절 (DNS rebinding 으로 다른 브리지를 노리는 요청)
-    expect(isAllowedHostHeader('127.0.0.1:12330', 12330)).toBe(false);
+    expect(isAllowedHostHeader('127.0.0.1:12331', 12330)).toBe(false);
     // 이름이 로컬이 아니면 거절 (DNS rebinding: attacker.example → 127.0.0.1)
     expect(isAllowedHostHeader('evil.example:12330', 12330)).toBe(false);
     expect(isAllowedHostHeader('127.0.0.1.attacker.example:12330', 12330)).toBe(false);

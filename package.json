@@ -5,7 +5,7 @@
   "author": "hangye (upstream), cw02326 (posendy-chrome fork)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cw02326/posendy-chrome.git"
+    "url": "https://github.com/scalemaker-ship-it/posendy-chrome.git"
   },
   "type": "module",
   "scripts": {

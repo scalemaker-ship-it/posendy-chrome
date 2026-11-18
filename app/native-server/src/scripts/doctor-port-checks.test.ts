@@ -177,9 +177,9 @@ describe('buildPortChecks - 살아 있는 브리지 개수 집계', () => {
 
   test('설정이 없으면 탐색으로 찾은 브리지를 전부 센다 (2개면 warn)', async () => {
     const probe = makeProbe({
-      ports: [12330, 12330],
-      responsivePorts: [12330, 12330],
-      bridgePorts: [12330, 12330],
+      ports: [12330, 12331],
+      responsivePorts: [12330, 12331],
+      bridgePorts: [12330, 12331],
     });
 
     const result = await buildPortChecks({
@@ -191,7 +191,7 @@ describe('buildPortChecks - 살아 있는 브리지 개수 집계', () => {
     const active = activeCheck(result.checks);
     expect(active.status).toBe('warn');
     expect(active.details.liveBridgeCount).toBe(2);
-    expect(active.details.liveBridgePorts).toEqual([12330, 12330]);
+    expect(active.details.liveBridgePorts).toEqual([12330, 12331]);
   });
 
   test('설정이 깨져도 탐색으로 찾은 브리지를 전부 센다 (2개면 warn)', async () => {

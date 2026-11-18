@@ -75,7 +75,7 @@ claude
 파워셸에 아래 한 줄을 붙여넣고 Enter를 누르세요.
 
 ```
-irm https://raw.githubusercontent.com/cw02326/posendy-chrome/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/scalemaker-ship-it/posendy-chrome/main/install.ps1 | iex
 ```
 
 이제 기다리면 됩니다. 2분에서 5분쯤 걸립니다. 이 한 줄이 이런 일을 알아서 합니다.
@@ -112,7 +112,7 @@ irm https://raw.githubusercontent.com/cw02326/posendy-chrome/main/install.ps1 | 
 1. 클로드 코드를 **완전히 껐다가 다시 켭니다.**
    (Ctrl + C 두 번으로 끄고, `claude` 로 다시 실행)
 2. 입력창에 **/mcp** 라고 치고 Enter를 누릅니다.
-3. 목록에 **chrome-mcp-stdio** 가 보이면 설치 완료입니다.
+3. 목록에 **posendy-chrome** 가 보이면 설치 완료입니다.
 
 > 재시작을 꼭 해야 합니다. 클로드 코드는 켜질 때 한 번만 도구 목록을 읽기 때문에,
 > 재시작 전에는 새로 설치한 것이 보이지 않습니다.
@@ -189,7 +189,7 @@ claude
 터미널에 아래 한 줄을 붙여넣고 Enter를 누르세요.
 
 ```
-curl -fsSL https://raw.githubusercontent.com/cw02326/posendy-chrome/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/scalemaker-ship-it/posendy-chrome/main/install.sh | bash
 ```
 
 이제 기다리면 됩니다. 2분에서 5분쯤 걸립니다. 이 한 줄이 이런 일을 알아서 합니다.
@@ -235,7 +235,7 @@ curl -fsSL https://raw.githubusercontent.com/cw02326/posendy-chrome/main/install
 1. 클로드 코드를 **완전히 껐다가 다시 켭니다.**
    (Ctrl + C 두 번으로 끄고, `claude` 로 다시 실행)
 2. 입력창에 **/mcp** 라고 치고 Enter를 누릅니다.
-3. 목록에 **chrome-mcp-stdio** 가 보이면 설치 완료입니다.
+3. 목록에 **posendy-chrome** 가 보이면 설치 완료입니다.
 
 > 재시작을 꼭 해야 합니다. 클로드 코드는 켜질 때 한 번만 도구 목록을 읽기 때문에,
 > 재시작 전에는 새로 설치한 것이 보이지 않습니다.
@@ -271,7 +271,7 @@ npm install -g posendy-chrome-bridge
 ```
 
 ```
-claude mcp add --scope user --transport stdio chrome-mcp-stdio -e CHROME_PORT=12330 -- node "$(npm root -g)/posendy-chrome-bridge/dist/mcp/mcp-server-stdio.js"
+claude mcp add --scope user --transport stdio posendy-chrome -e CHROME_PORT=12330 -- node "$(npm root -g)/posendy-chrome-bridge/dist/mcp/mcp-server-stdio.js"
 ```
 
 첫 줄이 확장 프로그램도 같이 내려받습니다.
@@ -279,7 +279,7 @@ claude mcp add --scope user --transport stdio chrome-mcp-stdio -e CHROME_PORT=12
 이름으로 생깁니다. 2단계에서 그 폴더를 고르면 됩니다.
 
 그래도 안 되면 아래 주소에 오류 화면을 올려 주세요.
-github.com/cw02326/posendy-chrome/issues
+github.com/scalemaker-ship-it/posendy-chrome/issues
 
 # 공통. 설치 후 알아두면 좋은 것
 
@@ -331,6 +331,6 @@ github.com/cw02326/posendy-chrome/issues
 
 ---
 
-프로젝트 주소: github.com/cw02326/posendy-chrome
+프로젝트 주소: github.com/scalemaker-ship-it/posendy-chrome
 
 이 가이드는 컴퓨터를 처음 다루는 분 기준으로 작성했습니다.

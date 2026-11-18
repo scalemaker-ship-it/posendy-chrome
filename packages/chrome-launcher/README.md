@@ -1,6 +1,6 @@
 # posendy-chrome-launcher
 
-> Chrome launcher with `--remote-debugging-port=9222` for [posendy-chrome](https://github.com/cw02326/posendy-chrome) Playwright CDP fallback.
+> Chrome launcher with `--remote-debugging-port=9222` for [posendy-chrome](https://github.com/scalemaker-ship-it/posendy-chrome) Playwright CDP fallback.
 
 ## What it does
 

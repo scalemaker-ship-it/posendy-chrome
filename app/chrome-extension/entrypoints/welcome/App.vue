@@ -17,22 +17,22 @@ const COMMANDS = {
   claudePrompt: `지금 working dir (이 프로젝트 폴더) 의 .mcp.json 에 우리 chrome MCP (posendy-chrome) 를 등록해줘. ~/.claude.json 같은 전역 설정에는 손대지 마.
 
 규칙:
-- 이름: "chrome-mcp-stdio"
+- 이름: "posendy-chrome"
 - transport: stdio (HTTP 안 씀)
 - command: "node"
 - args: ["<npm root -g 출력값>/posendy-chrome-bridge/dist/mcp/mcp-server-stdio.js"]
 - env: { "CHROME_PORT": "12330" }
 
-먼저 \`npm root -g\` 를 bash 로 실행해서 실제 경로 얻고, 그 다음에 working dir 의 .mcp.json (없으면 신설) 의 mcpServers.chrome-mcp-stdio 만 추가/갱신해줘. 기존 다른 server 항목은 보존.
+먼저 \`npm root -g\` 를 bash 로 실행해서 실제 경로 얻고, 그 다음에 working dir 의 .mcp.json (없으면 신설) 의 mcpServers.posendy-chrome 만 추가/갱신해줘. 기존 다른 server 항목은 보존.
 
 등록이 끝나면 아래 절차도 함께 안내해줘:
 1. Claude Code 를 Ctrl+C 두 번으로 종료 후 다시 실행 (mcp 서버 재로드)
-2. \`/mcp\` 입력해서 chrome-mcp-stdio 가 connected 상태인지 확인
+2. \`/mcp\` 입력해서 posendy-chrome 가 connected 상태인지 확인
 3. 확인 후 Esc 로 빠져나오기`,
   // v1.0.30+: troubleshooting 스킬은 postinstall 이 자동 설치 (~/.claude/ 가 있을 때만).
   // 별도 install prompt 박스 불필요.
   // GitHub repo
-  repoUrl: 'https://github.com/cw02326/posendy-chrome',
+  repoUrl: 'https://github.com/scalemaker-ship-it/posendy-chrome',
   // 우리 fork extension ID (deterministic)
   extensionId: 'dafdlgggdlfgiojdcjlaclelodbfajpp',
   // chrome://extensions URL — 가시화용
@@ -182,7 +182,7 @@ async function copyCommand(key: CommandKey): Promise<void> {
                       붙여넣기. Claude Code 가
                       <code class="welcome-code welcome-code-inline px-1 py-0.5">.mcp.json</code> 에
                       <code class="welcome-code welcome-code-inline px-1 py-0.5"
-                        >chrome-mcp-stdio</code
+                        >posendy-chrome</code
                       >
                       자동 등록.
                     </p>
@@ -277,7 +277,7 @@ async function copyCommand(key: CommandKey): Promise<void> {
                       붙여넣기. Claude Code 가
                       <code class="welcome-code welcome-code-inline px-1 py-0.5">.mcp.json</code> 에
                       <code class="welcome-code welcome-code-inline px-1 py-0.5"
-                        >chrome-mcp-stdio</code
+                        >posendy-chrome</code
                       >
                       자동 등록.
                     </p>

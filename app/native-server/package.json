@@ -36,9 +36,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cw02326/posendy-chrome.git"
+    "url": "https://github.com/scalemaker-ship-it/posendy-chrome.git"
   },
-  "homepage": "https://github.com/cw02326/posendy-chrome",
+  "homepage": "https://github.com/scalemaker-ship-it/posendy-chrome",
   "dependencies": {
     "@fastify/cors": "^11.0.1",
     "@modelcontextprotocol/sdk": "^1.11.0",

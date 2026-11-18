@@ -7,7 +7,7 @@
 
 - **목표:** vibemaker 포크를 "posendy-chrome Chrome MCP"로 리브랜딩한 **나만의 배포판**. npm 공개 배포 + `cw02326` GitHub 레포.
 - **핵심 제약:** 리브랜딩하면서 **작동 안정성이 vibemaker보다 나빠지면 안 된다.** 기능은 동결 복제 후 이름만 교체하는 순서로 회귀(regression)를 원천 차단.
-- **소유/배포:** npm(`posendy-chrome-bridge`) 공개 + GitHub `cw02326/posendy-chrome`.
+- **소유/배포:** npm(`posendy-chrome-bridge`) 공개 + GitHub `scalemaker-ship-it/posendy-chrome`.
 - **로컬 이관:** 완성 후 사용자 맥에서 vibemaker 제거 → posendy-chrome 설치.
 
 ## 2. 베이스
@@ -17,18 +17,18 @@
 
 ## 3. 리브랜딩 매핑
 
-| 항목             | 옛것                                                       | 새것                                                        |
-| ---------------- | ---------------------------------------------------------- | ----------------------------------------------------------- |
-| monorepo         | `mcp-chrome-vibemaker-monorepo`                            | `posendy-chrome-monorepo`                                  |
-| 브리지(npm 본체) | `mcp-chrome-vibemaker-bridge`                              | `posendy-chrome-bridge`                                    |
-| 확장             | `chrome-mcp-vibemaker`                                     | `posendy-chrome-extension`                                 |
-| shared           | `chrome-mcp-vibemaker-shared`                              | `posendy-chrome-shared`                                    |
-| launcher         | `mcp-chrome-vibemaker-launcher`                            | `posendy-chrome-launcher`                                  |
+| 항목             | 옛것                                                       | 새것                                                      |
+| ---------------- | ---------------------------------------------------------- | --------------------------------------------------------- |
+| monorepo         | `mcp-chrome-vibemaker-monorepo`                            | `posendy-chrome-monorepo`                                 |
+| 브리지(npm 본체) | `mcp-chrome-vibemaker-bridge`                              | `posendy-chrome-bridge`                                   |
+| 확장             | `chrome-mcp-vibemaker`                                     | `posendy-chrome-extension`                                |
+| shared           | `chrome-mcp-vibemaker-shared`                              | `posendy-chrome-shared`                                   |
+| launcher         | `mcp-chrome-vibemaker-launcher`                            | `posendy-chrome-launcher`                                 |
 | CLI bin          | `mcp-chrome-vibemaker-bridge`/`-stdio`/`vibemaker-install` | `posendy-chrome-bridge`/`-stdio`/`posendy-chrome-install` |
-| 네이티브 호스트  | `com.chromemcpvibemaker.nativehost`                        | `com.posendy.nativehost`                              |
-| 기본 포트        | `12316`                                                    | `12330`                                                     |
-| 확장 ID          | `epadcnnkkmnhalmhlemjlompmggbfjfa`                         | **새 RSA 키로 재생성(고정)**                                |
-| 텍스트 브랜드    | Vibemaker/VibeMaker                                        | posendy-chrome                                             |
+| 네이티브 호스트  | `com.chromemcpvibemaker.nativehost`                        | `com.posendy.nativehost`                                  |
+| 기본 포트        | `12316`                                                    | `12330`                                                   |
+| 확장 ID          | `epadcnnkkmnhalmhlemjlompmggbfjfa`                         | **새 RSA 키로 재생성(고정)**                              |
+| 텍스트 브랜드    | Vibemaker/VibeMaker                                        | posendy-chrome                                            |
 
 - **완전 분리 원칙:** 포트·확장ID·호스트명을 전부 다르게 → 제거 이관 중 vibemaker와 안 엉킴.
 - **잔재 0건:** `vibemaker`, `12316`, `chromemcpvibemaker`, 옛 확장ID를 grep 0건까지 훑음.

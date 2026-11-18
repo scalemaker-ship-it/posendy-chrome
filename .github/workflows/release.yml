@@ -1,16 +1,10 @@
-# 태그 하나로 npm 발행 + GitHub 릴리스까지 끝낸다.
+# 태그 하나로 깃허브 릴리스까지 끝낸다. npm 레지스트리에는 발행하지 않는다.
 #
-# npm 인증은 **Trusted Publishing(OIDC)** 을 쓴다 — 토큰이 필요 없고 OTP 왕복도 없다.
-# 2026-08-23 실측: Bypass 2FA 토큰으로는 더 이상 발행이 안 된다(EOTP). 그래서 이 경로로 옮겼다.
-#
-# 사전 설정 (npmjs.com, 패키지마다 1회):
-#   패키지 페이지 → Settings → Trusted publisher → GitHub Actions
-#     Organization or user: cw02326
-#     Repository:           posendy-chrome
-#     Workflow filename:    release.yml      ← 이 파일 이름과 정확히 일치해야 한다(대소문자 포함)
-#     Environment:          (비움)
-#     Allowed actions:      npm publish
-#   대상: posendy-chrome-shared, posendy-chrome-bridge 두 개 모두.
+# 설치는 install.ps1 / install.sh 가 릴리스 에셋에서 직접 받는다:
+#   posendy-chrome-bridge-<v>.tgz  -> npm install -g <릴리스 URL>
+#   posendy-chrome-shared-<v>.tgz  -> 브리지 package.json 의 의존성을 이 릴리스 URL 로 바꿔 둔다
+#   posendy-chrome-extension.zip   -> 압축해제된 확장 프로그램으로 로드
+# 릴리스를 만든 뒤 windows-install-test 를 호출해 윈도우에서 실제 설치까지 검증한다.
 name: release
 
 on:
@@ -23,10 +17,9 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-latest # OIDC 는 GitHub 호스티드 러너에서만 동작한다 (self-hosted 미지원)
+    runs-on: ubuntu-latest
     permissions:
       contents: write # GitHub 릴리스 생성
-      id-token: write # OIDC 토큰 발급 — trusted publishing 에 필수
     steps:
       - uses: actions/checkout@v4
 
@@ -36,15 +29,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22' # trusted publishing 요구: Node >= 22.14.0
+          node-version: '22'
           cache: pnpm
-          registry-url: https://registry.npmjs.org/
-
-      # Node 22 번들 npm 은 10.x 라 OIDC 를 모른다. 11.5.1 이상이 필요하다.
-      - name: Ensure npm supports trusted publishing
-        run: |
-          npm install -g npm@latest
-          npm --version
 
       # 태그 실행이면 태그와 package.json 이 어긋난 채로 발행되는 사고를 막고,
       # 수동 실행(dry run)이면 package.json 버전을 그대로 쓴다.
@@ -100,39 +86,39 @@ jobs:
             -C packages/chrome-launcher \
             bin dist package.json README.md
 
-      # ⚠️ 반드시 pnpm pack 이어야 한다. npm pack 은 내부 의존성을 "workspace:*" 그대로 남겨
-      #    설치 시 EUNSUPPORTEDPROTOCOL 로 깨진다 (v1.4.0/1.4.1 이 그래서 deprecate 됐다).
-      - name: Pack tarballs with resolved workspace deps
+      # 브리지의 shared 의존성을 npm 레지스트리 대신 이 릴리스의 tgz URL 로 고정한다.
+      # (posendy-chrome-shared 는 npm 에 발행하지 않는다)
+      - name: Point bridge -> shared dependency at release asset
+        run: |
+          SHARED_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/v${VERSION}/posendy-chrome-shared-${VERSION}.tgz"
+          node -e '
+            const fs = require("fs");
+            const p = "app/native-server/package.json";
+            const j = JSON.parse(fs.readFileSync(p, "utf8"));
+            j.dependencies["posendy-chrome-shared"] = process.argv[1];
+            fs.writeFileSync(p, JSON.stringify(j, null, 2) + "\n");
+            console.log("shared ->", process.argv[1]);
+          ' "$SHARED_URL"
+
+      - name: Pack tarballs
         run: |
           mkdir -p dist-tarballs
           pnpm --filter posendy-chrome-shared pack --pack-destination "$PWD/dist-tarballs"
           pnpm --filter posendy-chrome-bridge pack --pack-destination "$PWD/dist-tarballs"
           ls -la dist-tarballs
-          # 치환이 실제로 됐는지 확인 — 안 됐으면 여기서 멈춘다.
           tar -xzOf "dist-tarballs/posendy-chrome-bridge-${VERSION}.tgz" package/package.json \
             | node -e '
               let d = "";
               process.stdin.on("data", (c) => (d += c)).on("end", () => {
                 const dep = JSON.parse(d).dependencies["posendy-chrome-shared"];
-                if (String(dep).startsWith("workspace:")) {
-                  console.error("::error::workspace 의존성이 치환되지 않았습니다: " + dep);
+                if (!String(dep).startsWith("https://")) {
+                  console.error("::error::shared 의존성이 릴리스 URL 이 아닙니다: " + dep);
                   process.exit(1);
                 }
-                console.log("bridge → shared 의존성:", dep);
+                console.log("bridge -> shared:", dep);
               });'
-
-      # 여기서 토큰을 쓰지 않는다. OIDC 로 인증하고 provenance 도 자동으로 붙는다.
-      #
-      # ⚠️ 경로 앞의 `./` 를 지우지 마라. npm 12 부터 git 타입 fetch 가 기본 차단(EALLOWGIT)이고,
-      #    `dist-tarballs/foo.tgz` 처럼 슬래시가 든 인자는 로컬 파일이 아니라 `owner/repo` GitHub
-      #    단축 표기로 해석된다. v1.7.0 첫 발행이 정확히 이걸로 죽었다:
-      #      npm error Refusing to fetch "github:dist-tarballs/posendy-chrome-shared-1.7.0.tgz"
-      #    `./` 를 붙이면 파일 경로로 확정되고 npm 11·12 양쪽에서 동작한다.
-      - name: Publish to npm (trusted publishing)
-        if: github.event_name == 'push'
-        run: |
-          npm publish "./dist-tarballs/posendy-chrome-shared-${VERSION}.tgz" --access public
-          npm publish "./dist-tarballs/posendy-chrome-bridge-${VERSION}.tgz" --access public
+          tar -tzf "dist-tarballs/posendy-chrome-bridge-${VERSION}.tgz" | grep -q "package/dist/run_host.bat" \
+            || { echo "::error::브리지 tgz 에 run_host.bat 이 없습니다"; exit 1; }
 
       - name: GitHub Release
         if: github.event_name == 'push'
@@ -145,3 +131,13 @@ jobs:
             posendy-chrome-extension.zip
             chrome-launcher-v${{ env.VERSION }}.tar.gz
             dist-tarballs/posendy-chrome-bridge-${{ env.VERSION }}.tgz
+            dist-tarballs/posendy-chrome-shared-${{ env.VERSION }}.tgz
+            install.ps1
+            install.sh
+
+  windows-install-test:
+    needs: release
+    if: github.event_name == 'push'
+    uses: ./.github/workflows/windows-install-test.yml
+    with:
+      version: ${{ github.ref_name }}
