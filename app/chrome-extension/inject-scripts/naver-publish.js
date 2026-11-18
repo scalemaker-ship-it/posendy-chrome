@@ -241,7 +241,7 @@
         const sel = window.getSelection();
         sel.removeAllRanges();
         sel.addRange(r);
-        p.focus && p.focus();
+        if (p.focus) p.focus();
       }
     } catch (e) {
       /* ignore */

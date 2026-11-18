@@ -77,7 +77,7 @@ async function runJob(job: PosendyJob) {
   const tab = await chrome.tabs.create({ url, active: false });
   const tabId = tab.id!;
   try {
-    let loaded = await waitTabComplete(tabId);
+    const loaded = await waitTabComplete(tabId);
     if (/nid\.naver\.com|\/login/i.test(loaded.url || '')) {
       await chrome.tabs.update(tabId, { active: true });
       return { status: 'needs_login' as const, error: '네이버 로그인이 필요해요. 열린 탭에서 로그인해 주세요.' };
